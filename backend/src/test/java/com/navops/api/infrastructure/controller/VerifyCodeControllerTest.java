@@ -2,7 +2,7 @@ package com.navops.api.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navops.api.application.dto.request.VerifyCodeRequest;
-import com.navops.api.application.dto.response.VerifyCodeResponse;
+import com.navops.api.application.dto.response.VerifyCodeResponseDto;
 import com.navops.api.application.service.AuthService;
 import com.navops.api.infrastructure.exception.ExpiredResetCodeException;
 import com.navops.api.infrastructure.exception.InvalidResetCodeException;
@@ -46,7 +46,7 @@ class VerifyCodeControllerTest {
     @DisplayName("Should return 200 OK and JWT reset token when code is valid")
     void shouldReturn200WhenValidToken() throws Exception {
         VerifyCodeRequest request = new VerifyCodeRequest("test@navops.com", "ABCD1234");
-        VerifyCodeResponse expectedResponse = new VerifyCodeResponse("Identidad validada exitosamente", "dummy-reset-token-ey123");
+        VerifyCodeResponseDto expectedResponse = new VerifyCodeResponseDto("Identidad validada exitosamente", "dummy-reset-token-ey123");
 
         when(authService.verifyResetCode(request.email(), request.code()))
                 .thenReturn(expectedResponse);

@@ -1,8 +1,8 @@
 package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.LoginRequest;
-import com.navops.api.application.dto.response.LoginResponse;
-import com.navops.api.application.dto.response.VerifyCodeResponse;
+import com.navops.api.application.dto.response.LoginResponseDto;
+import com.navops.api.application.dto.response.VerifyCodeResponseDto;
 import com.navops.api.domain.entity.LoginAttempt;
 import com.navops.api.domain.entity.PasswordResetCode;
 import com.navops.api.domain.entity.User;
@@ -47,7 +47,7 @@ public class AuthService {
     private static final int LOCKOUT_MINUTES = 15;
 
     @Transactional
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponseDto login(LoginRequest loginRequest) {
         String ipAddress = getClientIp(request);
         String username = loginRequest.username();
 
@@ -72,7 +72,7 @@ public class AuthService {
 
             String redirectUrl = determineRedirectUrl(roleName);
 
-            return new LoginResponse(jwtToken, user.getId(), roleName, redirectUrl);
+            return new LoginResponseDto(jwtToken, user.getId(), roleName, redirectUrl);
 
         } catch (BadCredentialsException ex) {
 
@@ -143,7 +143,7 @@ public class AuthService {
     }
 
     @Transactional
-    public VerifyCodeResponse verifyResetCode(String email, String code) {
+    public VerifyCodeResponseDto verifyResetCode(String email, String code) {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         String rawCode = code.replace(" ", "").replace("-", "").toUpperCase();
 
@@ -163,7 +163,7 @@ public class AuthService {
 
         // Generar un token temporal para que el usuario pueda cambiar su contraseña en el siguiente paso
         String resetToken = jwtService.generatePasswordResetToken(user);
-        return new com.navops.api.application.dto.response.VerifyCodeResponse("Identidad validada exitosamente", resetToken);
+        return new VerifyCodeResponseDto("Identidad validada exitosamente", resetToken);
     }
 
     @Transactional

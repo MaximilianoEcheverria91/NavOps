@@ -79,6 +79,10 @@ public record PersonnelRegistrationRequest(
             @NotBlank(message = "La localidad o ciudad es obligatoria")
             String locality,
 
+            @Schema(example = "1832", requiredMode = Schema.RequiredMode.REQUIRED, description = "Código postal del usuario" )
+            @NotBlank(message = "El código postal es obligatorio")
+            String PostalCode,
+
             @Schema(example = "San Vicente", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nombre de la calle donde reside la persona" )
             @NotBlank(message = "El nombre de la calle es obligatoria")
             String street,

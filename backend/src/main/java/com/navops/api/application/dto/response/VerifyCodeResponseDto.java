@@ -3,7 +3,7 @@ package com.navops.api.application.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Respuesta de validación de código de recuperación")
-public record VerifyCodeResponse(
+public record VerifyCodeResponseDto(
 
         @Schema(example = "Código verificado correctamente", description = "Mensaje informativo del estado de la operación")
         String message,

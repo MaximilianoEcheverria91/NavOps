@@ -2,11 +2,11 @@ package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.ForgotPasswordRequest;
 import com.navops.api.application.dto.request.LoginRequest;
-import com.navops.api.application.dto.response.ErrorResponse;
-import com.navops.api.application.dto.response.ForgotPasswordResponse;
-import com.navops.api.application.dto.response.LoginResponse;
+import com.navops.api.application.dto.response.ErrorResponseDto;
+import com.navops.api.application.dto.response.ForgotPasswordResponseDto;
+import com.navops.api.application.dto.response.LoginResponseDto;
 import com.navops.api.application.dto.request.VerifyCodeRequest;
-import com.navops.api.application.dto.response.VerifyCodeResponse;
+import com.navops.api.application.dto.response.VerifyCodeResponseDto;
 import com.navops.api.application.service.AuthService;
 import com.navops.api.application.dto.request.ResetPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +34,7 @@ public class AuthController {
     @Operation(summary = "Iniciar sesión", description = "Autentica al usuario y devuelve un JWT. El campo redirectUrl indica a qué dashboard debe ir según su rol.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Autenticación exitosa",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class)) }),
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDto.class)) }),
             @ApiResponse(responseCode = "400", description = "Solicitud incorrectas (campos vacios)",
                     content = @Content),
             @ApiResponse(responseCode = "401", description = "Credenciales inválidas",
@@ -43,7 +43,7 @@ public class AuthController {
                     content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
@@ -52,22 +52,22 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Returns success universally to prevent email enumeration.")
     })
     @PostMapping("/forgot-password")
-    public ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<ForgotPasswordResponseDto> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request.email());
-        return ResponseEntity.ok(new ForgotPasswordResponse("Se ha enviado un enlace a tu correo electrónico"));
+        return ResponseEntity.ok(new ForgotPasswordResponseDto("Se ha enviado un enlace a tu correo electrónico"));
     }
 
     @Operation(summary = "Verificar código de seguridad", description = "Valida el código del email. Si es correcto, devuelve un 'resetToken' temporal necesario para el siguiente paso.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Código válido",
-                            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = VerifyCodeResponse.class)) }),
+                            content = { @Content(mediaType = "application/json", schema = @Schema(implementation = VerifyCodeResponseDto.class)) }),
                     @ApiResponse(responseCode = "400", description = "Código inválido o expirado",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
                     @ApiResponse(responseCode = "404", description = "Usuario no encontrado",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
             })
     @PostMapping("/verify-code")
-    public ResponseEntity<VerifyCodeResponse> verifyCode(@Valid @RequestBody VerifyCodeRequest request) {
+    public ResponseEntity<VerifyCodeResponseDto> verifyCode(@Valid @RequestBody VerifyCodeRequest request) {
         return ResponseEntity.ok(authService.verifyResetCode(request.email(), request.code()));
     }
 
@@ -75,11 +75,11 @@ public class AuthController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Contraseña actualizada"),
                     @ApiResponse(responseCode = "400", description = "Token de restablecimiento inválido",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
             })
     @PostMapping("/reset-password")
-    public ResponseEntity<ForgotPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ForgotPasswordResponseDto> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
-        return ResponseEntity.ok(new ForgotPasswordResponse("Tu contraseña fue actualizada con éxito"));
+        return ResponseEntity.ok(new ForgotPasswordResponseDto("Tu contraseña fue actualizada con éxito"));
     }
 }

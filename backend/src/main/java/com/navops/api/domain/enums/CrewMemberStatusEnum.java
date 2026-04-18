@@ -2,10 +2,10 @@ package com.navops.api.domain.enums;
 
 public enum CrewMemberStatusEnum {
 
-    ACTIVO("Personal activo"),
-    INACTIVO("Personal inactivo"),
-    LICENCIA("Personal con licencia por enfermedad, vacaciones, estudios, etc."),
-    SUSPENDIDO("personal suspendido");
+    ACTIVE("Personal activo"),
+    INACTIVE("Personal inactivo"),
+    LICENSE("Personal con licencia por enfermedad, vacaciones, estudios, etc."),
+    SUSPENDED("personal suspendido");
 
     private final String description;
 

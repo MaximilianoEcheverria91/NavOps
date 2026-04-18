@@ -2,7 +2,7 @@ package com.navops.api.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navops.api.application.dto.request.LoginRequest;
-import com.navops.api.application.dto.response.LoginResponse;
+import com.navops.api.application.dto.response.LoginResponseDto;
 import com.navops.api.application.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class AuthControllerTest {
     @DisplayName("Should return 200 OK and LoginResponse when credentials are valid")
     void shouldReturn200AndLoginResponseWhenValidRequest() throws Exception {
         LoginRequest validRequest = new LoginRequest("admin", "password123");
-        LoginResponse expectedResponse = new LoginResponse(
+        LoginResponseDto expectedResponse = new LoginResponseDto(
                 "mock.jwt.token",
                 UUID.randomUUID(),
                 "ROLE_ADMIN",

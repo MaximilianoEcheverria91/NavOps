@@ -45,7 +45,7 @@ public class CrewMember {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     @Column(nullable = false, length = 50)
-    private CrewMemberStatusEnum status = CrewMemberStatusEnum.ACTIVO;
+    private CrewMemberStatusEnum status = CrewMemberStatusEnum.ACTIVE;
 
     @Builder.Default
     @Version
