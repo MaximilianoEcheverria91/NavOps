@@ -1,6 +1,6 @@
 package com.navops.api.infrastructure.exception;
 
-import com.navops.api.application.dto.response.ErrorResponse;
+import com.navops.api.application.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,12 +18,12 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
-        ErrorResponse response = new ErrorResponse(
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Bad Request",
                 message.isEmpty() ? "Complete todos los campos" : message,
                 HttpStatus.BAD_REQUEST.value(),
@@ -34,8 +33,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Unauthorized",
                 "Usuario o contraseña incorrectos",
                 HttpStatus.UNAUTHORIZED.value(),
@@ -45,8 +44,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ErrorResponse> handleLockedException(LockedException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleLockedException(LockedException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Locked",
                 ex.getMessage(),
                 HttpStatus.LOCKED.value(),
@@ -56,8 +55,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleResourceAlreadyExists(ResourceAlreadyExistsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Conflict",
                 ex.getMessage(),
                 HttpStatus.CONFLICT.value(),
@@ -67,8 +66,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Internal Server Error",
                 "Ha ocurrido un error inesperado",
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -78,8 +77,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({InvalidResetCodeException.class, ExpiredResetCodeException.class})
-    public ResponseEntity<ErrorResponse> handleInvalidOrExpiredCode(RuntimeException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleInvalidOrExpiredCode(RuntimeException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Bad Request",
                 "El código ingresado no es válido o ha expirado",
                 HttpStatus.BAD_REQUEST.value(),
@@ -89,8 +88,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Not Found",
                 ex.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
@@ -100,8 +99,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEmailNotFound(EmailNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDto> handleEmailNotFound(EmailNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Not Found",
                 ex.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
@@ -111,15 +110,37 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(org.springframework.dao.InvalidDataAccessApiUsageException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidDataAccess(org.springframework.dao.InvalidDataAccessApiUsageException ex) {
+    public ResponseEntity<ErrorResponseDto> handleInvalidDataAccess(org.springframework.dao.InvalidDataAccessApiUsageException ex) {
         log.error("Error de integridad de datos: ", ex);
-        ErrorResponse response = new ErrorResponse(
+        ErrorResponseDto response = new ErrorResponseDto(
                 "Petición Inválida",
                 "Faltan IDs requeridos o hay un error de formato en las relaciones (País, Rol, etc.)",
                 HttpStatus.BAD_REQUEST.value(),
                 OffsetDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(NoCountriesFoundException.class) // Tendrías que crear esta clase
+    public ResponseEntity<ErrorResponseDto> handleNoCountries(NoCountriesFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    @ExceptionHandler(NoRoleFoundException.class) // Tendrías que crear esta clase
+    public ResponseEntity<ErrorResponseDto> NoRoleFoundException(NoRoleFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
 }

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 
 @Schema(description = "Estructura universal de errores de la API")
-public record ErrorResponse(
+public record ErrorResponseDto(
 
         @Schema(example = "Bad Request")
         String error,

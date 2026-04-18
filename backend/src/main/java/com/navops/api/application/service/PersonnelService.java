@@ -103,6 +103,7 @@ public class PersonnelService {
                 .addressNumber(request.residenceInfo().number())
                 .addressCity(request.residenceInfo().locality())
                 .addressProvince(request.residenceInfo().province())
+                .addressPostalCode(request.residenceInfo().PostalCode())
                // .avatarUrl(avatarUrl)
                 .user(savedUser)
                 .build();

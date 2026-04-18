@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
 @Schema(description = "Respuesta tras un inicio de sesión exitoso")
-public record LoginResponse(
+public record LoginResponseDto(
 
         @Schema(example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", description = "Token JWT para autenticar peticiones posteriores")
         String token,

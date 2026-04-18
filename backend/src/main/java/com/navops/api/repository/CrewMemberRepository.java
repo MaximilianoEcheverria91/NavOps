@@ -16,4 +16,20 @@ public interface CrewMemberRepository extends JpaRepository<CrewMember, UUID> {
 
     boolean existsByFileNumber(String fileNumber);
     boolean existsByMaritimeBookNumber(String maritimeBookNumber);
+
+    // 1. Contar todos los usuarios en el sistema
+    @Query("SELECT COUNT(u) FROM User u")
+    long countTotalUsers();
+
+    // 2. Contar usuarios activos
+    @Query("SELECT COUNT(u) FROM User u WHERE u.isActive = true")
+    long countActiveUsers();
+
+    // 3. Contar tripulantes disponibles (Que no estén en la tabla travel_plan_crew de un viaje en curso)
+    // Asumimos que un viaje está "en curso" si su status no es 'COMPLETED' ni 'CANCELLED'
+   /* @Query("SELECT COUNT(cm) FROM CrewMember cm " +
+            "WHERE cm.status = 'ACTIVE' " + // Solo si están activos laboralmente
+            "AND cm.id NOT IN (SELECT tpc.crew_members.id FROM travel_plan_crew tpc " +
+            "JOIN tpc.plan tp WHERE tp.status NOT IN ('COMPLETED', 'CANCELLED'))")
+    long countAvailableCrew();*/
 }

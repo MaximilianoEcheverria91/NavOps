@@ -1,6 +1,6 @@
 package com.navops.api.application.service;
 
-import com.navops.api.application.dto.response.VerifyCodeResponse;
+import com.navops.api.application.dto.response.VerifyCodeResponseDto;
 import com.navops.api.domain.entity.PasswordResetCode;
 import com.navops.api.domain.entity.User;
 import com.navops.api.infrastructure.exception.ExpiredResetCodeException;
@@ -96,7 +96,7 @@ class AuthServiceTest {
                 .thenReturn(Optional.of(validCode));
         when(jwtService.generatePasswordResetToken(testUser)).thenReturn("reset-token");
 
-        VerifyCodeResponse response = authService.verifyResetCode("test@navops.com", spacedCode);
+        VerifyCodeResponseDto response = authService.verifyResetCode("test@navops.com", spacedCode);
 
         assertNotNull(response);
         assertEquals("reset-token", response.resetToken());
