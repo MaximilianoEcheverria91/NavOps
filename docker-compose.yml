@@ -14,6 +14,7 @@ services:
       - navops-pgdata:/var/lib/postgresql/data
       # Instanciación automática del script SQL
       - "./data base/navops.sql:/docker-entrypoint-initdb.d/navops.sql"
+      - "./backend/src/main/resources/db/migration:/docker-entrypoint-initdb.d/"
     restart: always
 
   navops-api:
@@ -41,7 +42,7 @@ services:
       #Servicio de MSPT
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
+      - SMTP_USERNAME=${SMTP_USERNAME}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
 
 volumes:

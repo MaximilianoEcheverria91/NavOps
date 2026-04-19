@@ -1,0 +1,101 @@
+.wrapper {
+  min-height: 100vh;
+  width: 100vw; /* Forzamos el ancho de la pantalla */
+  display: flex;
+  flex-direction: column;
+  background-color: #031728;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Evita scroll horizontal raro */
+}
+.navbar {
+  width: 100%; /* El Nav ocupa todo */
+  box-sizing: border-box; /* Importante para que el padding no lo estire de más */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 3rem;
+  background-color: #051e34;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-main);
+}
+
+.navLinks {
+  display: flex;
+  gap: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0.25rem;
+  border-radius: 10px;
+}
+
+.link, .activeLink {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+}
+
+.activeLink {
+  color: var(--primary-cyan);
+  background-color: rgba(32, 149, 212, 0.1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: var(--text-muted);
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  padding-left: 1.5rem;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  background-color: var(--accent-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-cyan);
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px; /* Evita que en monitores gigantes se desparrame */
+  margin: 0 auto; /* ESTO CENTRA EL CUERPO */
+  padding: 3rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
