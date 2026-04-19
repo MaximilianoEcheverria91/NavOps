@@ -1,0 +1,74 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 1rem;
+  color: #3A617C;
+  pointer-events: none;
+}
+
+.select {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  background-color: #082842; /* Fondo de tus tarjetas */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.95rem;
+  appearance: none; /* Quitamos flecha por defecto de Chrome/Safari */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #2095D4;
+  box-shadow: 0 0 0 2px rgba(32, 149, 212, 0.2);
+}
+
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.selectError {
+  border-color: #ef4444;
+}
+
+.errorMessage {
+  position: absolute;
+  bottom: -1.25rem;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #ef4444;
+  font-size: 0.75rem;
+}
+
+/* Flecha personalizada */
+.selectWrapper::after {
+  content: '▼';
+  font-size: 0.6rem;
+  position: absolute;
+  right: 1rem;
+  color: #3A617C;
+  pointer-events: none;
+}

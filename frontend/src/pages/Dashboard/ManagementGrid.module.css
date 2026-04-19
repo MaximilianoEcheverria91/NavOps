@@ -1,0 +1,88 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.managerCard {
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  
+  border: 1px solid rgba(32, 149, 212, 0.08);
+  box-shadow: 0 0 20px rgba(32, 149, 212, 0.05);
+  transition: all 0.3s ease;
+}
+
+.managerCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(32, 149, 212, 0.3);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.iconContainer {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #1cb5e0 0%, #000851 100%); /* Degradado de la foto */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #031728; /* Color de fondo profundo para el icono */
+}
+
+.countBadge {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.body {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+}
+
+.footerLink {
+  background: none;
+  border: none;
+  color: var(--primary-cyan);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footerLink:hover {
+  opacity: 1;
+}
