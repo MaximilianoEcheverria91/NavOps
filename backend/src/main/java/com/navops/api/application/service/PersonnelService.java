@@ -36,6 +36,7 @@ public class PersonnelService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImageStorageService imageStorageService;
     private String generateNextFileNumber() {
         Long nextVal = crewMemberRepository.getNextFileSequenceValue();
         // String.format con %05d rellena con ceros a la izquierda hasta llegar a 5 dígitos
@@ -56,14 +57,11 @@ public class PersonnelService {
             throw new ResourceAlreadyExistsException("El número de libreta marítima ya se encuentra registrado.");
         }
 
-        String automaticFileNumber = generateNextFileNumber();
-        log.info("Generado nuevo legajo automático: {}", automaticFileNumber);
-/*
         String avatarUrl = null;
         if (image != null && !image.isEmpty()) {
             avatarUrl = imageStorageService.uploadImage(image, "profile_pictures");
         }
-*/
+
         log.info("Buscando país con ID: {}", request.residenceInfo().countryId()); // Agregá esto
         Country country = countryRepository.findById(request.residenceInfo().countryId())
                 .orElseThrow(() -> new IllegalArgumentException("El ID del país provisto no existe."));
@@ -104,27 +102,25 @@ public class PersonnelService {
                 .addressCity(request.residenceInfo().locality())
                 .addressProvince(request.residenceInfo().province())
                 .addressPostalCode(request.residenceInfo().PostalCode())
-               // .avatarUrl(avatarUrl)
+                .avatarUrl(avatarUrl)
                 .user(savedUser)
                 .build();
 
+        String automaticFileNumber = generateNextFileNumber();
+        log.info("Generado nuevo legajo automático: {}", automaticFileNumber);
 
+        CrewMember crewMember = CrewMember.builder()
+                .person(person)
+                .fileNumber(automaticFileNumber)
+                .maritimeBookNumber(request.laborData().maritimeBookNumber())
+                .navigationRole(request.laborData().navigationRole())
+                .category(request.laborData().category())
+                .hireDate(request.laborData().hireDate())
+                .status(CrewMemberStatusEnum.valueOf(request.laborData().status().toUpperCase()))
+                .build();
 
-        CrewMember crewMember = new CrewMember();
-        crewMember.setPerson(person); // Vinculamos antes de tener ID
-        crewMember.setFileNumber(automaticFileNumber);
-        crewMember.setMaritimeBookNumber(request.laborData().maritimeBookNumber());
-        crewMember.setNavigationRole(request.laborData().navigationRole());
-        crewMember.setCategory(request.laborData().category());
-        crewMember.setHireDate(request.laborData().hireDate());
-        crewMember.setStatus(CrewMemberStatusEnum.valueOf(request.laborData().status().toUpperCase()));
-
-        // 3. LA CLAVE: Vinculamos el tripulante a la persona
         person.setCrewMember(crewMember);
-
-        // 4. GUARDAMOS SOLO LA PERSONA (El cascade guarda al CrewMember solo)
         personRepository.save(person);
-
         log.info("Personal registrado exitosamente");
     }
 }
