@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +25,8 @@ import java.util.Map;
 @Tag(name = "Personnel Management", description = "Endpoints para la gestión de personal, tripulación y usuarios")
 public class PersonnelController {
 
-    private final PersonnelService personnelService;
+    private  final  PersonnelService personnelService;
+
 
     @Operation(
             summary = "Registrar nuevo personal",
@@ -39,13 +39,12 @@ public class PersonnelController {
     )
     @PostMapping("/create-user")
     public ResponseEntity<Map<String, String>> registerPersonnel(
-            @RequestPart("data") @Valid PersonnelRegistrationRequest request
-           // @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart("data") @Valid PersonnelRegistrationRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         log.info("Recibida petición para registrar personal documento: {}", request.generalInfo().documentNumber());
         try {
-           // personnelService.registerPersonnel(request, image);
-            personnelService.registerPersonnel(request, null);
+            personnelService.registerPersonnel(request, image);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Personal registrado exitosamente."));
         } catch (Exception e) {
             log.error("ERROR AL REGISTRAR:", e);
@@ -55,20 +54,20 @@ public class PersonnelController {
     }
 }
 
-/*@PostMapping("/create-user")
-public ResponseEntity<Map<String, String>> registerPersonnel(
-        @RequestPart("data") @Valid PersonnelRegistrationRequest request
-) {
-    log.info("Recibida petición para registrar personal documento: {}", request.generalInfo().documentNumber());
-    try {
-        // LLAMADA AL SERVICIO (Sin la imagen por ahora)
-        personnelService.registerPersonnel(request, null);
+     /*   @PostMapping("/create-user")
+        public ResponseEntity<Map<String, String>> registerPersonnel(
+                @RequestPart("data") @Valid PersonnelRegistrationRequest request
+        ) {
+            log.info("Recibida petición para registrar personal documento: {}", request.generalInfo().documentNumber());
+            try {
+                // LLAMADA AL SERVICIO (Sin la imagen por ahora)
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "Personal registrado exitosamente."));
-    } catch (Exception e) {
-        log.error("ERROR AL REGISTRAR:", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error interno: " + e.getMessage()));
-    }
-}*/
+                personnelService.registerPersonnel(request, null);
+
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(Map.of("message", "Personal registrado exitosamente."));
+            } catch (Exception e) {
+                log.error("ERROR AL REGISTRAR:", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "Error interno: " + e.getMessage()));
+            }*/
