@@ -1,31 +1,42 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+type User = {
+  name: string;
+  role: string;
+};
+
 interface AuthContextType {
-  user: { name: string; role: string } | null;
+  user: User | null;
+  setUser: (user: User | null) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
+  // 🔥 Hidratación inicial (clave offline-first)
   useEffect(() => {
-    const role = localStorage.getItem('navops_role');
-    const token = localStorage.getItem('auth_token');
-    if (token && role) {
-      // Aquí podrías decodificar el JWT para sacar el nombre real
-      setUser({ name: 'Capitán Martinez', role }); 
+    const storedUser = localStorage.getItem('navops_user');
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
   const logout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+    localStorage.removeItem('navops_user');
+    localStorage.removeItem('auth_token');
+
+    setUser(null);
+
+    // ⚠️ mejor que window.location
+    window.location.pathname = '/login';
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,51 +1,59 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  gap: 20px;
 }
 
-.card {
-  background-color: #082842; /* Hardcodeado para asegurar que se vea */
-  padding: 2rem;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  position: relative;
-  border: 1px solid rgba(32, 149, 212, 0.1);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-.iconWrapper {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cardValue {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
-}
-
-.cardTitle {
-  color: #94a3b8;
-  font-size: 0.85rem;
-  margin: 0;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(32, 149, 212, 0.15);
 }
 
 .activeBadge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: rgba(255, 255, 255, 0.05);
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(32, 149, 212, 0.15);
+  color: #7dd3fc;
+}
+
+.iconWrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: #38bdf8;
+}
+
+.cardValue {
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+}
+
+.cardTitle {
+  font-size: 13px;
   color: #94a3b8;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
+}
+.card {
+  position: relative;
+  padding: 20px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(32, 149, 212, 0.25);
+
+  box-shadow: 0 0 20px rgba(32, 149, 212, 0.08);
+
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(32, 149, 212, 0.15);
 }

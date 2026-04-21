@@ -1,21 +1,31 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
-export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
-  const token = localStorage.getItem('auth_token');
-  
-  const headers = {
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+
+export const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
     'Content-Type': 'application/json',
-    ...options.headers,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  },
+});
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+// 🔥 INTERCEPTOR REQUEST (JWT automático)
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
 
-  if (response.status === 401) {
-    localStorage.removeItem('auth_token');
-    window.location.href = '/login';
-    throw new Error('Sesión expirada');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  return response;
-};
+  return config;
+});
+
+// 🔥 INTERCEPTOR RESPONSE (manejo de errores global)
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Podés centralizar errores acá
+    return Promise.reject(error);
+  }
+);
