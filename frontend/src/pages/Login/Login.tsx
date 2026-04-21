@@ -4,10 +4,11 @@ import { User, Lock, Moon, Sun, Ship } from 'lucide-react';
 import { Input } from '../../components/ui/Input/Input';
 import { Button } from '../../components/ui/Button/Button';
 import { useTheme } from '../../hooks/useTheme';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Login.module.css';
-
-// Import local image (usamos directamente el PNG que acabas de dejar)
 import navopsLogo from '../../assets/logo.png';
+import { apiClient } from '../../api/apiClient';
+
 
 // Usaremos un componente SVG inline simple para Google ya que lucide-react no tiene logo oficial de Google a color.
 const GoogleIcon = () => (
@@ -20,6 +21,8 @@ const GoogleIcon = () => (
 );
 
 export const Login: React.FC = () => {
+ 
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
@@ -28,62 +31,59 @@ export const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [globalError, setGlobalError] = useState('');
 
-  // Limpiar error global si el usuario empieza a escribir de nuevo
-  useEffect(() => {
-    if (globalError) setGlobalError('');
-  }, [username, password]);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!username || !password) return;
-
-    setIsLoading(true);
-    setGlobalError('');
-
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Manejar errores de Spring Boot (BadCredentialsException, LockedException, etc)
-        throw new Error(data.message || data.error || 'Error de autenticación. Verifica tus credenciales.');
-      }
-
-      // Éxito
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('navops_role', data.role);
-        // Redirigir al dashboard estipulado
-        navigate('/dashboard', { replace: true });
-      } else {
-        throw new Error('No se recibió token del servidor.');
-      }
-
-    } catch (err: any) {
-      setGlobalError(err.message || 'Error de red. Asegúrate que el servidor esté en línea.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const isFormValid = username.trim() !== '' && password.trim() !== '';
-
-  // Determinar si hay imagen local disponible, de momento usamos URL fallback u o ícono si no se encuentra en public/assets
-  // En Vite, cuando los archivos están en src/, es mejor importarlos estáticamente
   const [imgError, setImgError] = useState(false);
   const logoPath = navopsLogo;
 
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!username || !password) return;
+
+  setIsLoading(true);
+  setGlobalError('');
+
+  try {
+    const response = await apiClient.post('/auth/login', {
+      username,
+      password,
+    });
+
+    const data = response.data;
+
+    if (!data?.token) {
+      throw new Error('No se recibió token del servidor.');
+    }
+
+    const userData = {
+      name: data.name || username, // fallback temporal
+      role: data.role,
+    };
+
+    // 🔥 persistencia
+    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('navops_user', JSON.stringify(userData));
+
+    // 🔥 estado global
+    setUser(userData);
+
+    navigate('/dashboard', { replace: true });
+
+  } catch (err: any) {
+    const message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'Error de red. Asegúrate que el servidor esté en línea.';
+
+    setGlobalError(message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   return (
+    
     <div className={styles.container}>
       {/* Botón superior de Theme */}
       <button

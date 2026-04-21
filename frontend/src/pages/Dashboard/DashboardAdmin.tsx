@@ -6,26 +6,32 @@ import { ManagementGrid } from './ManagementGrid';
 export const DashboardAdmin: React.FC = () => {
   return (
     <MainLayout>
-      {/* Contenedor con ancho completo y centrado */}
-      <div className="w-full flex flex-col items-center"> 
-        <div className="w-full"> {/* Este div asegura que el texto empiece a la izquierda del centro */}
-          <header className="mb-12">
-            <h1 className="text-3xl font-bold text-white tracking-tight">Panel de Administrador</h1>
-            <p className="text-slate-400 mt-1 font-light">
-              Bienvenido al sistema de gestión y Navegación
-            </p>
-          </header>
 
-          <StatsGrid />
-          
-          <div className="mt-10">
-            <ManagementGrid />
-          </div>
+      <div className="w-full max-w-7xl mx-auto px-6 py-8">
+        
+        {/* HEADER */}
+        <header className="mb-6">
+          <h1 className="text-3xl text-slate-100 font-light">
+            Panel de Administrador
+          </h1>
+          <p className="text-slate-400 mt-1 text-sm">
+            Bienvenido al sistema de gestión y navegación
+          </p>
+        </header>
+
+        {/* STATS */}
+        <StatsGrid />
+
+        {/* MANAGEMENT */}
+        <div className="mt-6">
+          <ManagementGrid />
         </div>
 
-        <footer className="text-center mt-16 text-xs text-slate-500 font-light pb-10">
+        {/* FOOTER */}
+        <footer className="text-center mt-10 text-xs text-slate-500 pb-6">
           Sistema de Gestión Marítima V.1
         </footer>
+
       </div>
     </MainLayout>
   );

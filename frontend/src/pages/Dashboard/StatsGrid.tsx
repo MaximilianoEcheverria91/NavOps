@@ -1,19 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { Users, UserCheck, Anchor } from 'lucide-react';
-import { apiClient } from '../../api/apiClient';
+import { Users, UserCheck,Ship, Anchor,Shield } from 'lucide-react';
+import { getDashboardStats } from '../../services/api/dashboardService';
 import styles from './StatsGrid.module.css';
 
 
 export const StatsGrid: React.FC = () => {
-  // ... lógica de fetch (déjala comentada si quieres concentrarte en diseño)
-  const loading = false; // Forza loading false para ver diseño
-  const stats = { totalUsers: 256, activeUsers: 59, availableCrewMembers: 136, roles: 5 }; // Datos Mock de tu foto
+
+  type DashboardStats = {
+  totalUsers: number;
+  activeUsers: number;
+};
+
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const data = await getDashboardStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching dashboard stats', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStats();
+}, []);
 
   const cards = [
-    { title: 'Total Usuarios', value: stats.totalUsers, active: '56 Activos', icon: <Users />, color: '#2095D4' },
-    //{ title: 'Total Barcos', value: stats.activeUsers, active: '48 Activos', icon: <Ship />, color: '#2095D4' },
-    { title: 'Total puertos', value: stats.availableCrewMembers, active: '135 Activos', icon: <Anchor />, color: '#2095D4' },
-    { title: 'Roles de administrador', value: stats.roles, active: '5 Activos', icon: <Users />, color: '#2095D4' },
+    { title: 'Total Usuarios', value:stats?.totalUsers ?? 0, 
+      active: `${stats?.activeUsers ?? 0} Activos`,
+      icon: <Users /> },
+    { title: 'Total Barcos', value: '—',  icon: <Ship /> },
+    { title: 'Total Puertos', value: '_', icon: <Anchor /> },
+    { title: 'Roles de administrador', value: '_', icon: <Shield /> },
   ];
 
   return (
@@ -21,8 +43,8 @@ export const StatsGrid: React.FC = () => {
       {cards.map((card, index) => (
         <div key={index} className={styles.card}>
           <div className={styles.activeBadge}>{card.active}</div>
-          <div className={styles.iconWrapper} style={{ backgroundColor: `${card.color}15`, color: card.color }}>
-            {React.cloneElement(card.icon, { strokeWidth: 1.5, size: 24 })}
+          <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+            {React.cloneElement(card.icon, { strokeWidth: 1.5, size: 40 })}
           </div>
           <div className={styles.info}>
             <h3 className={styles.cardValue}>{loading ? '...' : card.value}</h3>

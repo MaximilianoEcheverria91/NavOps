@@ -1,28 +1,19 @@
 import React from 'react';
 import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import styles from './MainLayout.module.css';
+import logo from '../assets/logo.png';
+import { useAuth } from '../context/AuthContext';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
-
-  // Datos mockeados para que no falle buscando el contexto
-  const user = { 
-    name: 'Capitán Martinez', 
-    role: localStorage.getItem('navops_role') || 'Admin' 
-  };
-
-  const logout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+  
+  const { user, logout } = useAuth();
 
   return (
     <div className={styles.wrapper}>
       <nav className={styles.navbar}>
         <div className={styles.logoArea}>
-          <Ship color="#2095D4" />
-          <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>NavOps</span>
+          <img src={logo} alt="NavOps" className={styles.logo} />
+          <span style={{ fontWeight: 'bold', fontSize: '1.2rem',  }} >NavOps</span>
         </div>
 
         <div className={styles.navLinks}>
@@ -33,19 +24,24 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         </div>
 
         <div className={styles.actions}>
-          <Sun size={20} style={{ cursor: 'pointer' }} />
+          <Sun size={20} style={{ cursor: 'pointer', color: 'var(--color-icon)' }}/>
           <div className={styles.statusBadge}>
-            <Wifi size={14} /> <span>Conectado</span>
+            <Wifi size={14}  /> <span>Conectado</span>
           </div>
-          <Bell size={20} style={{ cursor: 'pointer' }} />
+          <Bell size={20} style={{ cursor: 'pointer', color: 'var(--color-icon)' }} />
           
           <div className={styles.userProfile} onClick={logout} style={{ cursor: 'pointer' }}>
-            <div className={styles.avatar}>
-               <Users size={20} color="#2095D4" />
-            </div>
+              <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30"
+                  height="30"
+                  color='#38bdf8'
+                  viewBox="0 0 24 24"
+                  fill="currentColor">
+              <path d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
             <div className="hidden md:block text-left">
-              <p style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: 0 }}>{user.name}</p>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}>{user.role}</p>
+              <p style={{ fontSize: '0.85rem', fontWeight: 'bold', margin: 0 }}><p>{user?.name || 'Usuario'}</p></p>
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}><p>{user?.role || 'Rol'}</p></p>
             </div>
           </div>
         </div>
