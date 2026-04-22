@@ -1,11 +1,11 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login/Login';
 import { DashboardAdmin } from './pages/Dashboard/admin/DashboardAdmin';
 import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
 import { VerifyToken } from './pages/VerifyToken/VerifyToken';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
-//import { MainLayout } from './layouts/MainLayout';
+import { UsersList } from './pages/Users/UsersList';
+
 
 function App() {
   return (
@@ -14,6 +14,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<DashboardAdmin />} />
+        <Route path="/usuarios" element={<UsersList />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />
         <Route path="/reset-password" element={<ResetPassword />} />

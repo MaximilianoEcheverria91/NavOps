@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, UserCheck,Ship, Anchor,Shield } from 'lucide-react';
+import { Users,Ship, Anchor,Shield } from 'lucide-react';
 import { getDashboardStats } from '../../../services/api/dashboardService';
 import styles from '../StatsGrid.module.css';
 

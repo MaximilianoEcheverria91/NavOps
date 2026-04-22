@@ -25,6 +25,8 @@
   --error-color: #ef4444;
   --color-icon-notifict: #82D4FF;
   --color-theme: #82D4FF;
+  --color-icon3:  rgba(255, 255, 255, 0.8);
+  --boton-detail-color: #5cbce979;
 
   /*Navar*/
   --barckground-color-nav: none;
@@ -37,6 +39,7 @@
   --color-title: #ffff;
   --color-title2: #ffff;
   --color-subtitle: #4A90A4;
+  --color-subtitle3: #0ea5e9;
   --color-count: #82D4FF;
   --color-link: #82D4FF;
   --color-link1: #82D4FF;
@@ -56,6 +59,7 @@
   --error-color: #dc2626;
   --color-icon-notifict: #4A90A4;
   --color-theme: #082842;
+  --color-icon3:  rgba(0, 0, 0, 0.5);
 
   /*Navar*/
   --barckground-color-nav: #ffff;
@@ -68,6 +72,7 @@
   --color-title: #4A90A4;
   --color-title2: #0a0a0a;
   --color-subtitle: #4A90A4;
+  --color-subtitle3: #336775;
   --color-count: #4A90A4;
   --color-link: #82D4FF;
   --color-link1: #4A90A4;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Ship, Anchor, ChevronRight } from 'lucide-react';
 import styles from './ManagementGrid.module.css';
 import { getDashboardStats } from '../../../services/api/dashboardService';
@@ -12,6 +13,7 @@ export const ManagementGrid: React.FC = () => {
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -29,7 +31,7 @@ export const ManagementGrid: React.FC = () => {
     
 
   const managers = [
-    { title: 'Gestión de Usuarios', desc: 'Administrar Usuarios y Permisos', count: stats?.totalUsers ?? 0,  icon: <User />, link: '/usuarios' },
+    { title: 'Gestión de Usuarios', desc: 'Administrar Usuarios y Permisos', count: stats?.totalUsers ?? 0, loading,  icon: <User />, link: '/usuarios' },
     { title: 'Gestión de Barcos', desc: 'Administrar Flota y Embarcaciones', value: '—', icon: <Ship />, link: '/barcos' },
     { title: 'Gestión de Puertos', desc: 'Administrar Puertos', value: '—', icon: <Anchor />, link: '/puertos' },
   ];
@@ -37,7 +39,7 @@ export const ManagementGrid: React.FC = () => {
   return (
     <div className={styles.grid}>
       {managers.map((m, index) => (
-        <div key={index} className={styles.managerCard}>
+        <div key={index} className={styles.managerCard} onClick={() => navigate(m.link)} style={{ cursor: 'pointer' }}>
           <div className={styles.header}>
             <div className={styles.iconContainer}>
                {React.cloneElement(m.icon, { strokeWidth: 1.5, size: 40 })}
