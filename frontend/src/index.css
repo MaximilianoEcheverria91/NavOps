@@ -10,7 +10,7 @@
   --transition-speed: 0.2s;
   --border-radius-md: 6px;
   --border-radius-lg: 12px;
-  --color-icon: #38bdf8;
+  /*--color-icon: #38bdf8;*/
   
   /* Dark Mode */
   --bg-main: linear-gradient(180deg, #072740 0%, #010a12 100%);
@@ -23,6 +23,24 @@
   --color-primary-hover: #197bb0;
   --color-link: #2095d4;
   --error-color: #ef4444;
+  --color-icon-notifict: #82D4FF;
+  --color-theme: #82D4FF;
+
+  /*Navar*/
+  --barckground-color-nav: none;
+  --boder-color-nav: #4A90A4;
+
+  /*Indicadores*/
+  --background-color-icon: linear-gradient(180deg, #3DD6E5 0%, #22777F 100%);
+  --color-icon: #082842; 
+  --background-color-card: none ;
+  --color-title: #ffff;
+  --color-title2: #ffff;
+  --color-subtitle: #4A90A4;
+  --color-count: #82D4FF;
+  --color-link: #82D4FF;
+  --color-link1: #82D4FF;
+
 }
 
 [data-theme='light'] {
@@ -35,8 +53,24 @@
   --text-secondary: #082842;
   --color-primary: #2095d4;
   --color-primary-hover: #197bb0;
-  --color-link: #2095d4;
   --error-color: #dc2626;
+  --color-icon-notifict: #4A90A4;
+  --color-theme: #082842;
+
+  /*Navar*/
+  --barckground-color-nav: #ffff;
+  --boder-color-nav: #4A90A4;
+
+  /*Indicadores y card de boton*/
+  --background-color-icon: linear-gradient(180deg, #3DD6E5 0%, #22777F 100%);
+  --color-icon: #ffff;
+  --background-color-card: #ffff;
+  --color-title: #4A90A4;
+  --color-title2: #0a0a0a;
+  --color-subtitle: #4A90A4;
+  --color-count: #4A90A4;
+  --color-link: #82D4FF;
+  --color-link1: #4A90A4;
 }
 
 * {

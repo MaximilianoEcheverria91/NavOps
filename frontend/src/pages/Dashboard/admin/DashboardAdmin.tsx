@@ -1,9 +1,11 @@
 import React from 'react';
-import { MainLayout } from '../../layouts/MainLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { StatsGrid } from './StatsGrid';
 import { ManagementGrid } from './ManagementGrid';
 
 export const DashboardAdmin: React.FC = () => {
+
+
   return (
     <MainLayout>
 
@@ -11,7 +13,7 @@ export const DashboardAdmin: React.FC = () => {
         
         {/* HEADER */}
         <header className="mb-6">
-          <h1 className="text-3xl text-slate-100 font-light">
+          <h1 className="text-3xl text-[var(--text-secondary)]"> 
             Panel de Administrador
           </h1>
           <p className="text-slate-400 mt-1 text-sm">
