@@ -27,10 +27,27 @@
   color: var(--text-main);
 }
 
+.menuContainer {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 1rem;
+}
+
 .navLinks {
   display: flex;
   gap: 0.5rem;
+}
 
+.menuButton {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-icon-notifict);
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 60;
 }
 
 .link {
@@ -80,6 +97,66 @@
 .link:hover {
   background-color: rgba(56, 189, 248, 0.08);
   color: #38bdf8;
+}
+
+@media (max-width: 1024px) {
+  .menuButton {
+    display: flex;
+  }
+
+  .menuContainer {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: var(--barckground-color-nav);
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 2px solid var(--boder-color-nav);
+    z-index: 50;
+  }
+
+  .menuContainer.open {
+    display: flex;
+  }
+
+  .navLinks {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .link, .activeLink {
+    width: 100%;
+    padding: 1rem;
+    justify-content: flex-start;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .userProfile p {
+    display: block; /* revert hiding text since it's in a menu now */
+  }
+  .statusBadge {
+    display: flex; /* revert hiding since it's in a menu now */
+  }
+  .userProfile {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.8rem;
+  }
 }
 
 .actions {
