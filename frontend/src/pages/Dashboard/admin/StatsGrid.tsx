@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Users, UserCheck,Ship, Anchor,Shield } from 'lucide-react';
-import { getDashboardStats } from '../../services/api/dashboardService';
-import styles from './StatsGrid.module.css';
+import { getDashboardStats } from '../../../services/api/dashboardService';
+import styles from '../StatsGrid.module.css';
 
 
 export const StatsGrid: React.FC = () => {
@@ -34,8 +34,8 @@ export const StatsGrid: React.FC = () => {
       active: `${stats?.activeUsers ?? 0} Activos`,
       icon: <Users /> },
     { title: 'Total Barcos', value: '—',  icon: <Ship /> },
-    { title: 'Total Puertos', value: '_', icon: <Anchor /> },
-    { title: 'Roles de administrador', value: '_', icon: <Shield /> },
+    { title: 'Total Puertos', value: '—', icon: <Anchor /> },
+    { title: 'Roles de administrador', value: '—', icon: <Shield /> },
   ];
 
   return (

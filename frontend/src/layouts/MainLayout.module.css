@@ -3,7 +3,7 @@
   width: 100vw; /* Forzamos el ancho de la pantalla */
   display: flex;
   flex-direction: column;
-  background-color: #031728;
+  background-color: var(--bg-main);
   margin: 0;
   padding: 0;
   overflow-x: hidden; /* Evita scroll horizontal raro */
@@ -11,15 +11,14 @@
 
 
 .navbar {
-  height: 64px; /* 🔥 clave */
+  height: 70px; 
   min-height: 64px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  background-color: #051e34;
-  padding: 0 3rem;
+  border-bottom: 0.5px solid var(--boder-color-nav);
+  background-color: var(--barckground-color-nav);
+  padding: 0 1rem;
 }
 .logoArea {
   display: flex;
@@ -57,7 +56,7 @@
 .link, .activeLink {
   background: none;
   border: none;
-  color: #38bdf8;
+  color: var(--color-icon-notifict);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -94,29 +93,21 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-
   background-color: rgba(34, 197, 94, 0.1);
   color: #22c55e;
-
   padding: 0.3rem 0.75rem;
   border-radius: 20px;
   font-size: 0.75rem;
-
-  border: 1px solid rgba(34, 197, 94, 0.5); /* 🔥 clave */
+  border: 1px solid rgba(34, 197, 94, 0.5); 
 }
 
 .userProfile {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-
-  padding: 0.4rem 0.9rem; /* 🔥 aire interno */
-  border-radius: 15px; /* 🔥 píldora moderna */
-
+  padding: 0.4rem 0.9rem; 
+  border-radius: 15px; 
   border: 1px solid rgba(56, 189, 248, 0.5);
-
-  background-color: rgba(56, 189, 248, 0.05); /* 🔥 leve fondo */
-  
   transition: all 0.2s ease;
 }
 

@@ -4,13 +4,21 @@
   gap: 20px;
 }
 
-
 .managerCard {
-  padding: 22px;
+  padding: 20px;
   border-radius: 14px;
   border: 1px solid rgba(32, 149, 212, 0.2);
   transition: all 0.2s ease;
+  background: var(--background-color-card);
+  position: relative;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 0 20px rgba(32, 149, 212, 0.08);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
+
 
 .managerCard:hover {
   transform: translateY(-3px);
@@ -22,13 +30,16 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  color: red;
 }
 
 .iconContainer {
-  background: rgba(32, 149, 212, 0.15);
+  
   padding: 10px;
   border-radius: 10px;
-  color: #38bdf8;
+  color: var(--color-icon);
+  background:linear-gradient(180deg, #3DD6E5 5%, #22777F 100%);
+
 }
 
 .countBadge {
@@ -36,48 +47,29 @@
   background: rgba(32, 149, 212, 0.15);
   padding: 4px 10px;
   border-radius: 999px;
-  color: #7dd3fc;
+  color: var(--color-count);
 }
 
 .title {
-  color: white;
+  color: var(--color-title2);
   font-weight: 500;
   margin-bottom: 6px;
 }
 
 .description {
-  color: #94a3b8;
+  color: var(--color-subtitle);
   font-size: 13px;
 }
 
 .footerLink {
   margin-top: 16px;
   font-size: 13px;
-  color: #38bdf8;
+  color: var(--color-link1);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.managerCard {
-  position: relative;
-  padding: 20px;
-  border-radius: 14px;
-  
-
-  backdrop-filter: blur(2px);
-
-  border: 1px solid rgba(56, 189, 248, 0.15);
-
-  box-shadow: 0 0 20px rgba(32, 149, 212, 0.08);
-
-  transition: all 0.2s ease;
-
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 
 .managerCard:hover,
 .card:hover {

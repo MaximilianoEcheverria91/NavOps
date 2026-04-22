@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login/Login';
-import { DashboardAdmin } from './pages/Dashboard/DashboardAdmin';
+import { DashboardAdmin } from './pages/Dashboard/admin/DashboardAdmin';
 import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
 import { VerifyToken } from './pages/VerifyToken/VerifyToken';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
