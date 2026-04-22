@@ -1,8 +1,8 @@
 package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.LoginRequest;
-import com.navops.api.application.dto.response.LoginResponseDto;
-import com.navops.api.application.dto.response.VerifyCodeResponseDto;
+import com.navops.api.application.dto.response.auth.LoginResponseDto;
+import com.navops.api.application.dto.response.auth.VerifyCodeResponseDto;
 import com.navops.api.domain.entity.LoginAttempt;
 import com.navops.api.domain.entity.PasswordResetCode;
 import com.navops.api.domain.entity.User;

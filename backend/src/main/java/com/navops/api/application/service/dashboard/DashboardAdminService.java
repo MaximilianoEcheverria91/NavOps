@@ -1,6 +1,6 @@
 package com.navops.api.application.service.dashboard;
 
-import com.navops.api.application.dto.response.dashboard.DashboardStatsUserResponse;
+import com.navops.api.application.dto.response.user.StatsUserResponse;
 import com.navops.api.repository.CrewMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ public class DashboardAdminService {
 
     private final CrewMemberRepository crewMemberRepository;
 
-    public DashboardStatsUserResponse getAdminDashboardStats() {
+    public StatsUserResponse getAdminDashboardStats() {
 
         try {
             log.info("Calculando estadísticas para el dashboard de administrador");
@@ -21,7 +21,7 @@ public class DashboardAdminService {
             long active = crewMemberRepository.countActiveUsers();
             //long available = crewMemberRepository.countAvailableCrew();
 
-            return new DashboardStatsUserResponse(total, active);
+            return new StatsUserResponse(total, active);
 
         }catch (Exception e) {
             log.error("Error al calcular estadísticas: {}", e.getMessage());
