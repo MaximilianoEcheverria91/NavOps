@@ -143,4 +143,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
+    @ExceptionHandler(NoPersonnelFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoPersonnelFound(NoPersonnelFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Not Found",
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
 }

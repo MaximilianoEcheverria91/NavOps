@@ -2,7 +2,7 @@ package com.navops.api.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navops.api.application.dto.request.LoginRequest;
-import com.navops.api.application.dto.response.LoginResponseDto;
+import com.navops.api.application.dto.response.auth.LoginResponseDto;
 import com.navops.api.application.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

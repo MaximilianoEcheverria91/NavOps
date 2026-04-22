@@ -1,4 +1,4 @@
-package com.navops.api.application.dto.response;
+package com.navops.api.application.dto.response.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

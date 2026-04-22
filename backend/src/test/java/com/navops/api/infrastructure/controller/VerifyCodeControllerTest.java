@@ -2,7 +2,7 @@ package com.navops.api.infrastructure.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navops.api.application.dto.request.VerifyCodeRequest;
-import com.navops.api.application.dto.response.VerifyCodeResponseDto;
+import com.navops.api.application.dto.response.auth.VerifyCodeResponseDto;
 import com.navops.api.application.service.AuthService;
 import com.navops.api.infrastructure.exception.ExpiredResetCodeException;
 import com.navops.api.infrastructure.exception.InvalidResetCodeException;
