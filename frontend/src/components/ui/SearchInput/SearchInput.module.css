@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid #3a617c;
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  transition: 0.2s;
+}
+
+.container:focus-within {
+  border-color: var(--color-primary);
+}
+
+.icon {
+  color: #9EB0C7;
+}
+
+.input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}

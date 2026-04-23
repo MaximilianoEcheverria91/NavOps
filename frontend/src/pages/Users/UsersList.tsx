@@ -4,12 +4,15 @@ import { Search, Filter, User, FileText, Clock, Edit2, Trash2 } from 'lucide-rea
 import styles from './UsersList.module.css';
 import { getAllUsers } from '../../services/api/userService';
 import type { UserResponse } from '../../services/api/userService';
+import { SearchInput } from '../../components/ui/SearchInput/SearchInput';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export const UsersList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const debouncedSearch = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -39,6 +42,19 @@ export const UsersList: React.FC = () => {
     fetchUsers();
   }, []);
 
+  const filteredUsers = users.filter((user) => {
+  const term = debouncedSearch.toLowerCase();
+
+  return (
+    user.name?.toLowerCase().includes(term) ||
+    user.surname?.toLowerCase().includes(term) ||
+    user.position?.toLowerCase().includes(term) ||
+    user.systemRole?.toLowerCase().includes(term) ||
+    user.crewMemberStatus?.toLowerCase().includes(term) ||
+    user.fileNumber?.toLowerCase().includes(term)
+  );
+});
+
   return (
     <MainLayout>
       <div className="w-full max-w-7xl mx-auto px-6 py-8">
@@ -61,16 +77,10 @@ export const UsersList: React.FC = () => {
 
         {/* FILTERS */}
         <div className={styles.filtersContainer}>
-          <div className={styles.searchContainer}>
-            <Search size={18} className={styles.searchIcon} />
-            <input 
-              type="text" 
-              placeholder="Busca por ID.." 
-              className={styles.searchInput}
+            <SearchInput 
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+              onChange={setSearchTerm}
+              placeholder="Buscar por nombre, apellido, legajo..."/>
           
           <div className={styles.filterDropdown}>
             <Filter size={18} className={styles.filterIcon} />
@@ -91,13 +101,15 @@ export const UsersList: React.FC = () => {
             <p className="text-red-400 text-lg mb-2">Ocurrió un error al cargar los datos.</p>
             <p className="text-slate-500 text-sm">Detalle: {errorMsg}. Por favor, revisa la consola (F12).</p>
           </div>
-        ) : users.length === 0 ? (
+        ) : filteredUsers.length === 0 ? (
           <div className="flex justify-center items-center py-20">
-            <p className="text-[var(--text-secondary)] text-xl font-medium">No se encontraron registros de personal</p>
+            <p className="text-[var(--text-secondary)] text-xl font-medium">
+              No se encontraron usuarios
+            </p>
           </div>
         ) : (
           <div className={styles.usersGrid}>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <div key={user.id} className={styles.userCard}>
                 
                 <div className={styles.cardHeader}>
@@ -105,7 +117,7 @@ export const UsersList: React.FC = () => {
                     {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt={`${user.name} ${user.surname}`} className={styles.avatar} />
                   ) : (
-                    <div className={`${styles.avatar} flex justify-center items-center bg-[#082842] text-[var(--color-icon3)]`}>
+                    <div className={`${styles.avatar} flex justify-center items-center bg-[--bg-card] text-[var(--color-icon3)]`}>
                       <User size={40} />
                     </div>
                   )}

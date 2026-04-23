@@ -16,11 +16,6 @@
   background: rgba(14, 165, 233, 0.1);
 }
 
-.plusIcon {
-  font-size: 2.3rem;
-  font-weight: 300;
-  line-height: 1;
-}
 
 .filtersContainer {
   display: flex;
@@ -30,32 +25,6 @@
   
 }
 
-.searchContainer {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: 1px solid #3a617c;
-  border-radius: 15px;
-  padding: 8px 16px;
-}
-
-.searchIcon {
-  color: #9EB0C7; ;
-  margin-right: 12px;
-}
-
-.searchInput {
-  background: transparent;
-  border: none;
-  color: white;
-  width: 100%;
-  outline: none;
-}
-
-.searchInput::placeholder {
-  color: #9EB0C7;
-}
 
 .filterDropdown {
   display: flex;
