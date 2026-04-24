@@ -76,3 +76,17 @@
   transform: translateY(-2px);
   border-color: rgba(56, 189, 248, 0.4);
 }
+
+/* TABLET STYLES */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE STYLES */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

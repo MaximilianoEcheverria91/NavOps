@@ -6,6 +6,8 @@ import { getAllUsers } from '../../services/api/userService';
 import type { UserResponse } from '../../services/api/userService';
 import { SearchInput } from '../../components/ui/SearchInput/SearchInput';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useNavigate } from 'react-router-dom';
+
 
 export const UsersList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +15,7 @@ export const UsersList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -69,7 +72,9 @@ export const UsersList: React.FC = () => {
             </p>
           </header>
           
-          <button className={styles.addButton}>
+          <button
+            className={styles.addButton}
+            onClick={() => navigate('/users/create')}>
             <User size={24} />
             <span className={styles.plusIcon}>+</span>
           </button>

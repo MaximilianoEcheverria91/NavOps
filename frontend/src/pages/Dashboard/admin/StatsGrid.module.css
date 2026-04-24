@@ -58,3 +58,17 @@
   transform: translateY(-2px);
   box-shadow: 0 0 30px rgba(32, 149, 212, 0.15);
 }
+
+/* TABLET STYLES */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE STYLES */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
