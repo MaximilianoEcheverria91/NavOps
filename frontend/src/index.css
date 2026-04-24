@@ -27,6 +27,8 @@
   --color-theme: #82D4FF;
   --color-icon3:  rgba(255, 255, 255, 0.8);
   --boton-detail-color: #5cbce979;
+  --color-input: transparent;
+  --color-input-background: rgba(22, 41, 83, 0.24);
 
   /*Navar*/
   --barckground-color-nav: none;
@@ -60,6 +62,10 @@
   --color-icon-notifict: #4A90A4;
   --color-theme: #082842;
   --color-icon3:  rgba(0, 0, 0, 0.5);
+  --color-input: #ffff;
+  --color-input-background:  rgba(175, 194, 238, 0.6);
+ 
+
 
   /*Navar*/
   --barckground-color-nav: #ffff;

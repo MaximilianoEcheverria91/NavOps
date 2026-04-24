@@ -5,6 +5,7 @@ import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
 import { VerifyToken } from './pages/VerifyToken/VerifyToken';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
 import { UsersList } from './pages/Users/UsersList';
+import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 
 
 function App() {
@@ -18,9 +19,14 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/users/create" element={<CreateUser />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+
+
+
+<Route path="/users/create" element={<CreateUser />} />

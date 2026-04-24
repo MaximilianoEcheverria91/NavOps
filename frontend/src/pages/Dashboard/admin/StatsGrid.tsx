@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Users,Ship, Anchor,Shield } from 'lucide-react';
 import { getDashboardStats } from '../../../services/api/dashboardService';
-import styles from '../StatsGrid.module.css';
+import styles from './StatsGrid.module.css';
 
 
 export const StatsGrid: React.FC = () => {
