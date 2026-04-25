@@ -7,11 +7,13 @@ import type { UserResponse } from '../../services/api/userService';
 import { SearchInput } from '../../components/ui/SearchInput/SearchInput';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
+import { UserDetailModal } from './UserDetailModal';
 
 
 export const UsersList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<UserResponse[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -159,7 +161,10 @@ export const UsersList: React.FC = () => {
                 </div>
                 
                 <div className={styles.cardActions}>
-                  <button className={styles.viewDetailBtn}>
+                  <button 
+                    className={styles.viewDetailBtn}
+                    onClick={() => setSelectedUserId(user.id)}
+                  >
                     Ver detalle
                   </button>
                   <div className="flex gap-4">
@@ -183,6 +188,13 @@ export const UsersList: React.FC = () => {
         </footer>
 
       </div>
+
+      {selectedUserId && (
+        <UserDetailModal 
+          userId={selectedUserId} 
+          onClose={() => setSelectedUserId(null)} 
+        />
+      )}
     </MainLayout>
   );
 };
