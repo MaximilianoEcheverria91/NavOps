@@ -29,6 +29,9 @@
   --boton-detail-color: #5cbce979;
   --color-input: transparent;
   --color-input-background: rgba(22, 41, 83, 0.24);
+  --button-download: rgba(99, 186, 207, 0.9);
+  --border-button-dowload: rgba(99, 186, 207, 0.4);
+  --background-color-detail: #082842;
 
   /*Navar*/
   --barckground-color-nav: none;
@@ -64,6 +67,9 @@
   --color-icon3:  rgba(0, 0, 0, 0.5);
   --color-input: #ffff;
   --color-input-background:  rgba(175, 194, 238, 0.6);
+  --button-download: #082842;
+  --border-button-dowload: #436a88;
+  --background-color-detail: #ffff;
  
 
 

@@ -29,3 +29,43 @@ export const createUser = async (payload: any) => {
   });
   return response.data;
 };
+
+export interface UserDetailedResponse {
+  id: string;
+  documentType: string;
+  documentNumber: string;
+  cuil: string;
+  name: string;
+  surname: string;
+  nationality: string;
+  maritalStatus: string;
+  gender: string;
+  birthDate: string;
+  email: string;
+  mobile: string;
+  homePhone: string;
+  addressStreet: string;
+  addressNumber: string;
+  addressFloor: string;
+  addressDepartment: string;
+  addressCity: string;
+  addressProvince: string;
+  addressPostalCode: string;
+  countryName: string;
+  fileNumber: string;
+  maritimeBookNumber: string;
+  navigationRole: string;
+  category: string;
+  hireDate: string;
+  yearsOfService: number;
+  crewMemberStatus: string;
+  username: string;
+  systemRole: string;
+  avatarUrl: string;
+  isActive: boolean;
+}
+
+export const getUserById = async (id: string): Promise<UserDetailedResponse> => {
+  const response = await apiClient.get(`/admin/user/${id}`);
+  return response.data;
+};
