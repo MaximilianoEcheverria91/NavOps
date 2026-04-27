@@ -1,0 +1,75 @@
+/* variables.css
+   Global design tokens for NavOps.
+   Consumed by Tailwind via CSS variables and directly by CSS Modules.
+*/
+
+:root {
+  /* ── Brand palette (light mode) ────────────────────────────── */
+  --navops-blue-light:   #57B8F4;
+  --navops-bg-light:     #EDF6FD;
+  --navops-accent-green: #00CC29; /* adjusted for contrast ratio AA */
+  --navops-red:          #FF0000;
+  --navops-border-light: #B7D2E0;
+  --navops-surface:      #F8FBFD;
+
+  /* ── Semantic tokens (light mode) ──────────────────────────── */
+  --color-bg:            var(--navops-surface);
+  --color-surface:       #ffffff;
+  --color-surface-raised:#F3F8FC;
+  --color-border:        var(--navops-border-light);
+  --color-border-subtle: #DDE9F2;
+
+  --color-text-primary:  #0D2336;
+  --color-text-secondary:#4A6B80;
+  --color-text-muted:    #8AA5B5;
+
+  --color-accent:        var(--navops-blue-light);
+  --color-accent-muted:  #E5F4FD;
+
+  /* ── Status colors ──────────────────────────────────────────── */
+  --color-success: #22c55e;
+  --color-warning: #f97316;
+  --color-error:   #ef4444;
+  --color-info:    var(--navops-blue-light);
+
+  /* ── Typography ────────────────────────────────────────────── */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-size-xs:  11px;
+  --font-size-sm:  12px;
+  --font-size-base:13px;
+  --font-size-md:  14px;
+  --font-size-lg:  16px;
+  --font-size-xl:  20px;
+
+  /* ── Spacing ────────────────────────────────────────────────── */
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+
+  /* ── Transitions ────────────────────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+}
+
+/* ── Dark mode overrides ────────────────────────────────────── */
+[data-theme="dark"] {
+  --navops-bg-dark:       #031728;
+  --navops-surface-dark:  #082842;
+  --navops-surface-dark2: #193A53;
+  --navops-accent-dark:   #3A617C;
+  --navops-blue-dark:     #2095D4;
+
+  --color-bg:             var(--navops-bg-dark);
+  --color-surface:        var(--navops-surface-dark);
+  --color-surface-raised: var(--navops-surface-dark2);
+  --color-border:         #1A3D58;
+  --color-border-subtle:  #0F2E45;
+
+  --color-text-primary:   #E2F0F9;
+  --color-text-secondary: #7BAFC8;
+  --color-text-muted:     #4A7A99;
+
+  --color-accent:         var(--navops-blue-dark);
+  --color-accent-muted:   #0B2D45;
+}
