@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { MainLayout } from './../../layouts/MainLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { Search, Filter, User, FileText, Clock, Edit2, Trash2 } from 'lucide-react';
 import styles from './UsersList.module.css';
-import { getAllUsers } from '../../services/api/userService';
-import type { UserResponse } from '../../services/api/userService';
-import { SearchInput } from '../../components/ui/SearchInput/SearchInput';
-import { useDebounce } from '../../hooks/useDebounce';
+import { getAllUsers } from '../../../services/api/userService';
+import type { UserResponse } from '../../../services/api/userService';
+import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
+import { useDebounce } from '../../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
-import { UserDetailModal } from './UserDetailModal';
+import { UserDetailModal } from '../DetailUser/UserDetailModal';
 
 
 export const UsersList: React.FC = () => {
@@ -128,7 +128,7 @@ export const UsersList: React.FC = () => {
                       <User size={40} />
                     </div>
                   )}
-                    {user.crewMemberStatus === 'ACTIVE' ? (
+                    {user.crewMemberStatus === 'AVAILABLE' ? (
                       <div className={`${styles.statusBadge} ${styles.statusOnline}`}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                       </div>

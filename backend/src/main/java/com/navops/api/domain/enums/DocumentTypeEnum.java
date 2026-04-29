@@ -2,9 +2,10 @@ package com.navops.api.domain.enums;
 
 public enum DocumentTypeEnum {
 
-    DNI("Documento Nacional de Identidad"),
-    PASAPORTE("Pasaporte"),
-    CEDULA("Cedula de identidad");
+    DNI("National Identity Document."),
+    PASSPORT("Passport"),
+    CARD("Identity card"),
+    ENROLLMENT_BOOKLET("Enrollment booklet");
 
     private final String description;
 

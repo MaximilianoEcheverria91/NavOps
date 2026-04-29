@@ -4,7 +4,7 @@ import { DashboardAdmin } from './pages/Dashboard/admin/DashboardAdmin';
 import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
 import { VerifyToken } from './pages/VerifyToken/VerifyToken';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
-import { UsersList } from './pages/Users/UsersList';
+import { UsersList } from './pages/Users/ListUser/UsersList';
 import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 
 
