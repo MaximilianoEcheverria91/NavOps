@@ -22,8 +22,8 @@ export const validateCreateUser = (form: any) => {
   if (!form.generalInfo.birthDate) {
     errors['generalInfo.birthDate'] = 'Requerido';
   }
-  if (!form.generalInfo.nationality) {
-    errors['generalInfo.nationality'] = 'Requerido';
+  if (!form.generalInfo.nationalityCountryId) {
+    errors['generalInfo.nationalityCountryId'] = 'Requerido';
   }
   if (!form.generalInfo.maritalStatus) {
     errors['generalInfo.maritalStatus'] = 'Requerido';
@@ -39,11 +39,11 @@ export const validateCreateUser = (form: any) => {
   if (!form.residenceInfo.postalCode || !form.residenceInfo.postalCode.trim()) {
     errors['residenceInfo.postalCode'] = 'Requerido';
   }
-  if (!form.residenceInfo.province) {
-    errors['residenceInfo.province'] = 'Requerido';
+  if (!form.residenceInfo.provinceId) {
+    errors['residenceInfo.provinceId'] = 'Requerido';
   }
-  if (!form.residenceInfo.locality) {
-    errors['residenceInfo.locality'] = 'Requerido';
+  if (!form.residenceInfo.cityId) {
+    errors['residenceInfo.cityId'] = 'Requerido';
   }
   if (!form.residenceInfo.street || !form.residenceInfo.street.trim()) {
     errors['residenceInfo.street'] = 'Requerido';

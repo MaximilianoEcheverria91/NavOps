@@ -60,6 +60,10 @@ public record PersonnelRegistrationRequest(
             @NotNull(message = "El estado civil es obligatorio")
             String maritalStatus,
 
+            @Schema(example = "Argentina", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nacionalidad de la persona" )
+            @NotNull(message = "La nacionalidad es obligatoria")
+            UUID nationalityCountryId, //
+
             @Schema(example = "Masculino", requiredMode = Schema.RequiredMode.REQUIRED, description = "Genero de la persona" )
             @NotBlank(message = "El género es obligatorio")
             String gender
@@ -71,13 +75,13 @@ public record PersonnelRegistrationRequest(
             @NotNull(message = "El ID del país es obligatorio")
             UUID countryId,
 
-            @Schema(example = "Buenos Aires", requiredMode = Schema.RequiredMode.REQUIRED, description = "Provincia donde reside la persona" )
-            @NotBlank(message = "La residencia de provincia es obligatoria")
-            String province,
+            @NotNull(message = "El ID de la provincia es obligatorio")
+            @NotNull(message = "El ID de la provincia debe ser obligatorio")
+            UUID provinceId,
 
-            @Schema(example = "Lomas de Zamora", requiredMode = Schema.RequiredMode.REQUIRED, description = "Localidad o ciudad donde reside la persona" )
-            @NotBlank(message = "La localidad o ciudad es obligatoria")
-            String locality,
+            @NotNull(message = "El ID de la ciudad es obligatorio")
+            @NotNull(message = "El ID de la ciudad debe ser obligatorio")
+            UUID cityId,
 
             @Schema(example = "1832", requiredMode = Schema.RequiredMode.REQUIRED, description = "Código postal del usuario" )
             @NotBlank(message = "El código postal es obligatorio")

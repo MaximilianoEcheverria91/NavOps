@@ -2,9 +2,9 @@ package com.navops.api.domain.enums;
 
 public enum GenderEnum {
 
-    MASCULINO("Genero masculino"),
-    FEMENINO("Genero femenino"),
-    OTRO("Prefiero no decirlo");
+    MALE("Male gender."),
+    FEMALE("Female gender"),
+    OTHER("The user prefers not to disclose their gender.");
 
     private final String description;
 

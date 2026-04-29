@@ -3,6 +3,7 @@ package com.navops.api.domain.entity;
 import com.navops.api.domain.enums.DocumentTypeEnum;
 import com.navops.api.domain.enums.GenderEnum;
 import com.navops.api.domain.enums.MaritalStatusEnum;
+import com.navops.api.domain.enums.PeopleStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -41,9 +42,6 @@ public class Person {
     @Column(length = 50)
     private String cuil;
 
-    @Column(length = 100)
-    private String nationality;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "marital_status", length = 50)
     private MaritalStatusEnum maritalStatus;
@@ -52,12 +50,12 @@ public class Person {
     @Column(nullable = false, length = 20)
     private GenderEnum gender;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nationality_country_id")
+    private Country nationalityCountry;
+
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "country_id", nullable = false)
-    private Country country;
 
     @Column(length = 255)
     private String email;
@@ -67,6 +65,18 @@ public class Person {
 
     @Column(name = "home_phone", length = 50)
     private String homePhone;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "province_id", nullable = false)
+    private Province province;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
     @Column(name = "address_street", length = 200)
     private String addressStreet;
@@ -80,17 +90,14 @@ public class Person {
     @Column(name = "address_department", length = 20)
     private String addressDepartment;
 
-    @Column(name = "address_city", length = 100)
-    private String addressCity;
-
-    @Column(name = "address_province", length = 100)
-    private String addressProvince;
-
     @Column(name = "address_postal_code", length = 20)
     private String addressPostalCode;
 
     @Column(name = "avatar_url", length = 1000)
     private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    private PeopleStatusEnum status = PeopleStatusEnum.ACTIVE;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")

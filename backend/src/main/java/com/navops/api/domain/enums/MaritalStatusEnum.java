@@ -2,11 +2,11 @@ package com.navops.api.domain.enums;
 
 public enum MaritalStatusEnum {
 
-    SOLTERO("Estado civil soltero"),
-    CASADO("Estado civil casado"),
-    DIVORCIADO("Estado civil divorciado"),
-    VIUDO("Estado civil viudo"),
-    CONVIVIENTE("Estado civil conviviente");
+    SINGLE("The user is single."),
+    MARRIED("The user is married."),
+    DIVORCED("The user is divorced."),
+    WIDOWED("The user is a widower."),
+    COHABITANT("The user is cohabiting.");
 
     private final String description;
 

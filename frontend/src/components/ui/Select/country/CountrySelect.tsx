@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Globe, AlertCircle, Loader2 } from 'lucide-react';
-import { apiClient } from '../../../api/apiClient';
-import { CountrySelectOption } from '../../../types/location';
+import { apiClient } from '../../../../api/apiClient';
+import { CountrySelectOption } from '../../../../types/location';
 import styles from './CountrySelect.module.css';
 
 interface CountrySelectProps {

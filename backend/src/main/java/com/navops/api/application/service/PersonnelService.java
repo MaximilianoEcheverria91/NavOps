@@ -2,21 +2,10 @@ package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.PersonnelRegistrationRequest;
 import com.navops.api.application.dto.response.user.StatsUserResponse;
-import com.navops.api.domain.entity.Country;
-import com.navops.api.domain.entity.CrewMember;
-import com.navops.api.domain.entity.Person;
-import com.navops.api.domain.entity.Role;
-import com.navops.api.domain.entity.User;
-import com.navops.api.domain.enums.CrewMemberStatusEnum;
-import com.navops.api.domain.enums.DocumentTypeEnum;
-import com.navops.api.domain.enums.GenderEnum;
-import com.navops.api.domain.enums.MaritalStatusEnum;
+import com.navops.api.domain.entity.*;
+import com.navops.api.domain.enums.*;
 import com.navops.api.infrastructure.exception.ResourceAlreadyExistsException;
-import com.navops.api.repository.CountryRepository;
-import com.navops.api.repository.CrewMemberRepository;
-import com.navops.api.repository.PersonRepository;
-import com.navops.api.repository.RoleRepository;
-import com.navops.api.repository.UserRepository;
+import com.navops.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,6 +36,8 @@ public class PersonnelService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageStorageService imageStorageService;
+    private final ProvinceRepository provinceRepository;
+    private final CityRepository localityRepository;
 
     private String generateNextFileNumber() {
         Long nextVal = crewMemberRepository.getNextFileSequenceValue();
@@ -74,10 +65,21 @@ public class PersonnelService {
         if (image != null && !image.isEmpty()) {
             avatarUrl = imageStorageService.uploadImage(image, "profile_pictures");
         }
+        log.info("Buscando pais para nacionalidad con ID: {}", request.generalInfo().nationalityCountryId());
+        Country nacionalityCountry = countryRepository.findById(request.generalInfo().nationalityCountryId())
+                        .orElseThrow(()-> new IllegalArgumentException("El ID del país provisto no existe"));
 
-        log.info("Buscando país con ID: {}", request.residenceInfo().countryId()); // Agregá esto
+        log.info("Buscando país con ID: {}", request.residenceInfo().countryId());
         Country country = countryRepository.findById(request.residenceInfo().countryId())
                 .orElseThrow(() -> new IllegalArgumentException("El ID del país provisto no existe."));
+
+        log.info("Buscando provincia con ID: {}", request.residenceInfo().provinceId());
+        Province province = provinceRepository.findById(request.residenceInfo().provinceId())
+                .orElseThrow(() -> new IllegalArgumentException("Provincia no encontrada"));
+
+        log.info("Buscando ciudad con ID: {}", request.residenceInfo().cityId());
+        City city = localityRepository.findById(request.residenceInfo().cityId())
+                .orElseThrow(() -> new IllegalArgumentException("Ciudad no encontrada"));
 
         User savedUser = null;
         if (request.systemAccessData() != null && request.systemAccessData().belongsToSystem()) {
@@ -103,17 +105,19 @@ public class PersonnelService {
                 .documentType(DocumentTypeEnum.valueOf(request.generalInfo().documentType().toUpperCase()))
                 .documentNumber(request.generalInfo().documentNumber())
                 .cuil(request.generalInfo().cuil())
-                .nationality(request.generalInfo().nationality())
+                .nationalityCountry(nacionalityCountry)
                 .maritalStatus(MaritalStatusEnum.valueOf(request.generalInfo().maritalStatus().toUpperCase()))
                 .gender(GenderEnum.valueOf(request.generalInfo().gender()))
+                .status(PeopleStatusEnum.ACTIVE)
                 .birthDate(request.generalInfo().birthDate())
                 .country(country)
                 .email(request.contactInfo().email())
                 .mobile(request.contactInfo().cellPhone())
+                .country(country)
+                .province(province)
+                .city(city)
                 .addressStreet(request.residenceInfo().street())
                 .addressNumber(request.residenceInfo().number())
-                .addressCity(request.residenceInfo().locality())
-                .addressProvince(request.residenceInfo().province())
                 .addressPostalCode(request.residenceInfo().PostalCode())
                 .avatarUrl(avatarUrl)
                 .user(savedUser)
@@ -129,7 +133,7 @@ public class PersonnelService {
                 .navigationRole(request.laborData().navigationRole())
                 .category(request.laborData().category())
                 .hireDate(request.laborData().hireDate())
-                .status(CrewMemberStatusEnum.valueOf(request.laborData().status().toUpperCase()))
+                .status(CrewMemberStatusEnum.AVAILABLE)
                 .build();
 
         person.setCrewMember(crewMember);
@@ -259,7 +263,7 @@ public class PersonnelService {
                 person.getCuil(),
                 person.getFullName(),
                 person.getSurname(),
-                person.getNationality(),
+                person.getNationalityCountry().getName(),
                 person.getMaritalStatus() != null ? person.getMaritalStatus().name() : null,
                 person.getGender() != null ? person.getGender().name() : null,
                 person.getBirthDate(),
@@ -271,8 +275,8 @@ public class PersonnelService {
                 person.getAddressNumber(),
                 person.getAddressFloor(),
                 person.getAddressDepartment(),
-                person.getAddressCity(),
-                person.getAddressProvince(),
+                person.getCity().getName(),
+                person.getProvince().getName(),
                 person.getAddressPostalCode(),
                 person.getCountry() != null ? person.getCountry().getName() : null,
 

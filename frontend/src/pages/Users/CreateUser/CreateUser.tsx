@@ -6,6 +6,8 @@ import { useCreateUserForm } from '../../../hooks/useCreateUserForm';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { getCountries } from '../../../services/api/countryService';
 import { getRoles } from '../../../services/api/roleService';
+import {getProvincesByCountry} from '../../../services/api/provinceService'
+import {getCitiesByProvince} from '../../../services/api/cityService';
 import styles from './CreateUser.module.css';
 
 export const CreateUser: React.FC = () => {
@@ -17,6 +19,66 @@ export const CreateUser: React.FC = () => {
   
   const [countries, setCountries] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+
+  /*Efecto 1: Cargar Provincias cuando cambie el País
+  React.useEffect(() => {
+    if (form.residenceInfo.countryId) {
+      getProvincesByCountry(form.residenceInfo.countryId)
+        .then(setProvinces)
+        .catch(console.error);
+      handleChange('residenceInfo', 'provinceId', '');
+      handleChange('residenceInfo', 'cityId', '');
+    } else {
+      setProvinces([]);
+    }
+  }, [form.residenceInfo.countryId]);
+
+  // Efecto 2: Cargar Ciudades cuando cambie la Provincia
+  React.useEffect(() => {
+    if (form.residenceInfo.provinceId) {
+      getCitiesByProvince(form.residenceInfo.provinceId)
+        .then(setCities)
+        .catch(console.error);
+      // Resetear hijo
+      handleChange('residenceInfo', 'cityId', '');
+    } else {
+      setCities([]);
+    }
+  }, [form.residenceInfo.provinceId]);*/
+  // Efecto 1: Cargar Provincias
+  React.useEffect(() => {
+    if (form.residenceInfo.countryId) {
+      getProvincesByCountry(form.residenceInfo.countryId)
+        .then(setProvinces)
+        .catch(console.error);
+      
+      // IMPORTANTE: Solo resetear si el valor actual no es vacío
+      if (form.residenceInfo.provinceId !== '' || form.residenceInfo.cityId !== '') {
+        handleChange('residenceInfo', 'provinceId', '');
+        handleChange('residenceInfo', 'cityId', '');
+      }
+    } else {
+      setProvinces([]);
+      setCities([]);
+    }
+  }, [form.residenceInfo.countryId]); // Quité dependencias innecesarias
+
+  // Efecto 2: Cargar Ciudades
+  React.useEffect(() => {
+    if (form.residenceInfo.provinceId) {
+      getCitiesByProvince(form.residenceInfo.provinceId)
+        .then(setCities)
+        .catch(console.error);
+      
+      if (form.residenceInfo.cityId !== '') {
+        handleChange('residenceInfo', 'cityId', '');
+      }
+    } else {
+      setCities([]);
+    }
+  }, [form.residenceInfo.provinceId]);
 
   React.useEffect(() => {
     getCountries().then(setCountries).catch(console.error);
@@ -37,12 +99,19 @@ export const CreateUser: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
+  /*const handleSave = async () => {
     const response = await submit();
     if (response.success) {
       setShowModal(true);
     }
-  };
+  };*/
+
+  const handleSave = async () => {
+  console.log("Botón presionado");
+  const response = await submit();
+  console.log("Respuesta de submit:", response);
+  if (response.success) setShowModal(true);
+};
 
   const handleConfirmModal = () => {
     setShowModal(false);
@@ -132,9 +201,9 @@ export const CreateUser: React.FC = () => {
                 onChange={(e) => handleChange('generalInfo','gender', e.target.value)}
               >
                 <option value="">Ej: Masculino</option>
-                <option value="MASCULINO">Masculino</option>
-                <option value="FEMENINO">Femenino</option>
-                <option value="OTRO">Otro / No binario</option>
+                <option value="MALE">Masculino</option>
+                <option value="FEMALE">Femenino</option>
+                <option value="OTHER">Otro / No binario</option>
               </select>
             </div>
 
@@ -147,8 +216,9 @@ export const CreateUser: React.FC = () => {
               >
                 <option value="">Ej: DNI</option>
                 <option value="DNI">DNI</option>
-                <option value="PASAPORTE">Pasaporte</option>
-                <option value="CEDULA">Cédula</option>
+                <option value="PASSPORT">Pasaporte</option>
+                <option value="CARD">Cédula</option>
+                <option value="ENROLLMENT_BOOKLET">Libreta de enrolamiento</option>
               </select>
               {errors['generalInfo.documentType'] && <span className={styles.errorText}>{errors['generalInfo.documentType']}</span>}
             </div>
@@ -189,26 +259,15 @@ export const CreateUser: React.FC = () => {
             <div className={styles.inputGroup}>
               <label className={styles.label}>Nacionalidad</label>
               <select 
-                className={`${styles.input} ${errors['generalInfo.nationality'] ? styles.inputError : ''}`} 
-                value={form.generalInfo.nationality}
-                onChange={(e) => handleChange('generalInfo','nationality', e.target.value)}
-              >
-                <option value="">Ej: Argentino</option>
-                <option value="Argentino">Argentino</option>
-                <option value="Uruguayo">Uruguayo</option>
-                <option value="Chileno">Chileno</option>
-                <option value="Bolibiano">Boliviano</option>
-                <option value="Paraguayo">Paraguayo</option>
-                <option value="Barzilero">Brazilero</option>
-                <option value="Peruano">Peruano</option>
-                <option value="Ecuatoriano">Ecuatoriano</option>
-                <option value="Vanezolano">Venezolano</option>
-                <option value="Colombiano">Colombiano</option>
-                <option value="Mexicano">Mexicano</option>
-                <option value="Hondureño">Hondureño</option>
-                <option value="Cubano">Cubano</option>
+                className={`${styles.input} ${errors['generalInfo.nationalityCountryId'] ? styles.inputError : ''}`} 
+                value={form.generalInfo.nationalityCountryId}
+                onChange={(e) => handleChange('generalInfo','nationalityCountryId', e.target.value)}>
+               <option value="">Seleccione Nacionalidad</option>
+                  {countries.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
               </select>
-              {errors['generalInfo.nationality'] && <span className={styles.errorText}>{errors['generalInfo.nationality']}</span>}
+              {errors['generalInfo.nationalityCountryId'] && <span className={styles.errorText}>{errors['generalInfo.nationalityCountryId']}</span>}
             </div>
 
             <div className={styles.inputGroup}>
@@ -219,11 +278,11 @@ export const CreateUser: React.FC = () => {
                 onChange={(e) => handleChange('generalInfo','maritalStatus', e.target.value)}
               >
                 <option value="">Ej: Soltero</option>
-                <option value="SOLTERO">Soltero</option>
-                <option value="CASADO">Casado</option>
-                <option value="DIVORCIADO">Divorciado</option>
-                <option value="VIUDO">Viudo</option>
-                <option value="CONVIVIENTE">Conviviente</option>
+                <option value="SINGLE">Soltero</option>
+                <option value="MARRIED">Casado</option>
+                <option value="DIVORCIED">Divorciado</option>
+                <option value="WIDOWED">Viudo</option>
+                <option value="COHABITANT">Conviviente</option>
               </select>
               {errors['generalInfo.maritalStatus'] && <span className={styles.errorText}>{errors['generalInfo.maritalStatus']}</span>}
             </div>
@@ -249,25 +308,35 @@ export const CreateUser: React.FC = () => {
               </select>
               {errors['residenceInfo.countryId'] && <span className={styles.errorText}>{errors['residenceInfo.countryId']}</span>}
             </div>
-
+          
+          
             <div className={styles.inputGroup}>
               <label className={styles.label}>Provincia</label>
-              <input 
-                className={`${styles.input} ${errors['residenceInfo.province'] ? styles.inputError : ''}`} 
-                value={form.residenceInfo.province}
-                onChange={(e) => handleChange('residenceInfo','province', e.target.value)}
-              />
-              {errors['residenceInfo.province'] && <span className={styles.errorText}>{errors['residenceInfo.province']}</span>}
+              <select
+                className={`${styles.input} ${errors['residenceInfo.provinceId'] ? styles.inputError : ''}`} 
+                value={form.residenceInfo.provinceId}
+                onChange={(e) => handleChange('residenceInfo','provinceId', e.target.value)}>
+               
+                <option value="">Seleccione Provincia</option>
+                  {provinces.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+              </select>
+              {errors['residenceInfo.provinceId'] && <span className={styles.errorText}>{errors['residenceInfo.provinceId']}</span>}
             </div>
 
             <div className={styles.inputGroup}>
               <label className={styles.label}>Localidad</label>
-              <input 
-                className={`${styles.input} ${errors['residenceInfo.locality'] ? styles.inputError : ''}`} 
-                value={form.residenceInfo.locality}
-                onChange={(e) => handleChange('residenceInfo','locality', e.target.value)}
-              />
-              {errors['residenceInfo.locality'] && <span className={styles.errorText}>{errors['residenceInfo.locality']}</span>}
+              <select 
+                className={`${styles.input} ${errors['residenceInfo.cityId'] ? styles.inputError : ''}`} 
+                value={form.residenceInfo.cityId}
+                onChange={(e) => handleChange('residenceInfo','cityId', e.target.value)}>
+                <option value="">Seleccione Ciudad</option>
+                  {cities.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+              </select>
+              {errors['residenceInfo.cityId'] && <span className={styles.errorText}>{errors['residenceInfo.cityId']}</span>}
             </div>
           </div>
       
@@ -506,7 +575,10 @@ export const CreateUser: React.FC = () => {
           </button>
 
           <button className={styles.saveBtn} onClick={handleSave} disabled={loading}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline></svg>
             Guardar
           </button>
         </div>
