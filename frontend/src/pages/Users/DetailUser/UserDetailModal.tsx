@@ -1,7 +1,8 @@
 import React from 'react';
 import { X, Download, Edit2, Trash2, User as UserIcon } from 'lucide-react';
 import styles from './UserDetailModal.module.css';
-import { useUserDetail } from '../../hooks/useUserDetail';
+import { useUserDetail } from '../../../hooks/useUserDetail';
+import { useNavigate } from 'react-router-dom';
 
 interface UserDetailModalProps {
   userId: string;
@@ -9,6 +10,7 @@ interface UserDetailModalProps {
 }
 
 export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClose }) => {
+  const navigate = useNavigate();
   const { data: user, loading, error } = useUserDetail(userId);
 
   // Prevenir propagación de click para que cerrar funcione solo en el fondo overlay
@@ -21,16 +23,24 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
     if (!val) return '-';
     // Reemplazos genéricos para un display amigable
     const mapping: Record<string, string> = {
-      'MASCULINO': 'Masculino',
-      'FEMENINO': 'Femenino',
-      'OTRO': 'Otro',
-      'SOLTERO': 'Soltero',
-      'CASADO': 'Casado',
-      'DIVORCIADO': 'Divorciado',
-      'VIUDO': 'Viudo',
-      'CONVIVIENTE': 'Conviviente',
-      'ACTIVE': 'Operativo',
-      'INACTIVE': 'Inactivo'
+      'MALE': 'Masculino',
+      'FEMALE': 'Femenino',
+      'OTHER': 'Otro/prefiero no decirlo',
+      'SINGLE': 'Soltero',
+      'MARRIED': 'Casado',
+      'DIVORCED': 'Divorciado',
+      'WIDOWED': 'Viudo',
+      'COHABITANT': 'Conviviente',
+      'AVAILABLE': 'Disponible',
+      'ON_BOARD': 'En ruta',
+      'RESTING': 'Descanso',
+      'MATERNITY_LEAVE': 'Maternidad',
+      'UNAVAILABLE': 'No disponible',
+      'ACTIVE': 'Activo',
+      'INACTIVE': 'Inactivo',
+      'VACATION': 'Licencia por vaciones',
+      'MEDICAL_LEAVE': 'Licencia medica',
+      'SUSPENDED': 'Suspendido'
     };
     return mapping[val] || val;
   };
@@ -38,7 +48,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={handleModalContentClick}>
-        
+
         {/* CABECERA */}
         <div className={styles.header}>
           <div className={styles.titleArea}>
@@ -64,7 +74,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
           ) : error ? (
             <div className={styles.centerMessage}>
               <p className={styles.errorText}>{error}</p>
-              <button 
+              <button
                 className={styles.downloadBtn}
                 onClick={onClose}
               >
@@ -225,7 +235,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
         {/* FOOTER ACTIONS - Igual al renderizado del layout modal */}
         {!loading && !error && (
           <div className={styles.footerActions}>
-            <button className={styles.editActionBtn} title="Editar Usuario">
+            <button className={styles.editActionBtn} title="Editar Usuario" onClick={() => navigate(`/users/edit/${userId}`)}>
               <Edit2 size={16} />
             </button>
             <button className={styles.deleteActionBtn} title="Eliminar Usuario">

@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Respuesta de cantidad de usuarios total, activos y disponibles")
 public record StatsUserResponse(
 
-        @Schema(example = "10", description = "Cantidad total de usuarios registrados")
+        @Schema(example = "10", description = "Cantidad total de usuarios activos")
         long totalUsers,
 
-        @Schema(example = "8", description = "Cantidad de usuarios con estado activo")
+        @Schema(example = "8", description = "Cantidad de usuarios disponibles")
         long activeUsers
 
 /*

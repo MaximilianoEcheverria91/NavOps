@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X } from 'lucide-react';
 import styles from './MainLayout.module.css';
 import logo from '../assets/logo.png';
@@ -25,10 +26,30 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
 
           <div className={styles.navLinks}>
-            <button className={styles.link}><LayoutDashboard size={18}/> Dashboard</button>
-            <button className={styles.activeLink}><Users size={18}/> Usuarios</button>
-            <button className={styles.link}><Ship size={18}/> Barcos</button>
-            <button className={styles.link}><Anchor size={18}/> Puertos</button>
+            <NavLink 
+              to="/dashboard" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <LayoutDashboard size={18}/> Dashboard
+            </NavLink>
+            <NavLink 
+              to="/usuarios" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <Users size={18}/> Usuarios
+            </NavLink>
+            <NavLink 
+              to="/barcos" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <Ship size={18}/> Barcos
+            </NavLink>
+            <NavLink 
+              to="/puertos" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <Anchor size={18}/> Puertos
+            </NavLink>
           </div>
         </div>
 

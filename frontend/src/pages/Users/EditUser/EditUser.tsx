@@ -1,69 +1,38 @@
-import React, { useRef, useState } from 'react';
-import { Camera, ChevronDown, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef, useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../../../layouts/MainLayout';
-import { useCreateUserForm } from '../../../hooks/useCreateUserForm';
+import { useEditUserForm } from '../../../hooks/useEditUserForm';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { getCountries } from '../../../services/api/countryService';
 import { getRoles } from '../../../services/api/roleService';
-import {getProvincesByCountry} from '../../../services/api/provinceService'
-import {getCitiesByProvince} from '../../../services/api/cityService';
-import styles from './CreateUser.module.css';
+import { getProvincesByCountry } from '../../../services/api/provinceService';
+import { getCitiesByProvince } from '../../../services/api/cityService';
+// Reutilizamos los estilos del componente CreateUser
+import styles from '../CreateUser/CreateUser.module.css';
 
-export const CreateUser: React.FC = () => {
-  const { form, errors, image, handleImage, handleChange, submit, loading } = useCreateUserForm();
+export const EditUser: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { form, errors, image, handleImage, handleChange, submit, loading, loadingData } = useEditUserForm(id!);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  
   const [countries, setCountries] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
   const [provinces, setProvinces] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
 
-  /*Efecto 1: Cargar Provincias cuando cambie el País
-  React.useEffect(() => {
-    if (form.residenceInfo.countryId) {
-      getProvincesByCountry(form.residenceInfo.countryId)
-        .then(setProvinces)
-        .catch(console.error);
-      handleChange('residenceInfo', 'provinceId', '');
-      handleChange('residenceInfo', 'cityId', '');
-    } else {
-      setProvinces([]);
-    }
-  }, [form.residenceInfo.countryId]);
-
-  // Efecto 2: Cargar Ciudades cuando cambie la Provincia
-  React.useEffect(() => {
-    if (form.residenceInfo.provinceId) {
-      getCitiesByProvince(form.residenceInfo.provinceId)
-        .then(setCities)
-        .catch(console.error);
-      // Resetear hijo
-      handleChange('residenceInfo', 'cityId', '');
-    } else {
-      setCities([]);
-    }
-  }, [form.residenceInfo.provinceId]);*/
   // Efecto 1: Cargar Provincias
   React.useEffect(() => {
     if (form.residenceInfo.countryId) {
       getProvincesByCountry(form.residenceInfo.countryId)
         .then(setProvinces)
         .catch(console.error);
-      
-      // IMPORTANTE: Solo resetear si el valor actual no es vacío
-      if (form.residenceInfo.provinceId !== '' || form.residenceInfo.cityId !== '') {
-        handleChange('residenceInfo', 'provinceId', '');
-        handleChange('residenceInfo', 'cityId', '');
-      }
     } else {
       setProvinces([]);
       setCities([]);
     }
-  }, [form.residenceInfo.countryId]); // Quité dependencias innecesarias
+  }, [form.residenceInfo.countryId]);
 
   // Efecto 2: Cargar Ciudades
   React.useEffect(() => {
@@ -71,10 +40,6 @@ export const CreateUser: React.FC = () => {
       getCitiesByProvince(form.residenceInfo.provinceId)
         .then(setCities)
         .catch(console.error);
-      
-      if (form.residenceInfo.cityId !== '') {
-        handleChange('residenceInfo', 'cityId', '');
-      }
     } else {
       setCities([]);
     }
@@ -99,21 +64,12 @@ export const CreateUser: React.FC = () => {
     }
   };
 
-  /*const handleSave = async () => {
-    const response = await submit();
-    if (response.success) {
-      setShowModal(true);
-    }
-  };*/
-
   const handleSave = async () => {
-  console.log("Botón presionado");
-  const response = await submit();
-  console.log("Respuesta de submit:", response);
-  if (response.success) setShowModal(true);
-};
-
-
+    console.log("Botón de guardar presionado");
+    const response = await submit();
+    console.log("Respuesta de submit:", response);
+    if (response.success) setShowModal(true);
+  };
 
   const handleConfirmModal = () => {
     setShowModal(false);
@@ -124,15 +80,25 @@ export const CreateUser: React.FC = () => {
     navigate('/usuarios');
   };
 
+  if (loadingData) {
+    return (
+      <MainLayout>
+        <div className={styles.container} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p style={{ color: 'white' }}>Cargando datos del usuario...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
       <div className={styles.container}>
 
         {/* HEADER */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Agregar nuevo Usuario</h1>
+          <h1 className={styles.title}>Editar Usuario</h1>
           <p className={styles.subtitle}>
-            Bienvenido al sistema de gestión y navegación
+            Actualizar datos del sistema de gestión y navegación
           </p>
         </div>
 
@@ -287,6 +253,18 @@ export const CreateUser: React.FC = () => {
                 <option value="COHABITANT">Conviviente</option>
               </select>
               {errors['generalInfo.maritalStatus'] && <span className={styles.errorText}>{errors['generalInfo.maritalStatus']}</span>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Estado</label>
+              <select 
+                className={`${styles.input} ${errors['generalInfo.status'] ? styles.inputError : ''}`} 
+                value={form.generalInfo.status}
+                onChange={(e) => handleChange('generalInfo','status', e.target.value)}
+              >
+                <option value="ACTIVE">Activo</option>
+                <option value="INACTIVE">Inactivo</option>
+              </select>
             </div>
           </div>
         </div>
@@ -455,6 +433,7 @@ export const CreateUser: React.FC = () => {
                 <option value="">Ej: Jefe de Navegación</option>
                 <option value="Jefe de Navegación">Jefe de Navegación</option>
                 <option value="Marinero">Marinero</option>
+                <option value="Operario carga">Operario carga</option>
               </select>
               {errors['laborData.navigationRole'] && <span className={styles.errorText}>{errors['laborData.navigationRole']}</span>}
             </div>
@@ -469,6 +448,7 @@ export const CreateUser: React.FC = () => {
                 <option value="">Ej: Sub Oficial</option>
                 <option value="Sub Oficial">Sub Oficial</option>
                 <option value="Oficial">Oficial</option>
+                <option value="Auxiliar">Auxiliar</option>
               </select>
               {errors['laborData.category'] && <span className={styles.errorText}>{errors['laborData.category']}</span>}
             </div>
@@ -494,6 +474,30 @@ export const CreateUser: React.FC = () => {
               />
             </div>
 
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Estado</label>
+              <select 
+                className={`${styles.input} ${errors['laborData.status'] ? styles.inputError : ''}`} 
+                value={form.laborData.status}
+                onChange={(e) => handleChange('laborData','status', e.target.value)}
+              >
+                <option value="AVAILABLE">Disponible</option>
+                <option value="ON_BOARD">A Bordo</option>
+                <option value="ON_LEAVE">De Licencia</option>
+              </select>
+            </div>
+            
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Legajo</label>
+              <input 
+                type="text" 
+                className={styles.input} 
+                placeholder="Ej: LG00001"
+                value={form.laborData.fileNumber}
+                onChange={(e) => handleChange('laborData','fileNumber', e.target.value)}
+              />
+            </div>
+
           </div>
         </div>
 
@@ -501,21 +505,38 @@ export const CreateUser: React.FC = () => {
 
         {/* SISTEMA */}
         <div className={styles.section}>
-          <p className={styles.sectionTitle}>¿Pertenece al sistema?</p>
+          <div className={styles.grid}>
+             <div>
+                <p className={styles.sectionTitle}>¿Pertenece al sistema?</p>
+                <div className={styles.switchContainer}>
+                  <label className={styles.toggleSwitch}>
+                    <input
+                      type="checkbox"
+                      checked={form.systemAccessData.belongsToSystem}
+                      onChange={(e) => handleChange('systemAccessData','belongsToSystem', e.target.checked)}
+                    />
+                    <span className={styles.slider}></span>
+                  </label>
+                </div>
+             </div>
 
-          <div className={styles.switchContainer}>
-            <label className={styles.toggleSwitch}>
-              <input
-                type="checkbox"
-                checked={form.systemAccessData.belongsToSystem}
-                onChange={(e) => handleChange('systemAccessData','belongsToSystem', e.target.checked)}
-              />
-              <span className={styles.slider}></span>
-            </label>
+             <div>
+                <p className={styles.sectionTitle}>¿Bloquear usuario?</p>
+                <div className={styles.switchContainer}>
+                  <label className={styles.toggleSwitch}>
+                    <input
+                      type="checkbox"
+                      checked={form.systemAccessData.is_blocked}
+                      onChange={(e) => handleChange('systemAccessData','is_blocked', e.target.checked)}
+                    />
+                    <span className={styles.slider}></span>
+                  </label>
+                </div>
+             </div>
           </div>
 
           {form.systemAccessData.belongsToSystem && (
-            <div className={`${styles.grid} ${styles.treeCols}`}>
+            <div className={`${styles.grid} ${styles.treeCols}`} style={{ marginTop: '20px' }}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Nombre de usuario</label>
                 <input 
@@ -525,31 +546,6 @@ export const CreateUser: React.FC = () => {
                   onChange={(e) => handleChange('systemAccessData','username', e.target.value)}
                 />
                 {errors['systemAccessData.username'] && <span className={styles.errorText}>{errors['systemAccessData.username']}</span>}
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label className={styles.label}>Contraseña</label>
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <input 
-                    type={showPassword ? 'text' : 'password'}
-                    className={`${styles.input} ${errors['systemAccessData.password'] ? styles.inputError : ''}`} 
-                    placeholder="Ej: Admin123$"
-                    value={form.systemAccessData.password}
-                    onChange={(e) => handleChange('systemAccessData', 'password', e.target.value)}
-                    style={{ width: '100%', paddingRight: '40px' }}
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute', right: '12px', background: 'none', border: 'none', 
-                      cursor: 'pointer', color: '#6A7182', display: 'flex', padding: 0
-                    }}
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-                {errors['systemAccessData.password'] && <span className={styles.errorText}>{errors['systemAccessData.password']}</span>}
               </div>
 
               <div className={styles.inputGroup}>
@@ -600,7 +596,7 @@ export const CreateUser: React.FC = () => {
 
       {showModal && (
         <FeedbackModal
-          message="Usuario creado correctamente"
+          message="Usuario actualizado correctamente"
           onClose={handleConfirmModal}
         />
       )}

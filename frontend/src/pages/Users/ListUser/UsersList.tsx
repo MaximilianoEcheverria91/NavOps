@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { MainLayout } from '../../../layouts/MainLayout';
 import { Search, Filter, User, FileText, Clock, Edit2, Trash2 } from 'lucide-react';
 import styles from './UsersList.module.css';
-import { getAllUsers } from '../../../services/api/userService';
+import { getAllUsers, updateUserStatus } from '../../../services/api/userService';
 import type { UserResponse } from '../../../services/api/userService';
 import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import { UserDetailModal } from '../DetailUser/UserDetailModal';
+import { ConfirmationModal } from '../../../components/ui/ConfirmationModal/ConfirmationModal';
+import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 
 
 export const UsersList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<UserResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -46,6 +51,22 @@ export const UsersList: React.FC = () => {
     };
     fetchUsers();
   }, []);
+
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+    try {
+      setIsDeleting(true);
+      await updateUserStatus(userToDelete.id, 'INACTIVE');
+      setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+      setUserToDelete(null);
+      setShowFeedback(true);
+    } catch (error: any) {
+      console.error('Error al dar de baja al usuario:', error);
+      alert('Error al dar de baja: ' + (error?.message || 'Error desconocido'));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const filteredUsers = users.filter((user) => {
   const term = debouncedSearch.toLowerCase();
@@ -168,10 +189,10 @@ export const UsersList: React.FC = () => {
                     Ver detalle
                   </button>
                   <div className="flex gap-4">
-                    <button className={styles.editBtn}>
+                    <button className={styles.editBtn} onClick={() => navigate(`/users/edit/${user.id}`)}>
                       <Edit2 size={16} />
                     </button>
-                    <button className={styles.deleteBtn}>
+                    <button className={styles.deleteBtn} onClick={() => setUserToDelete(user)}>
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -193,6 +214,21 @@ export const UsersList: React.FC = () => {
         <UserDetailModal 
           userId={selectedUserId} 
           onClose={() => setSelectedUserId(null)} 
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={!!userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        user={userToDelete}
+      />
+
+      {showFeedback && (
+        <FeedbackModal
+          message="Usuario dado de baja exitosamente"
+          onClose={() => setShowFeedback(false)}
         />
       )}
     </MainLayout>
