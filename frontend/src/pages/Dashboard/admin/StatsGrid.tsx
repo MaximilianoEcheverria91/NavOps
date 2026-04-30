@@ -31,7 +31,7 @@ export const StatsGrid: React.FC = () => {
 
   const cards = [
     { title: 'Total Usuarios', value:stats?.totalUsers ?? 0, 
-      active: `${stats?.activeUsers ?? 0} Activos`,
+      active: `${stats?.activeUsers ?? 0} Disponibles`,
       icon: <Users /> },
     { title: 'Total Barcos', value: '—',  icon: <Ship /> },
     { title: 'Total Puertos', value: '—', icon: <Anchor /> },

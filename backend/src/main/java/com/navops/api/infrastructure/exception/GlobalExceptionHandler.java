@@ -65,11 +65,48 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        log.error("Error al leer el mensaje HTTP: ", ex);
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                "El formato del JSON enviado es incorrecto o contiene datos incompatibles.",
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+        log.error("Error de tipo en argumento: ", ex);
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                "El parámetro '" + ex.getName() + "' tiene un formato inválido.",
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.support.MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingPart(org.springframework.web.multipart.support.MissingServletRequestPartException ex) {
+        log.error("Falta parte en la petición multipart: ", ex);
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                "Falta el campo requerido en la petición: " + ex.getRequestPartName(),
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
+        log.error("Error inesperado en el servidor: ", ex);
         ErrorResponseDto response = new ErrorResponseDto(
                 "Internal Server Error",
-                "Ha ocurrido un error inesperado",
+                "Ha ocurrido un error inesperado: " + ex.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 OffsetDateTime.now()
         );
@@ -152,6 +189,28 @@ public class GlobalExceptionHandler {
                 OffsetDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(NoProvincesFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoProvincesFound(NoProvincesFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    @ExceptionHandler(NoCitiesFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoCitiesFound(NoCitiesFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
 }

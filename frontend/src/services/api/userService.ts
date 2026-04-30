@@ -69,3 +69,23 @@ export const getUserById = async (id: string): Promise<UserDetailedResponse> => 
   const response = await apiClient.get(`/admin/user/${id}`);
   return response.data;
 };
+
+export const getUserForEdit = async (id: string) => {
+  const response = await apiClient.get(`/admin/user/${id}/edit`);
+  return response.data;
+};
+
+export const updateUser = async (id: string, payload: any) => {
+  const response = await apiClient.put(`/admin/user/${id}`, payload, {
+    transformRequest: [(data, headers) => {
+      delete headers['Content-Type'];
+      return data;
+    }],
+  });
+  return response.data;
+};
+
+export const updateUserStatus = async (id: string, status: string) => {
+  const response = await apiClient.patch(`/admin/user/${id}/status`, { status });
+  return response.data;
+};

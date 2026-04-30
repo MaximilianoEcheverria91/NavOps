@@ -1,9 +1,8 @@
 package com.navops.api.application.service;
 
 import com.navops.api.application.dto.response.LocationResponseDto;
+import com.navops.api.infrastructure.exception.NoCitiesFoundException;
 import com.navops.api.repository.CityRepository;
-import com.navops.api.repository.ProvinceRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +12,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LocationService {
+public class CityService {
 
-    private final ProvinceRepository provinceRepository;
     private final CityRepository cityRepository;
 
-    public List<LocationResponseDto> getProvincesByCountry(UUID countryId) {
-        return provinceRepository.findByCountryIdOrderByNameAsc(countryId)
-                .stream()
-                .map(p -> new LocationResponseDto(p.getId(), p.getName()))
-                .collect(Collectors.toList());
-    }
-
     public List<LocationResponseDto> getCitiesByProvince(UUID provinceId) {
-        return cityRepository.findByProvinceIdOrderByNameAsc(provinceId)
+        List<LocationResponseDto> cities = cityRepository.findByProvinceIdOrderByNameAsc(provinceId)
                 .stream()
                 .map(c -> new LocationResponseDto(c.getId(), c.getName()))
                 .collect(Collectors.toList());
+
+        if (cities.isEmpty()) {
+            throw new NoCitiesFoundException("No cities found for the given province ID");
+        }
+
+        return cities;
     }
 }

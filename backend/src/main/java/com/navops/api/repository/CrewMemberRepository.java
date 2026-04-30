@@ -1,6 +1,8 @@
 package com.navops.api.repository;
 
 import com.navops.api.domain.entity.CrewMember;
+import com.navops.api.domain.enums.CrewMemberStatusEnum;
+import com.navops.api.domain.enums.PeopleStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,6 +18,9 @@ public interface CrewMemberRepository extends JpaRepository<CrewMember, UUID> {
 
     boolean existsByFileNumber(String fileNumber);
     boolean existsByMaritimeBookNumber(String maritimeBookNumber);
+    boolean existsByFileNumberAndIdNot(String fileNumber, UUID id);
+    boolean existsByMaritimeBookNumberAndIdNot(String maritimeBookNumber, UUID id);
+    long countByStatus(CrewMemberStatusEnum status);
 
     // 1. Contar todos los usuarios en el sistema
     @Query("SELECT COUNT(u) FROM User u")

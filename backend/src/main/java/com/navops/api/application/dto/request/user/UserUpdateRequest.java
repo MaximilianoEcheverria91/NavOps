@@ -1,27 +1,36 @@
-package com.navops.api.application.dto.request;
+package com.navops.api.application.dto.request.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Schema(description = "Registro de usuarios")
-public record PersonnelRegistrationRequest(
+@Schema(description = "Actualización de usuarios")
+public record UserUpdateRequest(
 
+        @Schema(description = "URL de la fotografía del usuario (opcional)")
+        String avatarUrl,
+
+        @Valid
         @NotNull(message = "La información general es obligatoria")
         GeneralInfo generalInfo,
 
+        @Valid
         @NotNull(message = "La información de residencia es obligatoria")
         ResidenceInfo residenceInfo,
 
+        @Valid
         @NotNull(message = "La información de contacto es obligatoria")
         ContactInfo contactInfo,
 
+        @Valid
         @NotNull(message = "Los datos laborales son obligatorios")
         LaborData laborData,
 
+        @Valid
         SystemAccessData systemAccessData
 ) {
     @Builder
@@ -52,21 +61,21 @@ public record PersonnelRegistrationRequest(
             @Past(message = "La fecha de nacimiento debe ser en el pasado")
             LocalDate birthDate,
 
-            @Schema(example = "Argentina", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nacionalidad de la persona" )
-            @NotNull(message = "La nacionalidad es obligatoria")
-            String nationality,
-
-            @Schema(example = "Soltero", requiredMode = Schema.RequiredMode.REQUIRED, description = "Estao civil de la persona" )
+            @Schema(example = "Soltero", requiredMode = Schema.RequiredMode.REQUIRED, description = "Estado civil de la persona" )
             @NotNull(message = "El estado civil es obligatorio")
             String maritalStatus,
 
-            @Schema(example = "Argentina", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nacionalidad de la persona" )
+            @Schema(example = "e1234567-e123-e123-e123-e12345678901", requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del país de nacionalidad de la persona" )
             @NotNull(message = "La nacionalidad es obligatoria")
-            UUID nationalityCountryId, //
+            UUID nationalityCountryId,
 
-            @Schema(example = "Masculino", requiredMode = Schema.RequiredMode.REQUIRED, description = "Genero de la persona" )
+            @Schema(example = "Masculino", requiredMode = Schema.RequiredMode.REQUIRED, description = "Género de la persona" )
             @NotBlank(message = "El género es obligatorio")
-            String gender
+            String gender,
+
+            @Schema(example = "ACTIVE", requiredMode = Schema.RequiredMode.REQUIRED, description = "Estado de la persona" )
+            @NotBlank(message = "El estado de la persona es obligatorio")
+            String status
     ) {}
 
     @Builder
@@ -76,16 +85,14 @@ public record PersonnelRegistrationRequest(
             UUID countryId,
 
             @NotNull(message = "El ID de la provincia es obligatorio")
-            @NotNull(message = "El ID de la provincia debe ser obligatorio")
             UUID provinceId,
 
             @NotNull(message = "El ID de la ciudad es obligatorio")
-            @NotNull(message = "El ID de la ciudad debe ser obligatorio")
             UUID cityId,
 
             @Schema(example = "1832", requiredMode = Schema.RequiredMode.REQUIRED, description = "Código postal del usuario" )
             @NotBlank(message = "El código postal es obligatorio")
-            String PostalCode,
+            String postalCode,
 
             @Schema(example = "San Vicente", requiredMode = Schema.RequiredMode.REQUIRED, description = "Nombre de la calle donde reside la persona" )
             @NotBlank(message = "El nombre de la calle es obligatoria")
@@ -95,19 +102,19 @@ public record PersonnelRegistrationRequest(
             @NotBlank(message = "El número o la altura de la calle es obligatoria")
             String number,
 
-            @Schema(example = "B2", requiredMode = Schema.RequiredMode.REQUIRED, description = "Departamento donde reside la persona" )
+            @Schema(example = "B2", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Departamento donde reside la persona" )
             String department,
 
-            @Schema(example = "12", requiredMode = Schema.RequiredMode.REQUIRED, description = "Número de piso del departamento donde reside la persona" )
+            @Schema(example = "12", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Número de piso del departamento donde reside la persona" )
             String floor
     ) {}
 
     @Builder
     public record ContactInfo(
-            @Schema(example = "42853252", requiredMode = Schema.RequiredMode.REQUIRED, description = "Número del teléfono fijo de la persona" )
+            @Schema(example = "42853252", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Número del teléfono fijo de la persona" )
             String particularPhone,
 
-            @Schema(example = "1157642102", requiredMode = Schema.RequiredMode.REQUIRED, description = "Número del celular de la persona" )
+            @Schema(example = "1157642102", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Número del celular de la persona" )
             String cellPhone,
 
             @Schema(example = "ejemplo@gmail.com", requiredMode = Schema.RequiredMode.REQUIRED, description = "Correo electrónico de la persona" )
@@ -118,6 +125,11 @@ public record PersonnelRegistrationRequest(
 
     @Builder
     public record LaborData(
+
+            @Schema(example = "LG00001", requiredMode = Schema.RequiredMode.REQUIRED, description = "Número de legajo")
+            @NotBlank(message = "El número de legajo es obligatorio")
+            String fileNumber,
+
             @Schema(example = "Operario carga", requiredMode = Schema.RequiredMode.REQUIRED, description = "Rol de la persona dentro de la embarcación" )
             @NotBlank(message = "El rol de navegación es obligatorio")
             String navigationRole,
@@ -134,8 +146,8 @@ public record PersonnelRegistrationRequest(
             @NotBlank(message = "El número de libreta marítima es obligatorio")
             String maritimeBookNumber,
 
-            @Schema(example = "Activo", requiredMode = Schema.RequiredMode.REQUIRED, description = "Estado de la persona" )
-            @NotBlank(message = "El estado es obligatorio")
+            @Schema(example = "AVAILABLE", requiredMode = Schema.RequiredMode.REQUIRED, description = "Estado de tripulante" )
+            @NotBlank(message = "El estado del tripulante es obligatorio")
             String status
     ) {}
 
@@ -148,14 +160,14 @@ public record PersonnelRegistrationRequest(
             @NotBlank(message = "El nombre de usuario es obligatorio")
             String username,
 
-            @Schema(example = "Admin123$", requiredMode = Schema.RequiredMode.REQUIRED, description = "Contraseña del usuario para el ingreso al sistema NavOps")
-            @NotBlank(message = "La contraseña es obligatoria")
-            @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&._-])[A-Za-z\\d@$!%*?&._-]{8,}$",
-                    message = "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial")
-            String password,
-
             @Schema(example = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", requiredMode = Schema.RequiredMode.REQUIRED, description = "ID de Rol de la persona")
-            @NotBlank(message = "La contraseña es obligatoria")
-            UUID roleId
+            @NotNull(message = "El rol es obligatorio")
+            UUID roleId,
+
+            @Schema(example = "true", requiredMode = Schema.RequiredMode.REQUIRED, description = "Si el usuario está activo o dado de baja")
+            boolean isActive,
+
+            @Schema(example = "false", requiredMode = Schema.RequiredMode.REQUIRED, description = "Si el usuario está bloqueado por intentos fallidos")
+            boolean is_blocked
     ) {}
 }
