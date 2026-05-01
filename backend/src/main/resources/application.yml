@@ -58,3 +58,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+# Configuración de seguridad JWT
+application:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION:7200000}
+
