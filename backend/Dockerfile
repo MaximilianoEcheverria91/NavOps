@@ -23,7 +23,7 @@ EXPOSE 8080
 VOLUME /tmp
 
 # No fijes el puerto con EXPOSE 8080, Render lo ignora pero el proceso debe escuchar en $PORT
-ENTRYPOINT ["sh", "-c", "java -Xmx512m -Dserver.port=${PORT} -jar /app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Xmx512m -Dserver.port=${PORT} -jar /app/app.jar"]
 
 # Run the application
 #ENTRYPOINT ["java", "-jar", "app.jar"]
