@@ -4,6 +4,7 @@ export interface PortSummaryResponse {
   id: string;
   mainImageUrl: string | null;
   name: string;
+  code: string;
   countryName: string;
   provinceName: string;
   cityName: string;
