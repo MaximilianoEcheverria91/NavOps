@@ -109,7 +109,7 @@ public class PersonnelService {
                 .cuil(request.generalInfo().cuil())
                 .nationalityCountry(nacionalityCountry)
                 .maritalStatus(MaritalStatusEnum.valueOf(request.generalInfo().maritalStatus().toUpperCase()))
-                .gender(GenderEnum.valueOf(request.generalInfo().gender()))
+                .gender(GenderEnum.valueOf(request.generalInfo().gender().toUpperCase()))
                 .status(PeopleStatusEnum.ACTIVE)
                 .birthDate(request.generalInfo().birthDate())
                 .country(country)
@@ -312,22 +312,6 @@ public class PersonnelService {
         }
     }
 
-    /*
-    * public StatsUserResponse getStatsUser() {
-    try {
-        log.info("Calculando estadísticas para el dashboard de administrador");
-
-        // Contamos solo los que están ACTIVE
-        long activeCount = personRepository.countByStatus(PeopleStatusEnum.ACTIVE);
-
-        // Si querés que el Dashboard solo refleje la realidad operativa actual:
-        return new StatsUserResponse(activeCount, activeCount);
-
-    } catch (Exception e) {
-        log.error("Error al calcular estadísticas: {}", e.getMessage());
-        throw e;
-    }
-}*/
 
     // LISTAR TODO EL PERSONAL (Resumen con los 7 campos)
     @Transactional(readOnly = true)
