@@ -14,6 +14,9 @@ public record PortSummaryResponse(
     @Schema(description = "Nombre del puerto", example = "Puerto Mar del Plata")
     String name,
     
+    @Schema(description = "Código internacional del puerto", example = "ARMDQ")
+    String code,
+    
     @Schema(description = "Nombre del país", example = "Argentina")
     String countryName,
     

@@ -113,10 +113,11 @@ public class PortService {
         }
 
         List<PortSummaryResponse> responseList = activePorts.stream()
-                .map(port -> new PortSummaryResponse(
+                .map(port -> new com.navops.api.application.dto.response.port.PortSummaryResponse(
                         port.getId(),
                         port.getMainImageUrl(), // Can be null, frontend handles this
                         port.getName(),
+                        port.getCode(),
                         port.getCountry().getName(),
                         port.getProvince().getName(),
                         port.getCity().getName(),

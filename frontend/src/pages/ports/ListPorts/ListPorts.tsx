@@ -38,6 +38,7 @@ export const ListPorts: React.FC = () => {
     const term = debouncedSearch.toLowerCase();
     const matchesSearch = 
       port.name.toLowerCase().includes(term) ||
+      port.code?.toLowerCase().includes(term) ||
       port.countryName.toLowerCase().includes(term) ||
       port.provinceName.toLowerCase().includes(term);
 
