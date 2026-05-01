@@ -7,7 +7,9 @@ import com.navops.api.domain.entity.City;
 import com.navops.api.domain.entity.Country;
 import com.navops.api.domain.entity.Port;
 import com.navops.api.domain.entity.Province;
+import com.navops.api.domain.enums.DockTypeEnum;
 import com.navops.api.domain.enums.PortStatusEnum;
+import com.navops.api.domain.enums.TypePortEnum;
 import com.navops.api.infrastructure.exception.NoPortsFoundException;
 import com.navops.api.infrastructure.exception.PortAlreadyExistsException;
 import com.navops.api.repository.CityRepository;
@@ -59,7 +61,8 @@ public class PortService {
 
         Port port = Port.builder()
                 .name(request.name())
-                .type(request.type())
+                .portType(TypePortEnum.valueOf(request.portType().toUpperCase()))
+                .dockType(DockTypeEnum.valueOf(request.dockType().toUpperCase()))
                 .code(request.code())
                 .contactPhone(request.contactPhone())
                 .contactEmail(request.contactEmail())
@@ -83,7 +86,8 @@ public class PortService {
         return new PortResponse(
                 savedPort.getId(),
                 savedPort.getName(),
-                savedPort.getType(),
+                savedPort.getPortType().name(),
+                savedPort.getDockType().name(),
                 savedPort.getCode(),
                 savedPort.getContactPhone(),
                 savedPort.getContactEmail(),
@@ -102,6 +106,7 @@ public class PortService {
         );
     }
 
+    // LISTA DE PUERTOS
     @Transactional(readOnly = true)
     public List<PortSummaryResponse> getAllActivePorts() {
         log.info("Iniciando recuperación de listado de puertos activos.");

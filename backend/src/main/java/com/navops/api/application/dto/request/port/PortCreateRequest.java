@@ -14,7 +14,11 @@ public record PortCreateRequest(
 
     @NotBlank(message = "El tipo de puerto es obligatorio")
     @Schema(description = "Tipo de puerto (ej. Comercial, Pasajeros)", example = "Comercial")
-    String type,
+    String portType,
+
+    @NotBlank(message = "El tipo de muelle")
+    @Schema(description = "Tipo de muelle (ej. Sólido, Flotante)", example = "Sólido")
+    String dockType,
 
     @NotBlank(message = "El código del puerto es obligatorio")
     @Schema(description = "Código único del puerto (UN/LOCODE)", example = "ARBUE")

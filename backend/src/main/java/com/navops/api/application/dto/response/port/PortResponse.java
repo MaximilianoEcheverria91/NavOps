@@ -7,7 +7,8 @@ import java.util.UUID;
 public record PortResponse(
     UUID id,
     String name,
-    String type,
+    String portType,
+    String dockType,
     String code,
     String contactPhone,
     String contactEmail,
