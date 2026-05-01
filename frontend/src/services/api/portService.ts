@@ -10,9 +10,20 @@ export interface PortSummaryResponse {
   cityName: string;
   status: string;
   isActive: boolean;
+  latitude: number;
+  longitude: number;
 }
 
 export const getAllPorts = async (): Promise<PortSummaryResponse[]> => {
   const response = await apiClient.get('/admin/ports/allPorts-active');
+  return response.data;
+};
+
+export const createPort = async (formData: FormData): Promise<any> => {
+  const response = await apiClient.post('/admin/ports', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };

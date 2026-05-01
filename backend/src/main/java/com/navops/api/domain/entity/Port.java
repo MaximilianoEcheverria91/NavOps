@@ -1,6 +1,8 @@
 package com.navops.api.domain.entity;
 
 import com.navops.api.domain.enums.PortStatusEnum;
+import com.navops.api.domain.enums.TypePortEnum;
+import com.navops.api.domain.enums.DockTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,8 +27,13 @@ public class Port {
     @Column(nullable = false, length = 200)
     private String name;
 
-    @Column(length = 80)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(name="port_type",length = 80)
+    private TypePortEnum portType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="dock_type", length = 80)
+    private DockTypeEnum dockType;
 
     @Column(nullable = false, unique = true, length = 10)
     private String code;

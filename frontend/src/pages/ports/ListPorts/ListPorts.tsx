@@ -78,7 +78,7 @@ export const ListPorts: React.FC = () => {
           
           <button
             className={styles.addButton}
-            onClick={() => navigate('/users/create')}>
+            onClick={() => navigate('/puertos/create')}>
             <Anchor size={24} />
             <span className={styles.plusIcon}>+</span>
           </button>
