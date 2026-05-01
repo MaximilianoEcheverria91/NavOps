@@ -1,0 +1,121 @@
+/* ═══════════════════════════════════════════════════════════
+   NavOps – Design Tokens
+   Feature: Agregar Puerto – Light & Dark Mode
+═══════════════════════════════════════════════════════════ */
+
+/* ── LIGHT MODE ─────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --color-celeste:        #57B8F4;
+  --color-celeste-dark:   #2da3e8;
+  --color-celeste-light:  #EDF6FD;
+  --color-success:        #00C853;
+  --color-danger:         #FF0000;
+  --color-warning:        #F59E0B;
+  --color-border:         #B7D2E0;
+  --color-bg:             #F8FBFD;
+  --color-surface:        #FFFFFF;
+  --color-surface-2:      #F0F6FC;
+  --color-text:           #1a2533;
+  --color-text-sec:       #5a7384;
+  --color-label:          #57B8F4;
+  --color-overlay:        rgba(183,210,224,0.55);
+
+  /* Nav */
+  --nav-bg:               #FFFFFF;
+  --nav-border:           #B7D2E0;
+
+  /* Inputs */
+  --input-bg:             #F8FBFD;
+  --input-border:         #B7D2E0;
+  --input-focus-shadow:   0 0 0 3px rgba(87,184,244,0.2);
+  --input-height:         42px;
+
+  /* Buttons */
+  --btn-save-bg:          #57B8F4;
+  --btn-save-text:        #FFFFFF;
+  --btn-cancel-bg:        #C8D8E4;
+  --btn-cancel-text:      #1a2533;
+
+  /* Map */
+  --map-border:           #B7D2E0;
+  --map-radius:           14px;
+
+  /* Section dot */
+  --dot-color:            #57B8F4;
+
+  /* Toast */
+  --toast-ok-bg:          #f0fdf4;
+  --toast-ok-text:        #065f46;
+  --toast-ok-border:      #a7f3d0;
+  --toast-err-bg:         #FFF0F0;
+  --toast-err-text:       #cc0000;
+  --toast-err-border:     #ffc0c0;
+
+  /* Photo uploader */
+  --upload-bg:            #EDF6FD;
+  --upload-border:        #57B8F4;
+
+  /* Typography */
+  --font-base:            'Nunito', sans-serif;
+  --font-display:         'Nunito', sans-serif;
+
+  /* Radius */
+  --radius-sm:    6px;
+  --radius-md:    8px;
+  --radius-lg:    14px;
+  --radius-xl:    20px;
+  --radius-full:  9999px;
+
+  /* Transitions */
+  --t-fast: 0.15s ease;
+  --t-md:   0.25s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(183,210,224,0.3);
+  --shadow-md: 0 4px 24px rgba(183,210,224,0.45);
+}
+
+/* ── DARK MODE ──────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-celeste:        #2095D4;
+  --color-celeste-dark:   #1a7ab0;
+  --color-celeste-light:  #082842;
+  --color-success:        #00C853;
+  --color-danger:         #FF4444;
+  --color-border:         #193A53;
+  --color-bg:             #031728;
+  --color-surface:        #082842;
+  --color-surface-2:      #193A53;
+  --color-text:           #E8F4FD;
+  --color-text-sec:       #3A617C;
+  --color-label:          #2095D4;
+  --color-overlay:        rgba(3,23,40,0.75);
+
+  --nav-bg:               #082842;
+  --nav-border:           #193A53;
+
+  --input-bg:             #082842;
+  --input-border:         #193A53;
+  --input-focus-shadow:   0 0 0 3px rgba(32,149,212,0.25);
+
+  --btn-save-bg:          #2095D4;
+  --btn-save-text:        #FFFFFF;
+  --btn-cancel-bg:        #193A53;
+  --btn-cancel-text:      #E8F4FD;
+
+  --map-border:           #193A53;
+
+  --upload-bg:            #0d2f47;
+  --upload-border:        #2095D4;
+
+  --toast-ok-bg:          #032010;
+  --toast-ok-text:        #4ade80;
+  --toast-ok-border:      #064e20;
+  --toast-err-bg:         #1a0000;
+  --toast-err-text:       #ff8080;
+  --toast-err-border:     #4a0000;
+
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 28px rgba(0,0,0,0.55);
+}
