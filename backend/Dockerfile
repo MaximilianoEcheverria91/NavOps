@@ -20,5 +20,16 @@ COPY --from=build /app/target/*.jar app.jar
 # Expose the port the app runs on
 EXPOSE 8080
 
+VOLUME /tmp
+
+# No fijes el puerto con EXPOSE 8080, Render lo ignora pero el proceso debe escuchar en $PORT
+ENTRYPOINT ["sh", "-c", "java -Xmx512m -Dserver.port=${PORT} -jar /app.jar"]
+
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+#FROM eclipse-temurin:21-jdk-alpine
+#VOLUME /tmp
+#COPY target/*.jar app.jar
+
