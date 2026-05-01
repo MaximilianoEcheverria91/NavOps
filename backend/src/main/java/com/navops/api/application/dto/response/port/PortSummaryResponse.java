@@ -1,0 +1,31 @@
+package com.navops.api.application.dto.response.port;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
+
+@Schema(description = "DTO para el listado resumido de puertos en las cards")
+public record PortSummaryResponse(
+    @Schema(description = "ID del puerto")
+    UUID id,
+    
+    @Schema(description = "URL de la imagen principal del puerto")
+    String mainImageUrl,
+    
+    @Schema(description = "Nombre del puerto", example = "Puerto Mar del Plata")
+    String name,
+    
+    @Schema(description = "Nombre del país", example = "Argentina")
+    String countryName,
+    
+    @Schema(description = "Nombre de la provincia", example = "Buenos Aires")
+    String provinceName,
+    
+    @Schema(description = "Nombre de la ciudad", example = "Mar del Plata")
+    String cityName,
+    
+    @Schema(description = "Estado actual del puerto", example = "OPERATIONAL")
+    String status,
+    
+    @Schema(description = "Indica si el puerto está activo o ha sido dado de baja lógicamente")
+    Boolean isActive
+) {}

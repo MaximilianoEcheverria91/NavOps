@@ -213,4 +213,37 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
+    @ExceptionHandler(PortAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handlePortAlreadyExists(PortAlreadyExistsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Conflict",
+                ex.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(PortNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePortNotFound(PortNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Not Found",
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(NoPortsFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoPortsFound(NoPortsFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
 }

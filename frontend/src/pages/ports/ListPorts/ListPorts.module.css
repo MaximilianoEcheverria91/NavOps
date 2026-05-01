@@ -1,0 +1,270 @@
+.pageHeader {
+  margin-bottom: 6px;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--color-title2);
+  font-weight: 500;
+  margin-bottom: 0px;
+}
+
+.subtitle {
+  color: var(--color-subtitle, #94a3b8);
+  font-size: 0.88rem;
+  margin-bottom: 15px;
+}
+
+.addButton {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  border-radius: 15px;
+  padding: 8px 20px;
+  color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.addButton:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.filtersContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.filterDropdown {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid #3a617c;
+  border-radius: 6px;
+  padding: 8px 16px;
+  min-width: 200px;
+}
+
+.filterIcon {
+  color: #9EB0C7;
+  margin-right: 8px;
+}
+
+.selectInput {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.selectInput option {
+  background: #082842;
+  color: #ffffff;
+}
+
+.portsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #ef4444;
+}
+
+@media (max-width: 1200px) {
+  .portsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .portsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .filtersContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filterDropdown {
+    width: 100%;
+  }
+}
+
+.portCard {
+  background: var(--background-color-card, #0f172a); 
+  border: 1.5px solid rgba(14, 165, 233, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.portImage {
+  width: 97%;
+  height: 95%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border-radius: 10px;
+  margin-top: 4px;
+  margin-left: 6px;
+}
+
+.portCard:hover .portImage {
+  transform: scale(1.05);
+}
+
+.cardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.portInfo {
+  flex: 1;
+  padding-right: 12px;
+}
+
+.portName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--color-title2, #ffffff);
+  margin: 0 0 4px 0;
+}
+
+.portLocation {
+  font-size: 0.85rem;
+  color: var(--color-subtitle3, #94a3b8);
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusOPERATIONAL {
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.statusUNDER_MAINTENANCE {
+ border: 1px solid rgba(181, 197, 34, 0.5);
+ background-color: rgba(246, 255, 170, 0.2);
+ color: #a8a629;
+}
+
+.statusCLOSED, .statusFULL {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(14, 165, 233, 0.5);
+
+}
+
+.viewDetailBtn {
+  background: #38bdf8;
+  color: #0f172a;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewDetailBtn:hover {
+  background: #7dd3fc;
+}
+
+.iconBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .deleteBtn {
+  background: transparent;
+  border-radius: 20px;
+  width: 50px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editBtn {
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+
+.editBtn:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.deleteBtn {
+  border: 1px solid #7f1d1d;
+  color: #ef4444;
+}
+
+.deleteBtn:hover {
+  background: rgba(127, 29, 29, 0.4);
+}
