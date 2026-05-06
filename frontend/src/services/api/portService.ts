@@ -20,7 +20,7 @@ export const getAllPorts = async (): Promise<PortSummaryResponse[]> => {
 };
 
 export const createPort = async (formData: FormData): Promise<any> => {
-  const response = await apiClient.post('/admin/ports', formData, {
+  const response = await apiClient.post('/admin/ports/create-port', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
