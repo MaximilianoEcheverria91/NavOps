@@ -1,0 +1,140 @@
+/* frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.module.css */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal {
+  background-color: var(--background-color-detail);
+  width: 100%;
+  max-width: 900px;
+  max-height: 95vh;
+  border-radius: 12px;
+  border: 1px solid var(--border-input, rgba(99, 186, 207, 0.3));
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: var(--color-input-background, var(--background-color-card));
+  border-bottom: 1px solid var(--border-input, rgba(99, 186, 207, 0.2));
+}
+
+.titleArea { display: flex; align-items: center; gap: 12px; }
+
+.title { font-size: 18px; font-weight: 500; margin: 0; color: var(--text-primary); }
+
+.closeBtn {
+  background: none;
+  border: 1px solid var(--border-button-dowload);
+  color: var(--button-download);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.closeBtn:hover { background: rgba(99, 186, 207, 0.2); color: white; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.topSection {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.shipImageWrapper {
+  width: 220px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(99, 186, 207, 0.3);
+  background-color: #1a2235;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.shipImage { width: 100%; height: 100%; object-fit: cover; }
+
+.infoBlock { display: flex; flex-direction: column; gap: 16px; }
+
+.sectionTitle {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-input, rgba(99, 186, 207, 0.1));
+  padding-bottom: 8px;
+}
+
+.gridData {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 24px;
+}
+
+.dataRow { display: flex; font-size: 13px; gap: 6px; }
+
+.dataLabel { font-weight: 600; color: var(--color-subtitle, #a0aec0); }
+
+.dataValue { color: var(--text-primary); }
+
+.centerMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  text-align: center;
+  gap: 16px;
+}
+
+.errorText { color: #ef4444; font-size: 15px; }
+
+.retryBtn {
+  background: transparent;
+  color: #63BACF;
+  border: 1px solid rgba(99, 186, 207, 0.4);
+  padding: 8px 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.retryBtn:hover { background: rgba(99, 186, 207, 0.1); }
+
+@media (max-width: 768px) {
+  .topSection { grid-template-columns: 1fr; }
+  .shipImageWrapper { width: 100%; height: 180px; }
+  .gridData { grid-template-columns: 1fr; }
+}
