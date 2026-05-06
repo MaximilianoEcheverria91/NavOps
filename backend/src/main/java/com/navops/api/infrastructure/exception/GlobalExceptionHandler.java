@@ -101,6 +101,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(NoShipsFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoShipsFound(NoShipsFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Sin Contenido",
+                ex.getMessage(),
+                HttpStatus.NO_CONTENT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    @ExceptionHandler(ShipNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleShipNotFound(ShipNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Not Found",
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
         log.error("Error inesperado en el servidor: ", ex);
@@ -245,5 +267,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
+
 
 }
