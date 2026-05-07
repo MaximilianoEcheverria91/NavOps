@@ -64,15 +64,15 @@
 }
 
 .topSection {
-  display: grid;
-  grid-template-columns: 220px 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 32px;
   align-items: start;
 }
 
 .shipImageWrapper {
-  width: 220px;
-  height: 160px;
+  width: 100%;
+  height: 250px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid rgba(99, 186, 207, 0.3);
@@ -85,14 +85,28 @@
 
 .shipImage { width: 100%; height: 100%; object-fit: cover; }
 
-.infoBlock { display: flex; flex-direction: column; gap: 16px; }
+.modalContentWrapper {
+  border: 1px solid rgba(99, 186, 207, 0.3);
+  border-radius: 10px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.infoBlock { display: flex; flex-direction: column; }
+
+.infoBlockDivider {
+  width: 98%;
+  height: 1px;
+  background-color: rgba(99, 186, 207, 0.3);
+  margin: 12px auto;
+}
 
 .sectionTitle {
-  font-size: 15px;
+  font-size: 24px;
   color: var(--text-primary);
-  margin: 0 0 12px 0;
   font-weight: 500;
-  border-bottom: 1px solid var(--border-input, rgba(99, 186, 207, 0.1));
   padding-bottom: 8px;
 }
 
@@ -100,13 +114,14 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px 24px;
+  padding: 0 24px;
 }
 
 .dataRow { display: flex; font-size: 13px; gap: 6px; }
 
-.dataLabel { font-weight: 600; color: var(--color-subtitle, #a0aec0); }
+.dataLabel { font-weight: 500; color: var(--text-primary, #a0aec0); }
 
-.dataValue { color: var(--text-primary); }
+.dataValue { color: var(--color-subtitle); }
 
 .centerMessage {
   display: flex;

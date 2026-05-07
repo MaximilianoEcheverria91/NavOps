@@ -43,16 +43,16 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
             </div>
           ) : ship ? (
             <>
-              {/* TOP: imagen + info general */}
-              <div className={styles.topSection}>
-                <div className={styles.shipImageWrapper}>
-                  {ship.mainImageUrl ? (
-                    <img src={ship.mainImageUrl} alt={ship.name} className={styles.shipImage} />
-                  ) : (
-                    <Anchor size={56} color="rgba(14,165,233,0.3)" />
-                  )}
-                </div>
+              <div className={styles.shipImageWrapper}>
+                {ship.mainImageUrl ? (
+                  <img src={ship.mainImageUrl} alt={ship.name} className={styles.shipImage} />
+                ) : (
+                  <Anchor size={56} color="rgba(14,165,233,0.3)" />
+                )}
+              </div>
 
+              <div className={styles.modalContentWrapper}>
+                {/* TOP: imagen + info general */}
                 <div className={styles.infoBlock}>
                   <h3 className={styles.sectionTitle}>Información General</h3>
                   <div className={styles.gridData}>
@@ -63,6 +63,10 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Matrícula:</span>
                       <span className={styles.dataValue}>{val(ship.registration)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Modelo:</span>
+                      <span className={styles.dataValue}>{val(ship.engineModel)}</span>
                     </div>
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Número IMO:</span>
@@ -86,88 +90,92 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Identificación Técnica */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.sectionTitle}>Identificación Técnica</h3>
-                <div className={styles.gridData}>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Número de Casco:</span>
-                    <span className={styles.dataValue}>{val(ship.hullNumber)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Número de Motor:</span>
-                    <span className={styles.dataValue}>{val(ship.engineSerialNumber)}</span>
+                <div className={styles.infoBlockDivider} />
+
+                {/* Identificación Técnica */}
+                <div className={styles.infoBlock}>
+                  <h3 className={styles.sectionTitle}>Identificación Técnica</h3>
+                  <div className={styles.gridData}>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Número de Casco:</span>
+                      <span className={styles.dataValue}>{val(ship.hullNumber)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Número de Motor:</span>
+                      <span className={styles.dataValue}>{val(ship.engineSerialNumber)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Especificaciones Físicas */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.sectionTitle}>Especificaciones Físicas</h3>
-                <div className={styles.gridData}>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Eslora (m):</span>
-                    <span className={styles.dataValue}>{val(ship.length)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Manga (m):</span>
-                    <span className={styles.dataValue}>{val(ship.beam)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Calado (m):</span>
-                    <span className={styles.dataValue}>{val(ship.draft)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Puntal (m):</span>
-                    <span className={styles.dataValue}>{val(ship.depth)}</span>
+                <div className={styles.infoBlockDivider} />
+
+                {/* Especificaciones Físicas */}
+                <div className={styles.infoBlock}>
+                  <h3 className={styles.sectionTitle}>Especificaciones Físicas</h3>
+                  <div className={styles.gridData}>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Eslora (metros):</span>
+                      <span className={styles.dataValue}>{val(ship.length)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Manga (metros):</span>
+                      <span className={styles.dataValue}>{val(ship.beam)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Calado (metros):</span>
+                      <span className={styles.dataValue}>{val(ship.draft)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Puntal (metros):</span>
+                      <span className={styles.dataValue}>{val(ship.depth)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Capacidades */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.sectionTitle}>Capacidades</h3>
-                <div className={styles.gridData}>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Capacidad de Tripulantes:</span>
-                    <span className={styles.dataValue}>{val(ship.crewCapacity)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Cantidad de Bodegas:</span>
-                    <span className={styles.dataValue}>{val(ship.holdCount)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Capacidad de Carga (ton.):</span>
-                    <span className={styles.dataValue}>{val(ship.cargoCapacityTonnes)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Capacidad de Nafta (L):</span>
-                    <span className={styles.dataValue}>{val(ship.fuelCapacityLiters)}</span>
+                <div className={styles.infoBlockDivider} />
+
+                {/* Capacidades */}
+                <div className={styles.infoBlock}>
+                  <h3 className={styles.sectionTitle}>Capacidades</h3>
+                  <div className={styles.gridData}>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Capacidad de Tripulantes:</span>
+                      <span className={styles.dataValue}>{val(ship.crewCapacity)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Cantidad de Bodegas:</span>
+                      <span className={styles.dataValue}>{val(ship.holdCount)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Capacidad de Nafta (Litros):</span>
+                      <span className={styles.dataValue}>{val(ship.fuelCapacityLiters)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Capacidad de Carga (Toneladas):</span>
+                      <span className={styles.dataValue}>{val(ship.cargoCapacityTonnes)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Motor y Mantenimiento */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.sectionTitle}>Motor y Mantenimiento</h3>
-                <div className={styles.gridData}>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Modelo del Motor:</span>
-                    <span className={styles.dataValue}>{val(ship.engineModel)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Horas Acumuladas:</span>
-                    <span className={styles.dataValue}>{val(ship.currentEngineHours)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Horas del Último Overhaul:</span>
-                    <span className={styles.dataValue}>{val(ship.lastTboEngineHours)}</span>
-                  </div>
-                  <div className={styles.dataRow}>
-                    <span className={styles.dataLabel}>Fecha Último Mantenimiento:</span>
-                    <span className={styles.dataValue}>{val(ship.lastMaintenanceDate)}</span>
+                <div className={styles.infoBlockDivider} />
+
+                {/* Motor y Mantenimiento */}
+                <div className={styles.infoBlock}>
+                  <h3 className={styles.sectionTitle}>Motor y Mantenimiento</h3>
+                  <div className={styles.gridData}>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Horas Acumuladas:</span>
+                      <span className={styles.dataValue}>{val(ship.currentEngineHours)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Horas del Último Overhaul:</span>
+                      <span className={styles.dataValue}>{val(ship.lastTboEngineHours)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Fecha Último Mantenimiento:</span>
+                      <span className={styles.dataValue}>{val(ship.lastMaintenanceDate)}</span>
+                    </div>
                   </div>
                 </div>
               </div>

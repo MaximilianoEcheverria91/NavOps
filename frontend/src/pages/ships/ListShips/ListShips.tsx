@@ -88,12 +88,20 @@ export const ListShips: React.FC = () => {
                   ) : (
                     <Anchor size={48} color="rgba(14,165,233,0.4)" />
                   )}
+
+                  <h3 className={styles.shipName}>
+                    <Anchor size={24} color="white" />
+                    {ship.name}
+                  </h3>
                 </div>
+
+                <span className={`${styles.statusBadge} ${styles[`status${ship.status}`]}`}>
+                  {STATUS_LABELS[ship.status]}
+                </span>
 
                 <div className={styles.cardContent}>
                   <div className={styles.headerRow}>
                     <div className={styles.shipInfo}>
-                      <h3 className={styles.shipName}>{ship.name}</h3>
                       <div className={styles.shipMeta}>
                         <div className={styles.metaItem}>
                           <span className={styles.metaLabel}>Matrícula</span>
@@ -105,9 +113,6 @@ export const ListShips: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <span className={`${styles.statusBadge} ${styles[`status${ship.status}`]}`}>
-                      {STATUS_LABELS[ship.status]}
-                    </span>
                   </div>
 
                   <div className={styles.cardActions}>
@@ -117,14 +122,12 @@ export const ListShips: React.FC = () => {
                     >
                       Ver detalle
                     </button>
-                    <div className={styles.iconBtns}>
-                      <button className={styles.editBtn} title="Editar">
-                        <Edit2 size={16} />
-                      </button>
-                      <button className={styles.deleteBtn} title="Eliminar">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    <button className={styles.editBtn} title="Editar">
+                      <Edit2 size={16} />
+                    </button>
+                    <button className={styles.deleteBtn} title="Eliminar">
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
               </div>
