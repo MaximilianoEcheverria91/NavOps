@@ -90,7 +90,7 @@ export const ListShips: React.FC = () => {
                   )}
 
                   <h3 className={styles.shipName}>
-                    <Anchor size={24} color="white" />
+                    <Anchor size={24} color="var(--text-secondary)" />
                     {ship.name}
                   </h3>
                 </div>

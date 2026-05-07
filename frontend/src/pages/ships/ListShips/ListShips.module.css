@@ -141,22 +141,22 @@
 
 .statusOPERATIONAL {
   background-color: #17F647;
-  color: black;
+  color: #0f172a;
 }
 
 .statusMAINTENANCE {
   background-color: #FFF600;
-  color: black;
+  color: #0f172a;
 }
 
 .statusREPAIR {
   background-color: #FF9D00;
-  color: black;
+  color: #0f172a;
 }
 
 .statusOUT_OF_SERVICE {
   background-color: #FF0000;
-  color: black;
+  color: #0f172a;
 }
 
 .cardActions {
