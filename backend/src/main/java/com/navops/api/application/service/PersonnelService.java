@@ -132,7 +132,7 @@ public class PersonnelService {
                 .person(person)
                 .fileNumber(automaticFileNumber)
                 .maritimeBookNumber(request.laborData().maritimeBookNumber())
-                .navigationRole(request.laborData().navigationRole())
+                .navigationRole(NavigationRoleEnum.valueOf(request.laborData().navigationRole().toUpperCase()))
                 .category(request.laborData().category())
                 .hireDate(request.laborData().hireDate())
                 .status(CrewMemberStatusEnum.AVAILABLE)
@@ -227,7 +227,7 @@ public class PersonnelService {
         if (person.getCrewMember() != null && request.laborData() != null) {
             CrewMember crew = person.getCrewMember();
             crew.setFileNumber(request.laborData().fileNumber());
-            crew.setNavigationRole(request.laborData().navigationRole());
+            crew.setNavigationRole(NavigationRoleEnum.valueOf(request.laborData().navigationRole().toUpperCase()));
             crew.setCategory(request.laborData().category());
             crew.setHireDate(request.laborData().hireDate());
             crew.setMaritimeBookNumber(request.laborData().maritimeBookNumber());
@@ -401,8 +401,7 @@ public class PersonnelService {
         CrewMember crew = person.getCrewMember();
         return new PersonnelEditResponse.LaborData(
                 crew.getFileNumber(),
-                crew.getNavigationRole(),
-                crew.getCategory(),
+                crew.getNavigationRole() != null ? crew.getNavigationRole().name() : null,                crew.getCategory(),
                 crew.getHireDate(),
                 crew.getMaritimeBookNumber(),
                 crew.getStatus() != null ? crew.getStatus().name() : null
@@ -472,7 +471,7 @@ public class PersonnelService {
         if (person.getCrewMember() != null) {
             fileNumber = person.getCrewMember().getFileNumber();
             maritimeBookNumber = person.getCrewMember().getMaritimeBookNumber();
-            navigationRole = person.getCrewMember().getNavigationRole();
+            navigationRole = person.getCrewMember().getNavigationRole().name();
             category = person.getCrewMember().getCategory();
             hireDate = person.getCrewMember().getHireDate();
             if (hireDate != null) {

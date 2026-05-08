@@ -1,6 +1,7 @@
 package com.navops.api.domain.entity;
 
 import com.navops.api.domain.enums.CrewMemberStatusEnum;
+import com.navops.api.domain.enums.NavigationRoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,8 +34,9 @@ public class CrewMember {
     @Column(name = "maritime_book_number", nullable = false, unique = true, length = 80)
     private String maritimeBookNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "navigation_role", nullable = false, length = 100)
-    private String navigationRole;
+    private NavigationRoleEnum navigationRole;
 
     @Column(nullable = false, length = 80)
     private String category;
