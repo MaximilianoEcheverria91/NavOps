@@ -19,33 +19,70 @@ export const ListPorts: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPorts = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getAllPorts();
+  const fetchPorts = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMsg(null);
+      const data = await getAllPorts();
+      
+      console.log("Datos recibidos de la API de Puertos:", data); // Debug clave
+
+      if (Array.isArray(data)) {
         setPorts(data);
-      } catch (error: any) {
-        console.error('Error fetching ports:', error);
-        setErrorMsg('Error al cargar la lista de puertos.');
-      } finally {
-        setIsLoading(false);
+      } else if (data && typeof data === 'object') {
+        // Buscamos los puertos si vienen anidados (común en Spring Boot)
+        // @ts-ignore
+        const arrayData = data.content || data.data || data.ports || [];
+        setPorts(arrayData);
+        
+        if (!Array.isArray(arrayData)) {
+          setPorts([]); // Si después de todo no es array, aseguramos lista vacía
+        }
+      } else {
+        setPorts([]);
       }
-    };
-    fetchPorts();
-  }, []);
+    } catch (error: any) {
+      console.error('Error al cargar la lista de puertos:', error);
+      setErrorMsg(error?.message || 'Error de conexión con el servidor');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchPorts();
+}, []);
 
-  const filteredPorts = ports.filter((port) => {
-    const term = debouncedSearch.toLowerCase();
-    const matchesSearch = 
-      port.name.toLowerCase().includes(term) ||
-      port.code?.toLowerCase().includes(term) ||
-      port.countryName.toLowerCase().includes(term) ||
-      port.provinceName.toLowerCase().includes(term);
+const filteredPorts = (ports || []).filter((port) => {
+  if (!port) return false;
+  const term = debouncedSearch.toLowerCase();
 
-    const matchesStatus = statusFilter ? port.status === statusFilter : true;
+  // Usamos (port.propiedad || '') para evitar errores si algo viene null
+  return (
+    (port.name || '').toLowerCase().includes(term) ||
+    (port.code || '').toLowerCase().includes(term) ||
+    (port.countryName || '').toLowerCase().includes(term)
+  );
+});
 
-    return matchesSearch && matchesStatus;
-  });
+  /*const filteredPorts = ports.filter((port) => {
+  // Verificamos que port exista para evitar crashes
+  if (!port) return false;
+
+  const term = debouncedSearch.toLowerCase();
+
+  // Usamos el operador || '' para que si el dato es null, sea un string vacío y no rompa el .toLowerCase()
+  const matchesSearch = 
+    (port.name || '').toLowerCase().includes(term) ||
+    (port.code || '').toLowerCase().includes(term) ||
+    (port.countryName || '').toLowerCase().includes(term) ||
+    (port.provinceName || '').toLowerCase().includes(term);
+
+  const matchesStatus = statusFilter && statusFilter !== 'all' 
+    ? port.status === statusFilter 
+    : true;
+
+  return matchesSearch && matchesStatus;
+}); */
+
 
   const handleEdit = (id: string) => {
     console.log('Edit port', id);
@@ -62,6 +99,7 @@ export const ListPorts: React.FC = () => {
     console.log('View detail', id);
     // TODO: implement detail view
   };
+ 
 
   return (
     <MainLayout>
@@ -103,7 +141,20 @@ export const ListPorts: React.FC = () => {
         {isLoading ? (
           <div className={styles.loading}>Cargando puertos...</div>
         ) : errorMsg ? (
-          <div className={styles.error}>{errorMsg}</div>
+          <div className="flex justify-center items-center py-20 text-center flex-col">
+            <p className="text-red-400 text-lg mb-2">Ocurrió un error al cargar los datos.</p>
+            <p className="text-slate-500 text-sm">Detalle: {errorMsg}. Por favor, revisa la consola (F12).</p>
+          </div>
+        ) : filteredPorts.length === 0 ? (
+          <div className="flex justify-center items-center py-20 text-center flex-col">
+            <Anchor size={48} className="text-slate-600 mb-4 opacity-20" />
+            <p className="text-[var(--text-secondary)] text-xl font-medium">
+              No se encontraron puertos registrados
+            </p>
+            <p className="text-slate-500 text-sm mt-2">
+              Probá cambiando los filtros o agregá un nuevo puerto.
+            </p>
+          </div>
         ) : (
           <div className={styles.portsGrid}>
             {filteredPorts.map((port) => (

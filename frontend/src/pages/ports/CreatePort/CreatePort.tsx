@@ -11,6 +11,7 @@ import { getCitiesByProvince } from '../../../services/api/cityService';
 import { getAllPorts, type PortSummaryResponse } from '../../../services/api/portService';
 import styles from './CreatePort.module.css';
 import 'leaflet/dist/leaflet.css';
+import { Loader2 } from 'lucide-react';
 
 
 // Fix Leaflet default icon issue
@@ -130,24 +131,6 @@ export const CreatePort: React.FC = () => {
 
   // Efecto para Países -> Provincias
   useEffect(() => {
-    /*if (form.countryId) {
-      getProvincesByCountry(form.countryId)
-      .then((data) => {
-        setProvinces(data);
-        setCities([]);
-      })
-      .catch(err => console.error("Error cargando provincias:", err));
-
-      const selected = countries.find((c) => c.id === form.countryId);
-      if (selected) {
-        setSelectedCountryName(selected.name);
-      }
-    } else {
-      setProvinces([]);
-      setCities([]);
-      setSelectedCountryName('');
-    }
-  }, [form.countryId, countries, setSelectedCountryName]);*/
 
   if (form.countryId) {
       // Limpiamos provincias y ciudades viejas antes de cargar nuevas
@@ -171,16 +154,6 @@ export const CreatePort: React.FC = () => {
   }, [form.countryId, countries, setSelectedCountryName]);
 
   useEffect(() => {
-   /* if (form.provinceId) {
-      console.log("Cargando ciudades para la provincia ID:", form.provinceId);
-      setCities([]); // Limpiamos ciudades viejas
-       getCitiesByProvince(form.provinceId)
-      .then(setCities)
-      .catch(err => console.error("Error cargando ciudades:", err));
-    } else {
-      setCities([]);
-    }
-  }, [form.provinceId]);*/
 
   if (form.provinceId) {
       setCities([]); // Limpiamos ciudades viejas
@@ -241,21 +214,7 @@ const handleInputChange = (field: string, value: string) => {
           <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
         </div>
 
-        {/* SECCIÓN FOTOGRAFÍA 
-        
-        <div className={styles.dropzone} onClick={() => fileInputRef.current?.click()}>
-  {previewUrl ? (
-    <img src={previewUrl} alt="Preview" className={styles.previewImage} />
-  ) : (
-    <>
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="1.5">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-      </svg>
-      <p style={{fontSize: '12px', color: '#0ea5e9', marginTop: '10px'}}>Cargar Foto</p>
-    </>
-  )}
-  <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleImageChange} />
-</div>*/}
+        {/* SECCIÓN FOTOGRAFÍA */}
         <h3 className={styles.sectionTitle}>Fotografía del Puerto</h3>
         <div className={styles.imageUploadBar}>
           <div className={styles.dropzone} onClick={() => fileInputRef.current?.click()}>
@@ -488,11 +447,33 @@ const handleInputChange = (field: string, value: string) => {
             </div>
         </div>
 
-        {/* ACCIONES FINAL */}
+        {/* ACCIONES FINAL
+        
+        <button 
+  className={styles.saveBtn} 
+  onClick={handleSave}
+  disabled={loading} // Deshabilitar mientras carga
+>
+  {loading ? (
+    <>
+      <Loader2 className={styles.spinner} size={20} />
+      Guardando...
+    </>
+  ) : (
+    'Guardar'
+  )}
+</button>*/}
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={() => navigate('/puertos')}>Cancelar</button>
-          <button className={styles.saveBtn} onClick={handleSave}>
-            Guardar
+          <button className={styles.saveBtn} onClick={handleSave} disabled={loading}>
+            {loading ? (
+              <>
+              <Loader2 className={styles.spinner} size={20} />
+              Guardando...
+              </>
+            ) : (
+                'Guardar'
+            )}
           </button>
         </div>
         <p className={styles.footerText}>
