@@ -30,6 +30,9 @@ public record PortCreateRequest(
     @Schema(description = "Email de contacto del puerto", example = "info@puertobuenosaires.gob.ar")
     String contactEmail,
 
+    @Schema(description = "Sitio web del puerto", example = "http://www.ejemplo.com.ar")
+    String contactWeb,
+
     @Schema(description = "Zona horaria del puerto", example = "UTC-3")
     String timezone,
 

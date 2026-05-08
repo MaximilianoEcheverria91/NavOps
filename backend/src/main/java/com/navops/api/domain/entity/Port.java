@@ -71,14 +71,17 @@ public class Port {
     @Column(name = "contact_phone", length = 50)
     private String contactPhone;
 
-    @Column(name = "contact_email", length = 150)
+    @Column(name = "contact_email", length = 50)
     private String contactEmail;
 
-    @Column(length = 40)
+    @Column(name = "contact_web", length = 250)
+    private String contactWeb;
+
+    @Column(length = 50)
     private String timezone;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(length = 50)
     private PortStatusEnum status;
 
     @Column(name = "is_active", nullable = false)

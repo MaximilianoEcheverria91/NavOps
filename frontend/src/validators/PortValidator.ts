@@ -5,13 +5,13 @@ export const validateCreatePort = (form: any) => {
     errors.name = 'El nombre del puerto es obligatorio';
   }
 
-  if (!form.type || form.type.trim() === '') {
-    errors.type = 'El tipo de puerto es obligatorio';
+  if (!form.portType || form.portType.trim() === '') {
+    errors.portType = 'El tipo de puerto es obligatorio';
   }
 
   if (!form.code || form.code.trim() === '') {
     errors.code = 'El código internacional es obligatorio';
-  } else if (!/^[A-Z]{5}$/.test(form.code)) {
+  } else if (!/^[A-Z0-9]{5}$/.test(form.code)) {
     errors.code = 'El código debe tener exactamente 5 letras mayúsculas (UN/LOCODE)';
   }
 

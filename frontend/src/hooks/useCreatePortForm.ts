@@ -3,32 +3,32 @@ import { createPort } from '../services/api/portService';
 import { validateCreatePort } from '../validators/PortValidator';
 
 export const countryCoordinates: Record<string, [number, number]> = {
-  // Coordenadas aproximadas del centro de los países requeridos (lat, lng)
   'Argentina': [-38.4161, -63.6167],
   'Uruguay': [-32.5228, -55.7658],
   'Paraguay': [-23.4425, -58.4438],
   'Bolivia': [-16.2902, -63.5887],
   'Chile': [-35.6751, -71.5430],
   'Brasil': [-14.2350, -51.9253],
-  'Brazil': [-14.2350, -51.9253] // Alias
+  'Brazil': [-14.2350, -51.9253]
 };
 
 export const useCreatePortForm = () => {
   const [form, setForm] = useState({
     name: '',
     code: '',
-    type: 'COMMERCIAL',
+    portType: '',
     countryId: '',
     provinceId: '',
     cityId: '',
     latitude: '',
     longitude: '',
+    dockType: '',
     dockCount: '',
     maxLength: '',
     maxDraft: '',
     contactPhone: '',
     contactEmail: '',
-    contactWeb: '', // Agregado web aunque no se envíe al back, según imagen
+    contactWeb: '', 
     timezone: 'UTC-3'
   });
 
@@ -83,17 +83,19 @@ export const useCreatePortForm = () => {
       const dataToSend = {
         name: form.name,
         code: form.code,
-        type: form.type,
+        portType: form.portType,
         countryId: form.countryId,
         provinceId: form.provinceId,
         cityId: form.cityId,
         latitude: Number(form.latitude),
         longitude: Number(form.longitude),
+        dockType: form.dockType,
         dockCount: form.dockCount ? Number(form.dockCount) : null,
         maxLength: form.maxLength ? Number(form.maxLength) : null,
         maxDraft: form.maxDraft ? Number(form.maxDraft) : null,
         contactPhone: form.contactPhone,
         contactEmail: form.contactEmail,
+        contactWeb: form.contactWeb,
         timezone: form.timezone
       };
 

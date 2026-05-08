@@ -12,6 +12,7 @@ public record PortResponse(
     String code,
     String contactPhone,
     String contactEmail,
+    String contactWeb,
     String timezone,
     Double latitude,
     Double longitude,

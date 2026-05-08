@@ -35,7 +35,7 @@ public class PortController {
             @ApiResponse(responseCode = "400", description = "Error de validación de los datos enviados", content = @Content(schema = @Schema(implementation = Map.class))),
             @ApiResponse(responseCode = "409", description = "Conflicto por datos duplicados (Ej. Código de puerto)", content = @Content(schema = @Schema(implementation = Map.class)))
     })
-    @PostMapping
+    @PostMapping("/create-port")
     public ResponseEntity<?> createPort(
             @RequestPart("data") @Valid PortCreateRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image) {

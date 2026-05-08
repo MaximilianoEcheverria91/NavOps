@@ -66,6 +66,7 @@ public class PortService {
                 .code(request.code())
                 .contactPhone(request.contactPhone())
                 .contactEmail(request.contactEmail())
+                .contactWeb(request.contactWeb())
                 .timezone(request.timezone())
                 .latitude(request.latitude())
                 .longitude(request.longitude())
@@ -91,6 +92,7 @@ public class PortService {
                 savedPort.getCode(),
                 savedPort.getContactPhone(),
                 savedPort.getContactEmail(),
+                savedPort.getContactWeb(),
                 savedPort.getTimezone(),
                 savedPort.getLatitude(),
                 savedPort.getLongitude(),

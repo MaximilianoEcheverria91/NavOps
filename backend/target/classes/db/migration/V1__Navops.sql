@@ -25,6 +25,26 @@ CREATE TABLE countries (
                            deleted_at timestamp with time zone
 );
 
+CREATE TABLE provinces (
+                           id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                           name varchar(100) NOT NULL,
+                           country_id uuid NOT NULL REFERENCES countries(id),
+                           UNIQUE(name,country_id),
+                           version integer NOT NULL DEFAULT 0,
+                           created_at timestamp with time zone DEFAULT now(),
+                           updated_at timestamp with time zone DEFAULT now()
+);
+
+CREATE TABLE cities (
+                        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                        name varchar(100) NOT NULL,
+                        province_id uuid NOT NULL REFERENCES provinces(id),
+                        version integer NOT NULL DEFAULT 0,
+                        created_at timestamp with time zone DEFAULT now(),
+                        updated_at timestamp with time zone DEFAULT now(),
+                        UNIQUE(name, province_id)
+);
+
 CREATE TABLE roles (
                        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                        name varchar(100) NOT NULL UNIQUE,
@@ -52,6 +72,7 @@ CREATE TABLE users (
                        email varchar(150) UNIQUE,
                        password_hash varchar(255) NOT NULL,
                        is_active boolean NOT NULL DEFAULT true,
+                       is_blocked boolean DEFAULT false,
                        role_id uuid NOT NULL REFERENCES roles(id) ON DELETE RESTRICT,
                        version integer NOT NULL DEFAULT 0,
                        created_at timestamp with time zone DEFAULT now(),
@@ -105,7 +126,7 @@ CREATE TABLE people (
                         document_type varchar(50) NOT NULL,
                         document_number varchar(60) NOT NULL,
                         cuil varchar(50),
-                        nationality varchar(100),
+                        nationality_country_id uuid REFERENCES countries(id),
                         marital_status varchar(50),
                         gender varchar(20) NOT NULL,
                         birth_date date NOT NULL,
@@ -117,9 +138,10 @@ CREATE TABLE people (
                         address_number varchar(20),
                         address_floor varchar(10),
                         address_department varchar(20),
-                        address_city varchar(100),
-                        address_province varchar(100),
+                        city_id uuid REFERENCES cities(id),
+                        province_id uuid REFERENCES provinces(id),
                         address_postal_code varchar(20),
+                        status varchar(50) DEFAULT 'ACTIVE',
                         avatar_url varchar(1000),
                         user_id uuid UNIQUE REFERENCES users(id) ON DELETE SET NULL,
                         version integer NOT NULL DEFAULT 0,
@@ -135,7 +157,7 @@ CREATE TABLE crew_members (
                               navigation_role varchar(100) NOT NULL,
                               category varchar(80) NOT NULL,
                               hire_date date NOT NULL,
-                              status varchar(50) NOT NULL DEFAULT 'ACTIVE',
+                              current_status varchar(50) NOT NULL DEFAULT 'AVAILABLE',
                               version integer NOT NULL DEFAULT 0,
                               created_at timestamp with time zone DEFAULT now(),
                               updated_at timestamp with time zone DEFAULT now(),
@@ -224,18 +246,29 @@ CREATE TABLE maintenance (
 CREATE TABLE ports (
                        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                        name varchar(200) NOT NULL,
-                       type varchar(80),
+                       port_type varchar(80),
+                       dock_type varchar(80),
+                       code varchar(10),
                        latitude double precision NOT NULL,
                        longitude double precision NOT NULL,
                        dock_count smallint,
                        max_length numeric(8,2),
                        max_draft numeric(8,2),
                        country_id uuid REFERENCES countries(id),
+                       province_id uuid REFERENCES provinces(id),
+                       city_id uuid REFERENCES cities(id),
+                       contact_email varchar(50),
+                       contact_phone varchar(50),
+                       contact_web varchar(250),
+                       timezone varchar(50),
+                       status varchar(50),
+                       is_active boolean DEFAULT true,
                        main_image_url varchar(1000),
                        version integer NOT NULL DEFAULT 0,
                        created_at timestamp with time zone DEFAULT now(),
                        updated_at timestamp with time zone DEFAULT now(),
                        deleted_at timestamp with time zone
+
 );
 
 CREATE TABLE travel_plan (
