@@ -1,6 +1,7 @@
 package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.port.PortCreateRequest;
+import com.navops.api.application.dto.response.port.PortDetailedResponse;
 import com.navops.api.application.dto.response.port.PortResponse;
 import com.navops.api.application.dto.response.port.PortSummaryResponse;
 import com.navops.api.domain.entity.City;
@@ -16,6 +17,7 @@ import com.navops.api.repository.CityRepository;
 import com.navops.api.repository.CountryRepository;
 import com.navops.api.repository.PortRepository;
 import com.navops.api.repository.ProvinceRepository;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -120,7 +123,7 @@ public class PortService {
         }
 
         List<PortSummaryResponse> responseList = activePorts.stream()
-                .map(port -> new com.navops.api.application.dto.response.port.PortSummaryResponse(
+                .map(port -> new PortSummaryResponse(
                         port.getId(),
                         port.getMainImageUrl(), // Can be null, frontend handles this
                         port.getName(),
@@ -135,5 +138,42 @@ public class PortService {
         
         log.info("Listado recuperado exitosamente. Total puertos activos: {}", responseList.size());
         return responseList;
+    }
+
+    @Transactional(readOnly = true)
+    public PortDetailedResponse getPortById(UUID id){
+        log.info("Buscando puerto con el detalla en ID: {}", id);
+        Port port = portRepository.findById(id)
+                .orElseThrow(
+                        () -> new NoPortsFoundException("No se encontró el personal con el ID proporcionado."));
+        return mapToPortDetail(port);
+    }
+
+
+
+    public PortDetailedResponse mapToPortDetail(Port port){
+
+        return new PortDetailedResponse(
+                port.getId(),
+                port.getName(),
+                port.getCode(),
+                port.getPortType() != null ? port.getPortType().name() : null,
+                port.getDockType() != null ? port.getDockType().name() : null,
+                port.getLatitude(),
+                port.getLongitude(),
+                port.getDockCount(),
+                port.getMaxLength(),
+                port.getMaxDraft(),
+                port.getCountry() != null ? port.getCountry().getName() : null,
+                port.getProvince() != null ? port.getProvince().getName() : null,
+                port.getCity() != null ? port.getCity().getName() : null,
+                port.getMainImageUrl(),
+                port.getContactPhone(),
+                port.getContactEmail(),
+                port.getContactWeb(),
+                port.getTimezone(),
+                port.getStatus() != null ? port.getStatus().name() : null,
+                port.getIsActive());
+
     }
 }

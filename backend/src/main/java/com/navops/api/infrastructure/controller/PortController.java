@@ -1,6 +1,7 @@
 package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.port.PortCreateRequest;
+import com.navops.api.application.dto.response.port.PortDetailedResponse;
 import com.navops.api.application.dto.response.port.PortResponse;
 import com.navops.api.application.dto.response.port.PortSummaryResponse;
 import com.navops.api.application.service.PortService;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/admin/ports/")
@@ -30,6 +32,7 @@ public class PortController {
 
     private final PortService portService;
 
+    // POST Crear Puertos
     @Operation(summary = "Registrar nuevo puerto", description = "Crea un registro de un puerto y opcionalmente asocia una imagen principal.", responses = {
             @ApiResponse(responseCode = "201", description = "Puerto registrado exitosamente", content = @Content(schema = @Schema(implementation = PortResponse.class))),
             @ApiResponse(responseCode = "400", description = "Error de validación de los datos enviados", content = @Content(schema = @Schema(implementation = Map.class))),
@@ -57,6 +60,8 @@ public class PortController {
                     .body(Map.of("error", "Error interno: " + e.getMessage()));
         }
     }
+
+    //GET Obtener Listado DE Puertos
     @Operation(summary = "Obtener puertos activos", description = "Retorna un listado resumido de todos los puertos que se encuentran activos.", responses = {
             @ApiResponse(responseCode = "200", description = "Listado recuperado exitosamente", content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.port.PortSummaryResponse.class))),
             @ApiResponse(responseCode = "204", description = "No se encontraron puertos activos en el sistema")
@@ -67,4 +72,13 @@ public class PortController {
         List<PortSummaryResponse> response = portService.getAllActivePorts();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPortById(@PathVariable("id") UUID id){
+        log.info("Petición recibida para obtener detalle completo del puerto seleccionado");
+        PortDetailedResponse responses = portService.getPortById(id);
+        return ResponseEntity.ok(responses);
+    }
+
+
 }
