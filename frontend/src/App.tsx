@@ -9,6 +9,7 @@ import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
+import { ListShips } from './pages/ships/ListShips/ListShips';
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
         <Route path="/usuarios" element={<UsersList />} />
         <Route path="/puertos" element={<ListPorts />} />
         <Route path="/puertos/create" element={<CreatePort />} />
+        <Route path="/barcos" element={<ListShips />} />
+        <Route path="/barcos/:id" element={<ListShips />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />
         <Route path="/reset-password" element={<ResetPassword />} />

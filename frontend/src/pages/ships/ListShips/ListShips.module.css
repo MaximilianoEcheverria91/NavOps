@@ -1,0 +1,204 @@
+/* frontend/src/pages/ships/ListShips/ListShips.module.css */
+.filtersContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.filterDropdown {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid #3a617c;
+  border-radius: 6px;
+  padding: 8px 16px;
+  min-width: 200px;
+}
+
+.filterIcon {
+  color: #9EB0C7;
+  margin-right: 8px;
+}
+
+.selectInput {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.selectInput option {
+  background: #082842;
+  color: #ffffff;
+}
+
+.shipsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.error { color: #ef4444; }
+
+@media (max-width: 1200px) { .shipsGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px)  { .shipsGrid { grid-template-columns: 1fr; } }
+
+.shipCard {
+  background: var(--background-color-card, #0f172a);
+  border: 1.5px solid rgba(14, 165, 233, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.shipImage {
+  width: 97%;
+  height: 95%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.cardContent {
+  padding: 16px;
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.shipInfo { flex: 1; padding-right: 12px; }
+
+.shipName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--color-title2, #ffffff);
+  margin: 0 0 4px 0;
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+}
+
+.shipMeta {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+}
+
+.metaLabel { color: #64748b; }
+.metaValue { color: #94a3b8; }
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.statusOPERATIONAL {
+  background-color: #17F647;
+  color: #0f172a;
+}
+
+.statusMAINTENANCE {
+  background-color: #FFF600;
+  color: #0f172a;
+}
+
+.statusREPAIR {
+  background-color: #FF9D00;
+  color: #0f172a;
+}
+
+.statusOUT_OF_SERVICE {
+  background-color: #FF0000;
+  color: #0f172a;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid rgba(14, 165, 233, 0.5);
+  margin-top: auto;
+  gap: 24px;
+}
+
+.viewDetailBtn {
+  background: #38bdf8;
+  color: #0f172a;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.viewDetailBtn:hover { background: #7dd3fc; }
+
+.editBtn, .deleteBtn {
+  background: transparent;
+  border-radius: 12px;
+  width: 50px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.editBtn { border: 1px solid #38bdf8; color: #38bdf8; }
+.editBtn:hover { background: rgba(56, 189, 248, 0.1); }
+
+.deleteBtn { border: 1px solid #7f1d1d; color: #ef4444; }
+.deleteBtn:hover { background: rgba(127, 29, 29, 0.4); }
