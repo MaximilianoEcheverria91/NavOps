@@ -5,7 +5,7 @@ import java.util.UUID;
 
 @Schema(description = "DTO para el listado resumido de puertos en las cards")
 public record PortSummaryResponse(
-    @Schema(description = "ID del puerto")
+    @Schema(description = "ID del puerto", example = "550e8400-e29b-41d4-a716-446655440000")
     UUID id,
     
     @Schema(description = "URL de la imagen principal del puerto")
