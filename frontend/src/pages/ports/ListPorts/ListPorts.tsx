@@ -6,6 +6,7 @@ import { Filter, UserPlus, User, Anchor, Edit2, Trash2 } from 'lucide-react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllPorts } from '../../../services/api/portService';
 import type { PortSummaryResponse } from '../../../services/api/portService';
+import { PortDetailModal } from '../DetailPort/PortDetailModal';
 import styles from './ListPorts.module.css';
 
 export const ListPorts: React.FC = () => {
@@ -14,6 +15,8 @@ export const ListPorts: React.FC = () => {
   const [ports, setPorts] = useState<PortSummaryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [selectedPortId, setSelectedPortId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const debouncedSearch = useDebounce(searchTerm, 300);
   const navigate = useNavigate();
@@ -96,8 +99,8 @@ const filteredPorts = (ports || []).filter((port) => {
   };
 
   const handleViewDetail = (id: string) => {
-    console.log('View detail', id);
-    // TODO: implement detail view
+    setSelectedPortId(id);
+    setIsModalOpen(true);
   };
  
 
@@ -216,6 +219,13 @@ const filteredPorts = (ports || []).filter((port) => {
           Sistema de Gestión Marítima V.1
         </footer>
       </div>
+      
+      {isModalOpen && selectedPortId && (
+        <PortDetailModal
+          portId={selectedPortId}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </MainLayout>
   );
 };
