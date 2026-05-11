@@ -73,6 +73,7 @@ public class PortController {
         return ResponseEntity.ok(response);
     }
 
+   
     @GetMapping("/{id}")
     public ResponseEntity<?> getPortById(@PathVariable("id") UUID id){
         log.info("Petición recibida para obtener detalle completo del puerto seleccionado");
