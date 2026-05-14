@@ -1,73 +1,98 @@
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/MaritimeApiApplication.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ForgotPasswordRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/LoginRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ResetPasswordRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/VerifyCodeRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelRegistrationRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/UserUpdateRequest.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/CountryResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ErrorResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/LocationResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/RoleResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/LoginResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelDetailedResponse.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelSummaryResponse.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/StatsUserResponse.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/AuthService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CityService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CountryService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/EmailService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ImageStorageService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PersonnelService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ProvinceService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/RoleService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/dashboard/DashboardAdminService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/config/CloudinaryConfig.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/config/OpenApiConfig.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/config/SecurityConfig.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/City.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Country.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/CrewMember.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/LoginAttempt.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/PasswordResetCode.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Person.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Province.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Role.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/User.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/CrewMemberStatusEnum.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/DocumentTypeEnum.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/GenderEnum.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/MaritalStatusEnum.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/PeopleStatusEnum.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/AuthController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CityController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CountryController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ImageController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/PersonnelController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ProvinceController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/RoleController.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/EmailNotFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ExpiredResetCodeException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/InvalidResetCodeException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCitiesFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCountriesFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoPersonnelFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoProvincesFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoRoleFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/UserNotFoundException.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CityRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CountryRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CrewMemberRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/LoginAttemptRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PasswordResetCodeRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PersonRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ProvinceRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/RoleRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/repository/UserRepository.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtAuthenticationFilter.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtService.java
-/home/maxi/Mis Proyectos/NavOps/backend/src/main/java/com/navops/api/security/UserDetailsServiceImpl.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/MaritimeApiApplication.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ForgotPasswordRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/LoginRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ResetPasswordRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/VerifyCodeRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/port/PortCreateRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelFilterRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelRegistrationRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/StatusUpdateRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/UserUpdateRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/CountryResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ErrorResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/LocationResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/RoleResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/LoginResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortDetailedResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortSummaryResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelDetailedResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelEditResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelFilterResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelSummaryResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/StatsUserResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/AuthService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CityService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CountryService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/EmailService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ImageStorageService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PersonnelFilterService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PersonnelService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PortService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ProvinceService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/RoleService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/dashboard/DashboardAdminService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/CloudinaryConfig.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/OpenApiConfig.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/SecurityConfig.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/City.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Country.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/CrewMember.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/LoginAttempt.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/PasswordResetCode.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Person.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Port.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Province.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Role.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/User.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/AccessStatusEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/CrewMemberStatusEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/DockTypeEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/DocumentTypeEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/GenderEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/MaritalStatusEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/NavigationRoleEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/PeopleStatusEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/PortStatusEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/SystemRoleFilterEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/TypePortEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/specification/PersonnelFilterSpecification.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/AuthController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CityController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CountryController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ImageController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/PersonnelController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/PortController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ProvinceController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/RoleController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/PersonnelFilterController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/EmailNotFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ExpiredResetCodeException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/InvalidResetCodeException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCitiesFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCountriesFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoPersonnelFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoPortsFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoProvincesFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoRoleFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortAlreadyExistsException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortNotFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/UserNotFoundException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CityRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CountryRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CrewMemberRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/LoginAttemptRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PasswordResetCodeRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PersonRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PortRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ProvinceRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/RoleRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/UserRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/filters/PersonFilterRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtAuthenticationFilter.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/UserDetailsServiceImpl.java

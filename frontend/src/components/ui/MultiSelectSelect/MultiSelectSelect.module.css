@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.title {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 400;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 8px;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: white;
+}
+
+.checkboxSelected {
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.labelText {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.optionLabel:hover .labelText {
+  color: var(--color-link1);
+}
+
+.optionLabel:hover .checkbox {
+  border-color: #0ea5e9;
+}
