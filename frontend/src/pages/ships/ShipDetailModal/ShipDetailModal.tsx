@@ -2,12 +2,20 @@
 import React from 'react';
 import { X, Anchor } from 'lucide-react';
 import { useShipDetail } from '../../../hooks/useShipDetail';
+import type { ShipStatus } from '../../../types/ship';
 import styles from './ShipDetailModal.module.css';
 
 interface ShipDetailModalProps {
   shipId: string;
   onClose: () => void;
 }
+
+const STATUS_LABELS: Record<ShipStatus, string> = {
+  OPERATIONAL: 'Operativo',
+  MAINTENANCE: 'Mantenimiento',
+  REPAIR: 'Reparación',
+  OUT_OF_SERVICE: 'Fuera de servicio',
+};
 
 const val = (v: string | number | null | undefined): string =>
   v !== null && v !== undefined ? String(v) : '—';
@@ -86,7 +94,7 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                     </div>
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Estado:</span>
-                      <span className={styles.dataValue}>{val(ship.status)}</span>
+                      <span className={styles.dataValue}>{STATUS_LABELS[ship.status] ?? val(ship.status)}</span>
                     </div>
                   </div>
                 </div>
@@ -144,6 +152,10 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                       <span className={styles.dataValue}>{val(ship.crewCapacity)}</span>
                     </div>
                     <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Peso (Toneladas):</span>
+                      <span className={styles.dataValue}>{val(ship.weightTonnes)}</span>
+                    </div>
+                    <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Cantidad de Bodegas:</span>
                       <span className={styles.dataValue}>{val(ship.holdCount)}</span>
                     </div>
@@ -164,6 +176,10 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                 <div className={styles.infoBlock}>
                   <h3 className={styles.sectionTitle}>Motor y Mantenimiento</h3>
                   <div className={styles.gridData}>
+                    <div className={styles.dataRow}>
+                      <span className={styles.dataLabel}>Fabricante del Motor:</span>
+                      <span className={styles.dataValue}>{val(ship.engineManufacturer)}</span>
+                    </div>
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Horas Acumuladas:</span>
                       <span className={styles.dataValue}>{val(ship.currentEngineHours)}</span>
