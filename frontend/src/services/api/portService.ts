@@ -57,5 +57,9 @@ export const getPortById = async (id: string): Promise<PortDetailedResponse> => 
 };
 
 export const deletePort = async (id: string): Promise<void> => {
-  await apiClient.delete(`/admin/ports/${id}`);
+  await apiClient.patch(`/admin/ports/${id}/deactivate`);
+};
+
+export const reactivatePort = async (id: string): Promise<void> => {
+  await apiClient.patch(`/admin/ports/${id}/reactivate`);
 };

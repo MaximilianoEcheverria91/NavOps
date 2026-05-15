@@ -9,6 +9,7 @@ import type { PortSummaryResponse } from '../../../services/api/portService';
 import styles from './ListPorts.module.css';
 import {PortDetailModal} from "../DetailPort/PortDetailModal.tsx";
 import DeletePortModal from '../../../components/ui/DeletePortModal/DeletePortModal';
+import ReactivatePortModal from '../../../components/ui/ReactivatePortModal/ReactivatePortModal';
 
 export const ListPorts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +30,13 @@ export const ListPorts: React.FC = () => {
   imageUrl?: string;
 } | null>(null);
 
-  useEffect(() => {
+  const [portToReactivate, setPortToReactivate] = useState<{
+  id: string;
+  name: string;
+  location: string;
+  imageUrl?: string;
+} | null>(null);
+
   const fetchPorts = async () => {
     try {
       setIsLoading(true);
@@ -59,8 +66,10 @@ export const ListPorts: React.FC = () => {
       setIsLoading(false);
     }
   };
-  fetchPorts();
-}, []);
+
+  useEffect(() => {
+    fetchPorts();
+  }, []);
 
 const filteredPorts = (ports || []).filter((port) => {
   if (!port) return false;
@@ -73,27 +82,6 @@ const filteredPorts = (ports || []).filter((port) => {
     (port.countryName || '').toLowerCase().includes(term)
   );
 });
-
-  /*const filteredPorts = ports.filter((port) => {
-  // Verificamos que port exista para evitar crashes
-  if (!port) return false;
-
-  const term = debouncedSearch.toLowerCase();
-
-  // Usamos el operador || '' para que si el dato es null, sea un string vacío y no rompa el .toLowerCase()
-  const matchesSearch = 
-    (port.name || '').toLowerCase().includes(term) ||
-    (port.code || '').toLowerCase().includes(term) ||
-    (port.countryName || '').toLowerCase().includes(term) ||
-    (port.provinceName || '').toLowerCase().includes(term);
-
-  const matchesStatus = statusFilter && statusFilter !== 'all' 
-    ? port.status === statusFilter 
-    : true;
-
-  return matchesSearch && matchesStatus;
-}); */
-
 
   const handleEdit = (id: string) => {
     console.log('Edit port', id);
@@ -192,6 +180,8 @@ const filteredPorts = (ports || []).filter((port) => {
                       <span className={`${styles.statusBadge} ${styles.statusOPERATIONAL}`}>OPERATIVO</span>
                     ) : port.status === 'UNDER_MAINTENANCE' ? (
                       <span className={`${styles.statusBadge} ${styles.statusUNDER_MAINTENANCE}`}>EN MANTENIMIENTO</span>
+                    ) : port.status === 'INACTIVE' ? (
+                      <span className={`${styles.statusBadge} ${styles.statusINACTIVE}`}>INACTIVO</span>
                     ) : (
                       <span className={`${styles.statusBadge} ${styles.statusCLOSED}`}>MUELLE COMPLETO</span>
                     )}
@@ -203,31 +193,58 @@ const filteredPorts = (ports || []).filter((port) => {
                       Ver detalle
                     </button>
 
-                    
-                    <div className={styles.iconBtns}>
-                      <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
-                        <Edit2 size={16} />
+                    {port.status === 'INACTIVE' && port.isActive === false ? (
+                      <button 
+                        className={styles.reactivateBtn} 
+                        onClick={() => setPortToReactivate({
+                          id: port.id,
+                          name: port.name,
+                          location: `${port.provinceName}, ${port.countryName}`,
+                          imageUrl: port.mainImageUrl ?? undefined,
+                        })}
+                      >
+                        Dar de alta
                       </button>
+                    ) : (
+                      <div className={styles.iconBtns}>
+                        <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
+                          <Edit2 size={16} />
+                        </button>
 
-                      <button onClick={() => setPortToDelete({
-                        id: port.id,
-                        name: port.name,
-                        location: `${port.provinceName}, ${port.countryName}`,
-                        imageUrl: port.mainImageUrl ?? undefined,
-                      })}>
-                        Eliminar
-                      </button>
+                        <button  className={styles.deleteBtn}  onClick={() => setPortToDelete({
+                          id: port.id,
+                          name: port.name,
+                          location: `${port.provinceName}, ${port.countryName}`,
+                          imageUrl: port.mainImageUrl ?? undefined,
+                        })}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
 
-                      {portToDelete && (
-                        <DeletePortModal
-                          portId={portToDelete.id}
-                          portName={portToDelete.name}
-                          portLocation={portToDelete.location}
-                          mainImageUrl={portToDelete.imageUrl}
-                          onCancel={() => setPortToDelete(null)}
-                        />
-                      )}
-                    </div>
+                    {portToDelete && portToDelete.id === port.id && (
+                      <DeletePortModal
+                        portId={portToDelete.id}
+                        portName={portToDelete.name}
+                        portLocation={portToDelete.location}
+                        mainImageUrl={portToDelete.imageUrl}
+                        onCancel={() => setPortToDelete(null)}
+                      />
+                    )}
+
+                    {portToReactivate && portToReactivate.id === port.id && (
+                      <ReactivatePortModal
+                        portId={portToReactivate.id}
+                        portName={portToReactivate.name}
+                        portLocation={portToReactivate.location}
+                        mainImageUrl={portToReactivate.imageUrl}
+                        onCancel={() => setPortToReactivate(null)}
+                        onSuccess={() => {
+                          setPortToReactivate(null);
+                          fetchPorts();
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </div>

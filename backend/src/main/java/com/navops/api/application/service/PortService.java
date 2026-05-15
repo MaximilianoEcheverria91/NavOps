@@ -13,6 +13,7 @@ import com.navops.api.domain.enums.PortStatusEnum;
 import com.navops.api.domain.enums.TypePortEnum;
 import com.navops.api.infrastructure.exception.NoPortsFoundException;
 import com.navops.api.infrastructure.exception.PortAlreadyExistsException;
+import com.navops.api.infrastructure.exception.PortNotFoundException;
 import com.navops.api.repository.CityRepository;
 import com.navops.api.repository.CountryRepository;
 import com.navops.api.repository.PortRepository;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -140,6 +142,43 @@ public class PortService {
         return responseList;
     }
 
+    // DELETE PORT
+
+    @Transactional
+    public void deactivatePort(UUID id) {
+        log.info("Desactivando puerto con ID: {}", id);
+
+        Port port = portRepository.findById(id)
+                .orElseThrow(() -> new PortNotFoundException("No se encontró el puerto con el ID proporcionado."));
+
+        port.setStatus(PortStatusEnum.INACTIVE);
+        port.setIsActive(false);
+        port.setDeletedAt(OffsetDateTime.now());
+
+        //Port savedPort = portRepository.save(port);
+        // No hace falta el .save() si el objeto es administrado por la transacción
+        log.info("Puerto con ID {} marcado como inactivo.", id);
+    }
+
+
+
+    // REACTIVATE PORT
+
+    @Transactional
+    public void reactivatePort(UUID id) {
+        log.info("Reactivando puerto con ID: {}", id);
+
+        Port port = portRepository.findById(id)
+                .orElseThrow(() -> new PortNotFoundException("No se encontró el puerto con el ID proporcionado."));
+
+        port.setStatus(PortStatusEnum.OPERATIONAL);
+        port.setIsActive(true);
+        port.setDeletedAt(null);
+
+        log.info("Puerto con ID {} reactivado exitosamente.", id);
+    }
+
+    // DETAIL PORT
     @Transactional(readOnly = true)
     public PortDetailedResponse getPortById(UUID id){
         log.info("Buscando puerto con el detalla en ID: {}", id);
