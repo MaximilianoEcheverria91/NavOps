@@ -19,8 +19,10 @@ export interface ShipDetailResponse extends ShipSummaryResponse {
   draft: number;
   depth: number;
   crewCapacity: number;
+  weightTonnes: number;
   holdCount: number | null;
   cargoCapacityTonnes: number;
+  engineManufacturer: string | null;
   engineModel: string | null;
   engineSerialNumber: string | null;
   currentEngineHours: number | null;

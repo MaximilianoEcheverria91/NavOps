@@ -28,11 +28,9 @@ services:
       - postgres
     environment:
       #Servicio de PostgreSQL
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 
       #Servicio de Claudinary
       - CLOUDINARY_NAME=${CLOUDINARY_NAME}

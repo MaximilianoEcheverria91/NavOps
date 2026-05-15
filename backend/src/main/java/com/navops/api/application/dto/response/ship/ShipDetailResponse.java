@@ -16,24 +16,19 @@ public record ShipDetailResponse(
     String countryName,
     String status,
     String mainImageUrl,
-    // Gap 2 — ships.hull_number?
     String hullNumber,
-    // Gap 3   ships.hold_count?
     Short holdCount,
-    // Especificaciones físicas — presentes en ships
     BigDecimal length,
     BigDecimal beam,
     BigDecimal draft,
     BigDecimal depth,
-    // Capacidades — presentes en ships
     Short crewCapacity,
+    BigDecimal weightTonnes,
     BigDecimal cargoCapacityTonnes,
-    // Relacionadas - null por ahora
+    String engineManufacturer,
     String engineModel,
-    // Gap 4 — engines.serial_number?
     String engineSerialNumber,
     Integer currentEngineHours,
-    // Gap 5 — tbo.last_tbo_engine_hours?
     Integer lastTboEngineHours,
     BigDecimal fuelCapacityLiters,
     LocalDate lastMaintenanceDate

@@ -1,11 +1,16 @@
 package com.navops.api.application.service;
 
+import com.navops.api.application.dto.request.ship.ShipCreateRequest;
 import com.navops.api.application.dto.response.ship.ShipDetailResponse;
+import com.navops.api.domain.entity.Country;
 import com.navops.api.domain.entity.Engine;
 import com.navops.api.domain.entity.Maintenance;
 import com.navops.api.domain.entity.Ship;
 import com.navops.api.domain.entity.ShipTank;
+import com.navops.api.domain.enums.ShipStatusEnum;
+import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
 import com.navops.api.infrastructure.exception.ShipNotFoundException;
+import com.navops.api.repository.CountryRepository;
 import com.navops.api.repository.EngineRepository;
 import com.navops.api.repository.MaintenanceRepository;
 import com.navops.api.repository.ShipRepository;
@@ -25,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +40,8 @@ class ShipServiceTest {
     @Mock private EngineRepository engineRepository;
     @Mock private ShipTankRepository shipTankRepository;
     @Mock private MaintenanceRepository maintenanceRepository;
+    @Mock private CountryRepository countryRepository;
+    @Mock private ImageStorageService imageStorageService;
 
     @InjectMocks private ShipService shipService;
 
@@ -60,6 +68,70 @@ class ShipServiceTest {
                 .build();
         when(shipRepository.findByIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.of(ship));
     }
+
+    // ── createShip ────────────────────────────────────────────────────────────
+
+    private ShipCreateRequest minimalRequest(UUID countryId) {
+        return new ShipCreateRequest(
+                "ARA Almirante Brown", "AR-D10-1983", "D-10", "Destructor", (short) 1983,
+                countryId, "OPERATIONAL", null,
+                new BigDecimal("125.9"), new BigDecimal("14.0"), new BigDecimal("5.8"), new BigDecimal("9.28"),
+                new BigDecimal("3600"), (short) 200, BigDecimal.ZERO,
+                null, null, null, null, null, null, null, null
+        );
+    }
+
+    @Test
+    @DisplayName("IMO duplicado → ShipAlreadyExistsException")
+    void createShip_whenDuplicateImo_throwsException() {
+        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(true);
+
+        assertThrows(ShipAlreadyExistsException.class,
+                () -> shipService.createShip(minimalRequest(UUID.randomUUID()), null));
+    }
+
+    @Test
+    @DisplayName("Matrícula duplicada → ShipAlreadyExistsException")
+    void createShip_whenDuplicateRegistration_throwsException() {
+        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
+        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(true);
+
+        assertThrows(ShipAlreadyExistsException.class,
+                () -> shipService.createShip(minimalRequest(UUID.randomUUID()), null));
+    }
+
+    @Test
+    @DisplayName("País inexistente → IllegalArgumentException")
+    void createShip_whenCountryNotFound_throwsException() {
+        UUID unknownCountryId = UUID.randomUUID();
+        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
+        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(false);
+        when(countryRepository.findById(unknownCountryId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> shipService.createShip(minimalRequest(unknownCountryId), null));
+    }
+
+    @Test
+    @DisplayName("Happy path → barco creado, ShipDetailResponse retornado")
+    void createShip_happyPath_returnsDetailResponse() throws Exception {
+        UUID countryId = UUID.randomUUID();
+        Country country = Country.builder().id(countryId).name("Argentina").isoCode("AR").version(0).build();
+
+        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
+        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(false);
+        when(countryRepository.findById(countryId)).thenReturn(Optional.of(country));
+        when(shipRepository.save(any(Ship.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        ShipDetailResponse result = shipService.createShip(minimalRequest(countryId), null);
+
+        assertNotNull(result);
+        assertEquals("ARA Almirante Brown", result.name());
+        assertEquals("AR-D10-1983", result.imoNumber());
+        assertEquals("OPERATIONAL", result.status());
+    }
+
+    // ── getById ───────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("Motor encontrado → engineModel y currentEngineHours se rellenan")
@@ -122,13 +194,12 @@ class ShipServiceTest {
     }
 
     @Test
-    @DisplayName("Maintenance IN_PROGRESS → status es MAINTENANCE")
-    void getById_whenMaintenanceInProgress_returnsMaintenanceStatus() {
-        Maintenance inProgress = Maintenance.builder()
-                .id(UUID.randomUUID()).shipId(shipId).status("IN_PROGRESS").build();
+    @DisplayName("Barco con status MAINTENANCE → getById devuelve MAINTENANCE")
+    void getById_whenShipStatusIsMaintenance_returnsMaintenance() {
+        ship.setStatus(ShipStatusEnum.MAINTENANCE);
         when(engineRepository.findFirstByShipIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.empty());
         when(shipTankRepository.findAllByShipIdAndContentTypeAndDeletedAtIsNull(shipId, "FUEL")).thenReturn(List.of());
-        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of(inProgress));
+        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of());
 
         ShipDetailResponse result = shipService.getById(shipId);
 
@@ -136,14 +207,11 @@ class ShipServiceTest {
     }
 
     @Test
-    @DisplayName("Sin IN_PROGRESS → status es OPERATIONAL")
-    void getById_whenNoInProgressMaintenance_returnsOperational() {
-        Maintenance completed = Maintenance.builder()
-                .id(UUID.randomUUID()).shipId(shipId).status("COMPLETED")
-                .completedDate(LocalDate.of(2025, 3, 10)).build();
+    @DisplayName("Barco con status OPERATIONAL → getById devuelve OPERATIONAL")
+    void getById_whenShipStatusIsOperational_returnsOperational() {
         when(engineRepository.findFirstByShipIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.empty());
         when(shipTankRepository.findAllByShipIdAndContentTypeAndDeletedAtIsNull(shipId, "FUEL")).thenReturn(List.of());
-        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of(completed));
+        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of());
 
         ShipDetailResponse result = shipService.getById(shipId);
 
