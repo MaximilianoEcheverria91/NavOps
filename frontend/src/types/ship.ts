@@ -1,4 +1,4 @@
-export type ShipStatus = 'OPERATIONAL' | 'MAINTENANCE' | 'REPAIR' | 'OUT_OF_SERVICE';
+export type ShipStatus = 'OPERATIONAL' | 'MAINTENANCE' | 'REPAIR' | 'OUT_OF_SERVICE' | 'INACTIVE';
 
 export interface ShipSummaryResponse {
   id: string;

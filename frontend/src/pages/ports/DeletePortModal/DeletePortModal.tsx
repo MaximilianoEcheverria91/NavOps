@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeletePort } from '../../../hooks/useDeletePort';
-import { FeedbackModal } from '../FeedbackModal/FeedbackModal';
+import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import styles from './DeletePortModal.module.css';
 
 interface Props {

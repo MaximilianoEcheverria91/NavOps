@@ -15,6 +15,7 @@ const STATUS_LABELS: Record<ShipStatus, string> = {
   MAINTENANCE: 'Mantenimiento',
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
+  INACTIVE: 'Inactivo',
 };
 
 export const ListShips: React.FC = () => {
@@ -28,18 +29,38 @@ export const ListShips: React.FC = () => {
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   useEffect(() => {
-    getAllShips()
-      .then(setShips)
-      .catch(() => setErrorMsg('Error al cargar la lista de barcos.'))
-      .finally(() => setIsLoading(false));
+    const fetchShips = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMsg(null);
+        const data = await getAllShips();
+        
+        if (Array.isArray(data)) {
+          setShips(data);
+        } else if (data && typeof data === 'object') {
+          // @ts-ignore
+          const arrayData = data.content || data.data || data.ships || [];
+          setShips(arrayData);
+        } else {
+          setShips([]);
+        }
+      } catch (error: any) {
+        console.error('Error al cargar la lista de barcos:', error);
+        setErrorMsg('Error al cargar la lista de barcos.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchShips();
   }, []);
 
-  const filtered = ships.filter((ship) => {
+  const filtered = (ships || []).filter((ship) => {
     const term = debouncedSearch.toLowerCase();
     const matchesSearch =
-      ship.name.toLowerCase().includes(term) ||
-      ship.registration.toLowerCase().includes(term) ||
-      ship.imoNumber.toLowerCase().includes(term);
+      (ship.name || '').toLowerCase().includes(term) ||
+      (ship.registration || '').toLowerCase().includes(term) ||
+      (ship.imoNumber || '').toLowerCase().includes(term);
     const matchesStatus = statusFilter ? ship.status === statusFilter : true;
     return matchesSearch && matchesStatus;
   });
