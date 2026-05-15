@@ -81,7 +81,7 @@ public class ShipService {
                 .crewCapacity(request.crewCapacity())
                 .mainImageUrl(mainImageUrl)
                 .build();
-        shipRepository.save(ship);
+        ship = shipRepository.save(ship);
         log.info("Barco registrado con ID: {}", ship.getId());
 
         Engine engine = null;
@@ -111,6 +111,7 @@ public class ShipService {
             Maintenance maintenance = Maintenance.builder()
                     .shipId(ship.getId())
                     .status("COMPLETED")
+                    .scheduledDate(request.lastMaintenanceDate())
                     .completedDate(request.lastMaintenanceDate())
                     .build();
             maintenanceRepository.save(maintenance);

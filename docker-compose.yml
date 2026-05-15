@@ -41,10 +41,6 @@ services:
       - CLOUDINARY_KEY=${CLOUDINARY_KEY}
       - CLOUDINARY_SECRET=${CLOUDINARY_SECRET}
 
-      #JWT Security
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION=${JWT_EXPIRATION}
-
       #Servicio de MSPT
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}

@@ -23,6 +23,10 @@ public class ShipTank {
     @Column(name = "ship_id", nullable = false)
     private UUID shipId;
 
+    @Builder.Default
+    @Column(name = "tank_name", nullable = false, length = 50)
+    private String tankName = "PRINCIPAL";
+
     @Column(name = "content_type", nullable = false, length = 50)
     private String contentType;
 

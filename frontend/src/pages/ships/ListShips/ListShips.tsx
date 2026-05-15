@@ -47,10 +47,16 @@ export const ListShips: React.FC = () => {
   return (
     <MainLayout>
       <div className="w-full max-w-7xl mx-auto px-6 py-8">
-        <header className="mb-6">
-          <h1 className="text-3xl text-[var(--text-secondary)] font-medium">Gestión de Barcos</h1>
-          <p className="text-slate-400 mt-1 text-sm">Bienvenido al sistema de gestión y Navegación</p>
-        </header>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <header>
+            <h1 className="text-3xl text-[var(--text-secondary)] font-medium">Gestión de Barcos</h1>
+            <p className="text-slate-400 mt-1 text-sm">Bienvenido al sistema de gestión y Navegación</p>
+          </header>
+          <button className={styles.addButton} onClick={() => navigate('/barcos/nuevo')}>
+            <Anchor size={24} />
+            <span>+</span>
+          </button>
+        </div>
 
         <div className={styles.filtersContainer}>
           <SearchInput
