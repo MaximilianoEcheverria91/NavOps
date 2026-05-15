@@ -6,6 +6,7 @@ import com.navops.api.application.dto.response.port.PortResponse;
 import com.navops.api.application.dto.response.port.PortSummaryResponse;
 import com.navops.api.application.service.PortService;
 import com.navops.api.infrastructure.exception.PortAlreadyExistsException;
+import com.navops.api.infrastructure.exception.PortNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -81,5 +82,41 @@ public class PortController {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "Desactivar puerto (baja lógica)", description = "Cambia el estado del puerto a INACTIVE y lo marca como no activo. El puerto no se elimina físicamente de la base de datos para mantener el historial.", responses = {
+            @ApiResponse(responseCode = "200", description = "Puerto desactivado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Puerto no encontrado", content = @Content(schema = @Schema(implementation = Map.class)))
+    })
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Map<String, String>> deactivatePort(@PathVariable("id") UUID id) {
+        log.info("Petición recibida para desactivar puerto ID: {}", id);
+        try {
+            portService.deactivatePort(id);
+            return ResponseEntity.ok(Map.of("message", "Puerto desactivado exitosamente."));
+        } catch (PortNotFoundException e) {
+            log.error("Puerto no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Reactivar puerto", description = "Restablece el estado del puerto a OPERATIONAL y lo marca como activo. Revierte la baja lógica.", responses = {
+            @ApiResponse(responseCode = "200", description = "Puerto reactivado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Puerto no encontrado", content = @Content(schema = @Schema(implementation = Map.class)))
+    })
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<Map<String, String>> reactivatePort(@PathVariable("id") UUID id) {
+        log.info("Petición recibida para reactivar puerto ID: {}", id);
+        try {
+            portService.reactivatePort(id);
+            return ResponseEntity.ok(Map.of("message", "Puerto reactivado exitosamente."));
+        } catch (PortNotFoundException e) {
+            log.error("Puerto no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
 }
+
+
+
