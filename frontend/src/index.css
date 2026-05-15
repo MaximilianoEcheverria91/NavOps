@@ -49,6 +49,14 @@
   --color-link: #82D4FF;
   --color-link1: #82D4FF;
 
+  /*filter*/
+  --color-text-filter:#38bdf8;
+  --color-input-liter:#f8fafc6c;
+  --sidebar-footer: #082842;
+  --color-text-filter2:#38bff891;
+  --color-button-clear: #38bdf8;
+  --color-button-clear2: #ffffff;
+
 }
 
 [data-theme='light'] {
@@ -88,6 +96,14 @@
   --color-count: #4A90A4;
   --color-link: #82D4FF;
   --color-link1: #4A90A4;
+
+  /*filters*/
+  --color-text-filter:#082842;
+  --color-input-liter:#0000006c;
+  --sidebar-footer: #b0e4ff;
+  --color-text-filter2:#08284285;
+  --color-button-clear: #082842;
+  --color-button-clear2: #00000098;
 }
 
 * {

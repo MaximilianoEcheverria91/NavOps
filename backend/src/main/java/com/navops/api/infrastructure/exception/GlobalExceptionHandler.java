@@ -90,6 +90,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(NoShipsFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNoShipsFound(NoShipsFoundException ex) {
         ErrorResponseDto response = new ErrorResponseDto(

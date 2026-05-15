@@ -7,6 +7,9 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllPorts } from '../../../services/api/portService';
 import type { PortSummaryResponse } from '../../../services/api/portService';
 import styles from './ListPorts.module.css';
+import {PortDetailModal} from "../DetailPort/PortDetailModal.tsx";
+import DeletePortModal from '../../../components/ui/DeletePortModal/DeletePortModal';
+import ReactivatePortModal from '../../../components/ui/ReactivatePortModal/ReactivatePortModal';
 
 export const ListPorts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,11 +17,26 @@ export const ListPorts: React.FC = () => {
   const [ports, setPorts] = useState<PortSummaryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
+  const [selectedPortId, setSelectedPortId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
   const navigate = useNavigate();
 
-  useEffect(() => {
+
+  const [portToDelete, setPortToDelete] = useState<{
+  id: string;
+  name: string;
+  location: string;
+  imageUrl?: string;
+} | null>(null);
+
+  const [portToReactivate, setPortToReactivate] = useState<{
+  id: string;
+  name: string;
+  location: string;
+  imageUrl?: string;
+} | null>(null);
+
   const fetchPorts = async () => {
     try {
       setIsLoading(true);
@@ -48,8 +66,10 @@ export const ListPorts: React.FC = () => {
       setIsLoading(false);
     }
   };
-  fetchPorts();
-}, []);
+
+  useEffect(() => {
+    fetchPorts();
+  }, []);
 
 const filteredPorts = (ports || []).filter((port) => {
   if (!port) return false;
@@ -63,27 +83,6 @@ const filteredPorts = (ports || []).filter((port) => {
   );
 });
 
-  /*const filteredPorts = ports.filter((port) => {
-  // Verificamos que port exista para evitar crashes
-  if (!port) return false;
-
-  const term = debouncedSearch.toLowerCase();
-
-  // Usamos el operador || '' para que si el dato es null, sea un string vacío y no rompa el .toLowerCase()
-  const matchesSearch = 
-    (port.name || '').toLowerCase().includes(term) ||
-    (port.code || '').toLowerCase().includes(term) ||
-    (port.countryName || '').toLowerCase().includes(term) ||
-    (port.provinceName || '').toLowerCase().includes(term);
-
-  const matchesStatus = statusFilter && statusFilter !== 'all' 
-    ? port.status === statusFilter 
-    : true;
-
-  return matchesSearch && matchesStatus;
-}); */
-
-
   const handleEdit = (id: string) => {
     console.log('Edit port', id);
     // navigate(`/puertos/edit/${id}`);
@@ -96,8 +95,8 @@ const filteredPorts = (ports || []).filter((port) => {
   };
 
   const handleViewDetail = (id: string) => {
-    console.log('View detail', id);
-    // TODO: implement detail view
+    setSelectedPortId(id);
+    setIsModalOpen(true);
   };
  
 
@@ -181,24 +180,71 @@ const filteredPorts = (ports || []).filter((port) => {
                       <span className={`${styles.statusBadge} ${styles.statusOPERATIONAL}`}>OPERATIVO</span>
                     ) : port.status === 'UNDER_MAINTENANCE' ? (
                       <span className={`${styles.statusBadge} ${styles.statusUNDER_MAINTENANCE}`}>EN MANTENIMIENTO</span>
+                    ) : port.status === 'INACTIVE' ? (
+                      <span className={`${styles.statusBadge} ${styles.statusINACTIVE}`}>INACTIVO</span>
                     ) : (
                       <span className={`${styles.statusBadge} ${styles.statusCLOSED}`}>MUELLE COMPLETO</span>
                     )}
                   </div>
 
                   <div className={styles.cardActions}>
+
                     <button className={styles.viewDetailBtn} onClick={() => handleViewDetail(port.id)}>
                       Ver detalle
                     </button>
-                    
-                    <div className={styles.iconBtns}>
-                      <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
-                        <Edit2 size={16} />
+
+                    {port.status === 'INACTIVE' && port.isActive === false ? (
+                      <button 
+                        className={styles.reactivateBtn} 
+                        onClick={() => setPortToReactivate({
+                          id: port.id,
+                          name: port.name,
+                          location: `${port.provinceName}, ${port.countryName}`,
+                          imageUrl: port.mainImageUrl ?? undefined,
+                        })}
+                      >
+                        Dar de alta
                       </button>
-                      <button className={styles.deleteBtn} onClick={() => handleDelete(port)}>
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    ) : (
+                      <div className={styles.iconBtns}>
+                        <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
+                          <Edit2 size={16} />
+                        </button>
+
+                        <button  className={styles.deleteBtn}  onClick={() => setPortToDelete({
+                          id: port.id,
+                          name: port.name,
+                          location: `${port.provinceName}, ${port.countryName}`,
+                          imageUrl: port.mainImageUrl ?? undefined,
+                        })}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+
+                    {portToDelete && portToDelete.id === port.id && (
+                      <DeletePortModal
+                        portId={portToDelete.id}
+                        portName={portToDelete.name}
+                        portLocation={portToDelete.location}
+                        mainImageUrl={portToDelete.imageUrl}
+                        onCancel={() => setPortToDelete(null)}
+                      />
+                    )}
+
+                    {portToReactivate && portToReactivate.id === port.id && (
+                      <ReactivatePortModal
+                        portId={portToReactivate.id}
+                        portName={portToReactivate.name}
+                        portLocation={portToReactivate.location}
+                        mainImageUrl={portToReactivate.imageUrl}
+                        onCancel={() => setPortToReactivate(null)}
+                        onSuccess={() => {
+                          setPortToReactivate(null);
+                          fetchPorts();
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -216,6 +262,13 @@ const filteredPorts = (ports || []).filter((port) => {
           Sistema de Gestión Marítima V.1
         </footer>
       </div>
+
+      {isModalOpen && selectedPortId && (
+        <PortDetailModal
+          portId={selectedPortId}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </MainLayout>
   );
 };
