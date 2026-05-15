@@ -36,6 +36,7 @@ public record PersonnelDetailedResponse(
                 @Schema(description = "Calle de residencia", example = "Av. Corrientes") String addressStreet,
 
                 @Schema(description = "Número de calle", example = "1234") String addressNumber,
+
                 @Schema(description = "Piso del departamento", example = "5") String addressFloor,
 
                 @Schema(description = "Número de departamento", example = "B") String addressDepartment,

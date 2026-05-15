@@ -16,15 +16,68 @@
   background: rgba(14, 165, 233, 0.1);
 }
 
-
 .filtersContainer {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   gap: 16px;
-  
 }
 
+.activeFiltersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: transparent;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-filter2);
+}
+
+.filterChip span {
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+.chipRemoveBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.chipRemoveBtn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.clearFiltersBtn {
+  background: none;
+  border: none;
+  color: var(--color-button-clear2);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.clearFiltersBtn:hover {
+  color: var(--color-button-clear);
+}
 
 .filterDropdown {
   display: flex;
@@ -34,6 +87,12 @@
   border-radius: 6px;
   padding: 8px 16px;
   min-width: 150px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterDropdown:hover {
+  background: rgba(14, 165, 233, 0.1);
 }
 
 .filterIcon {
@@ -41,18 +100,17 @@
   margin-right: 8px;
 }
 
-.selectInput {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  width: 100%;
-  outline: none;
-  appearance: none;
-  cursor: pointer;
+.mainLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
 }
 
-.selectInput option {
-  background: #082842;
+.gridContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .usersGrid {
@@ -61,13 +119,16 @@
   gap: 20px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .usersGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
+  .mainLayout {
+    flex-direction: column-reverse;
+  }
   .usersGrid {
     grid-template-columns: 1fr;
   }
@@ -80,10 +141,6 @@
   .filterDropdown {
     width: 100%;
     justify-content: center;
-  }
-  
-  .selectInput {
-    text-align: center;
   }
 }
 
@@ -238,4 +295,30 @@
 
 .deleteBtn:hover {
   background: rgba(239, 68, 68, 0.1);
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loadMoreBtn {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  border-radius: 20px;
+  padding: 10px 32px;
+  color: #0ea5e9;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.loadMoreBtn:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.loadMoreBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

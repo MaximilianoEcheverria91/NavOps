@@ -1,4 +1,4 @@
--- backend/src/main/resources/db/migration/V9__seed_ships_related.sql
+-- backend/src/main/resources/db/migration/V10__seed_ships_related.sql
 DO $$
 DECLARE
   ship_libertador    UUID;

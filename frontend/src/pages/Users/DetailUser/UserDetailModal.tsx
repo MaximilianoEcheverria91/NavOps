@@ -21,6 +21,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
   // Función para capitalizar o parsear enums al UI
   const formatEnum = (val?: string) => {
     if (!val) return '-';
+    
     // Reemplazos genéricos para un display amigable
     const mapping: Record<string, string> = {
       'MALE': 'Masculino',
