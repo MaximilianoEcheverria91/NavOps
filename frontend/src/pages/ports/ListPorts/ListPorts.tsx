@@ -5,10 +5,10 @@ import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
 import { Filter, UserPlus, User, Anchor, Edit2, Trash2 } from 'lucide-react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllPorts } from '../../../services/api/portService';
-import type { PortSummaryResponse } from '../../../services/api/portService';
+import type { PortSummaryResponse } from '../../../types/port';
 import styles from './ListPorts.module.css';
 import {PortDetailModal} from "../DetailPort/PortDetailModal.tsx";
-import DeletePortModal from '../../../components/ui/DeletePortModal/DeletePortModal';
+import DeletePortModal from '../DeletePortModal/DeletePortModal';
 import ReactivatePortModal from '../../../components/ui/ReactivatePortModal/ReactivatePortModal';
 
 export const ListPorts: React.FC = () => {
