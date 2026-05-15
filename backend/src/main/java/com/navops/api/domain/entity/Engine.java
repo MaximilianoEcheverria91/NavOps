@@ -31,6 +31,12 @@ public class Engine {
     @Column(name = "current_engine_hours", nullable = false)
     private Integer currentEngineHours;
 
+    @Column(name = "serial_number", length = 100)
+    private String serialNumber;
+
+    @Column(name = "last_tbo_engine_hours")
+    private Integer lastTboEngineHours;
+
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 }

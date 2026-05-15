@@ -1,4 +1,3 @@
-@@ -1,106 +1,128 @@
 package com.navops.api.infrastructure.exception;
 import com.navops.api.application.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -217,6 +216,16 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(PortAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handlePortAlreadyExists(PortAlreadyExistsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Conflict",
+                ex.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+    @ExceptionHandler(ShipAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleShipAlreadyExists(ShipAlreadyExistsException ex) {
         ErrorResponseDto response = new ErrorResponseDto(
                 "Conflict",
                 ex.getMessage(),

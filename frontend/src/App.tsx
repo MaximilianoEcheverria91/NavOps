@@ -10,6 +10,7 @@ import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
 import { ListShips } from './pages/ships/ListShips/ListShips';
+import { CreateShip } from './pages/ships/CreateShip/CreateShip';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/users/create" element={<CreateUser />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
+        <Route path="/barcos/nuevo" element={<CreateShip />} />
       </Routes>
     </BrowserRouter>
   );

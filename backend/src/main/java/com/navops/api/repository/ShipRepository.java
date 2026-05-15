@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface ShipRepository extends JpaRepository<Ship, UUID> {
     List<Ship> findAllByDeletedAtIsNull();
     Optional<Ship> findByIdAndDeletedAtIsNull(UUID id);
+    boolean existsByImoNumberAndDeletedAtIsNull(String imoNumber);
+    boolean existsByRegistrationAndDeletedAtIsNull(String registration);
 }
