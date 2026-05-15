@@ -27,3 +27,39 @@ export const createPort = async (formData: FormData): Promise<any> => {
   });
   return response.data;
 };
+
+export interface PortDetailedResponse {
+  id: string;
+  name: string;
+  code: string;
+  portType: string;
+  dockType: string;
+  latitude: number;
+  longitude: number;
+  dockCount: number;
+  maxLength: number;
+  maxDraft: number;
+  country: string;
+  province: string;
+  city: string;
+  mainImageUrl: string | null;
+  contactPhone: string;
+  contactEmail: string;
+  contactWeb: string;
+  timezone: string;
+  status: string;
+  isActive: boolean;
+}
+
+export const getPortById = async (id: string): Promise<PortDetailedResponse> => {
+  const response = await apiClient.get(`/admin/ports/${id}`);
+  return response.data;
+};
+
+export const deletePort = async (id: string): Promise<void> => {
+  await apiClient.patch(`/admin/ports/${id}/deactivate`);
+};
+
+export const reactivatePort = async (id: string): Promise<void> => {
+  await apiClient.patch(`/admin/ports/${id}/reactivate`);
+};

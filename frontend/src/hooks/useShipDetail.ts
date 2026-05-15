@@ -15,7 +15,7 @@ export const useShipDetail = (shipId: string) => {
       .then(setData)
       .catch(() => setError('No se pudo cargar la información del barco.'))
       .finally(() => setLoading(false));
-  } , [shipId]);
+  }, [shipId]);
 
   return { data, loading, error };
 };

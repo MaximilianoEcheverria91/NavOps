@@ -1,4 +1,3 @@
-@@ -1,106 +1,128 @@
 package com.navops.api.infrastructure.exception;
 import com.navops.api.application.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +84,17 @@ public class GlobalExceptionHandler {
         ErrorResponseDto response = new ErrorResponseDto(
                 "Bad Request",
                 "Falta el campo requerido en la petición: " + ex.getRequestPartName(),
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                ex.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 OffsetDateTime.now()
         );
@@ -217,6 +227,16 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(PortAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handlePortAlreadyExists(PortAlreadyExistsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Conflict",
+                ex.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+    @ExceptionHandler(ShipAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleShipAlreadyExists(ShipAlreadyExistsException ex) {
         ErrorResponseDto response = new ErrorResponseDto(
                 "Conflict",
                 ex.getMessage(),

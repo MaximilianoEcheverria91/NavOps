@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.navops.api.domain.enums.ShipStatusEnum;
+
 @Entity
 @Table(name = "ships")
 @Getter
@@ -30,6 +32,17 @@ public class Ship {
 
     @Column(name = "imo_number", nullable = false, unique = true, length = 50)
     private String imoNumber;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private ShipStatusEnum status = ShipStatusEnum.OPERATIONAL;
+
+    @Column(name = "hull_number", length = 100)
+    private String hullNumber;
+
+    @Column(name = "hold_count")
+    private Short holdCount;
 
     @Column(name = "ship_type", nullable = false, length = 80)
     private String shipType;

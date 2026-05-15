@@ -23,8 +23,15 @@ public class Maintenance {
     @Column(name = "ship_id", nullable = false)
     private UUID shipId;
 
+    @Builder.Default
+    @Column(name = "maintenance_type", nullable = false, length = 50)
+    private String maintenanceType = "GENERAL";
+
     @Column(nullable = false, length = 50)
     private String status;
+
+    @Column(name = "scheduled_date")
+    private LocalDate scheduledDate;
 
     @Column(name = "completed_date")
     private LocalDate completedDate;
