@@ -6,8 +6,9 @@ import { Filter, UserPlus, User, Anchor, Edit2, Trash2 } from 'lucide-react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllPorts } from '../../../services/api/portService';
 import type { PortSummaryResponse } from '../../../services/api/portService';
-import { PortDetailModal } from '../DetailPort/PortDetailModal';
 import styles from './ListPorts.module.css';
+import {PortDetailModal} from "../DetailPort/PortDetailModal.tsx";
+import DeletePortModal from '../../../components/ui/DeletePortModal/DeletePortModal';
 
 export const ListPorts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,9 +18,16 @@ export const ListPorts: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedPortId, setSelectedPortId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
   const debouncedSearch = useDebounce(searchTerm, 300);
   const navigate = useNavigate();
+
+
+  const [portToDelete, setPortToDelete] = useState<{
+  id: string;
+  name: string;
+  location: string;
+  imageUrl?: string;
+} | null>(null);
 
   useEffect(() => {
   const fetchPorts = async () => {
@@ -190,17 +198,35 @@ const filteredPorts = (ports || []).filter((port) => {
                   </div>
 
                   <div className={styles.cardActions}>
+
                     <button className={styles.viewDetailBtn} onClick={() => handleViewDetail(port.id)}>
                       Ver detalle
                     </button>
+
                     
                     <div className={styles.iconBtns}>
                       <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
                         <Edit2 size={16} />
                       </button>
-                      <button className={styles.deleteBtn} onClick={() => handleDelete(port)}>
-                        <Trash2 size={16} />
+
+                      <button onClick={() => setPortToDelete({
+                        id: port.id,
+                        name: port.name,
+                        location: `${port.provinceName}, ${port.countryName}`,
+                        imageUrl: port.mainImageUrl ?? undefined,
+                      })}>
+                        Eliminar
                       </button>
+
+                      {portToDelete && (
+                        <DeletePortModal
+                          portId={portToDelete.id}
+                          portName={portToDelete.name}
+                          portLocation={portToDelete.location}
+                          mainImageUrl={portToDelete.imageUrl}
+                          onCancel={() => setPortToDelete(null)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -219,7 +245,7 @@ const filteredPorts = (ports || []).filter((port) => {
           Sistema de Gestión Marítima V.1
         </footer>
       </div>
-      
+
       {isModalOpen && selectedPortId && (
         <PortDetailModal
           portId={selectedPortId}

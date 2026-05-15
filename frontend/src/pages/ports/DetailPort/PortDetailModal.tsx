@@ -65,7 +65,6 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
           ) : port ? (
             <>
               {/* IMAGEN DEL PUERTO */}
-              {/* IMAGEN DEL PUERTO */}
               <div className={styles.imageSection}>
                 {imageUrl && imageUrl !== 'null' ? (
                   <>
@@ -76,10 +75,6 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
                       referrerPolicy="no-referrer"
                       crossOrigin="anonymous"
                     />
-                    {/* Quita este div de debug si la imagen ya carga bien */}
-                    <div style={{ position: 'absolute', bottom: 0, background: 'rgba(0,0,0,0.8)', color: 'white', padding: '4px', fontSize: '10px', zIndex: 10 }}>
-                      Debug URL: {imageUrl}
-                    </div>
                   </>
                 ) : (
                   <div className={styles.placeholderImage}>

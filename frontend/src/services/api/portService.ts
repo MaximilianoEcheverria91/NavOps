@@ -55,3 +55,7 @@ export const getPortById = async (id: string): Promise<PortDetailedResponse> => 
   const response = await apiClient.get(`/admin/ports/${id}`);
   return response.data;
 };
+
+export const deletePort = async (id: string): Promise<void> => {
+  await apiClient.delete(`/admin/ports/${id}`);
+};
