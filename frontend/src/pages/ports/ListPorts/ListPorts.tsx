@@ -7,7 +7,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllPorts } from '../../../services/api/portService';
 import type { PortSummaryResponse } from '../../../services/api/portService';
 import styles from './ListPorts.module.css';
-import PortDetail from '../PortDetail/PortDetail';
+import {PortDetailModal} from "../DetailPort/PortDetailModal.tsx";
 import DeletePortModal from '../../../components/ui/DeletePortModal/DeletePortModal';
 
 export const ListPorts: React.FC = () => {
@@ -17,9 +17,11 @@ export const ListPorts: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedPortId, setSelectedPortId] = useState<string | null>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
   const navigate = useNavigate();
+
+
   const [portToDelete, setPortToDelete] = useState<{
   id: string;
   name: string;
@@ -105,8 +107,8 @@ const filteredPorts = (ports || []).filter((port) => {
   };
 
   const handleViewDetail = (id: string) => {
-    console.log('View detail', id);
-    // TODO: implement detail view
+    setSelectedPortId(id);
+    setIsModalOpen(true);
   };
  
 
@@ -197,21 +199,16 @@ const filteredPorts = (ports || []).filter((port) => {
 
                   <div className={styles.cardActions}>
 
-                    <button onClick={() => setSelectedPortId(port.id)}>Ver detalle</button>
-                    {selectedPortId && (
-                      <PortDetail
-                        portId={selectedPortId}
-                        onClose={() => setSelectedPortId(null)}
-                        onEdit={(id) => { /* navegar a edición */ }}
-                        onDelete={(id) => { /* lógica de eliminación */ }}
-                      />
-                    )}
+                    <button className={styles.viewDetailBtn} onClick={() => handleViewDetail(port.id)}>
+                      Ver detalle
+                    </button>
+
                     
                     <div className={styles.iconBtns}>
                       <button className={styles.editBtn} onClick={() => handleEdit(port.id)}>
                         <Edit2 size={16} />
                       </button>
-                     
+
                       <button onClick={() => setPortToDelete({
                         id: port.id,
                         name: port.name,
@@ -220,7 +217,7 @@ const filteredPorts = (ports || []).filter((port) => {
                       })}>
                         Eliminar
                       </button>
-                      
+
                       {portToDelete && (
                         <DeletePortModal
                           portId={portToDelete.id}
@@ -248,7 +245,13 @@ const filteredPorts = (ports || []).filter((port) => {
           Sistema de Gestión Marítima V.1
         </footer>
       </div>
+
+      {isModalOpen && selectedPortId && (
+        <PortDetailModal
+          portId={selectedPortId}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </MainLayout>
   );
 };
-

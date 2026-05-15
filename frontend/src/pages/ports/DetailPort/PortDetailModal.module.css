@@ -1,0 +1,254 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background-color: #031525;
+  border: 1px solid #38bdf8;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title {
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: #64748b;
+  border: 1px solid #38bdf8;
+  padding: 0.4rem 1.2rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+}
+
+.closeBtn {
+  background: transparent;
+  border: 2px solid #38bdf8;
+  color: #38bdf8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+}
+
+/* CONTENT SCROLL */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Custom Scrollbar */
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.content::-webkit-scrollbar-thumb {
+  background-color: rgba(56, 189, 248, 0.3);
+  border-radius: 10px;
+}
+
+.centerMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: #94a3b8;
+  gap: 1rem;
+}
+
+.errorText {
+  color: #ef4444;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* MAIN IMAGE SECTION */
+.imageSection {
+  width: 100%;
+  height: 250px;
+  min-height: 250px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  background-color: rgba(56, 189, 248, 0.05);
+}
+
+.portImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38bdf8;
+}
+
+/* INFO BLOCKS */
+.infoBlock {
+  background-color: transparent;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  color: #e2e8f0;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.gridData {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+}
+
+.dataRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.dataLabel {
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.dataValue {
+  color: #94a3b8;
+}
+
+/* FOOTER ACTIONS */
+.footerActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  background-color: transparent;
+}
+
+.editActionBtn,
+.deleteActionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 8px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editActionBtn {
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+}
+
+.editActionBtn:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+}
+
+.deleteActionBtn {
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+.deleteActionBtn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .gridData {
+    grid-template-columns: 1fr;
+  }
+  
+  .imageSection {
+    height: 180px;
+  }
+  
+  .footerActions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
