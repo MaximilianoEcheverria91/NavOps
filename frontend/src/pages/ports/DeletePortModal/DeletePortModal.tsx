@@ -10,6 +10,7 @@ interface Props {
   portLocation: string;
   mainImageUrl?: string;
   onCancel: () => void;
+  onSuccess: () => void;
 }
 
 const DeletePortModal: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const DeletePortModal: React.FC<Props> = ({
   portLocation,
   mainImageUrl,
   onCancel,
+  onSuccess,
 }) => {
   const navigate = useNavigate();
   const { loading, error, confirmDelete } = useDeletePort();
@@ -30,7 +32,7 @@ const DeletePortModal: React.FC<Props> = ({
 
   // Tras aceptar el FeedbackModal → navegar a la lista
   const handleSuccessClose = () => {
-    navigate('/puertos');
+    onSuccess();
   };
 
   // Mostrar FeedbackModal de éxito

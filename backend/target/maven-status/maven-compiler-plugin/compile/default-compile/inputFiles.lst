@@ -4,6 +4,7 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ResetPasswordRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/VerifyCodeRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/port/PortCreateRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/port/PortUpdateRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelFilterRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelRegistrationRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/StatusUpdateRequest.java

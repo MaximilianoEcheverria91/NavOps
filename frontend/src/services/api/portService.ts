@@ -16,6 +16,15 @@ export const createPort = async (formData: FormData): Promise<any> => {
   return response.data;
 };
 
+export const updatePort = async (id: string, formData: FormData): Promise<any> => {
+  const response = await apiClient.put(`/admin/ports/${id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export const getPortById = async (id: string): Promise<PortDetailedResponse> => {
   const response = await apiClient.get(`/admin/ports/${id}`);
   return response.data;

@@ -23,6 +23,9 @@ export interface PortDetailedResponse {
   dockCount: number;
   maxLength: number;
   maxDraft: number;
+  countryId: string;
+  provinceId: string;
+  cityId: string;
   country: string;
   province: string;
   city: string;
