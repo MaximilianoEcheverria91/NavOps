@@ -84,8 +84,7 @@ const filteredPorts = (ports || []).filter((port) => {
 });
 
   const handleEdit = (id: string) => {
-    console.log('Edit port', id);
-    // navigate(`/puertos/edit/${id}`);
+    navigate(`/puertos/edit/${id}`);
   };
 
   const handleDelete = (port: PortSummaryResponse) => {
@@ -99,6 +98,23 @@ const filteredPorts = (ports || []).filter((port) => {
     setIsModalOpen(true);
   };
  
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'OPERATIONAL':
+        return <span className={`${styles.statusBadge} ${styles.statusOPERATIONAL}`}>OPERATIVO</span>;
+      case 'UNDER_MAINTENANCE':
+        return <span className={`${styles.statusBadge} ${styles.statusUNDER_MAINTENANCE}`}>MANTENIMIENTO</span>;
+      case 'INACTIVE':
+        return <span className={`${styles.statusBadge} ${styles.statusINACTIVE}`}>INACTIVO</span>;
+      case 'CLOSED':
+        return <span className={`${styles.statusBadge} ${styles.statusCLOSED}`}>CERRADO</span>;
+      case 'FULL':
+        return <span className={`${styles.statusBadge} ${styles.statusFULL}`}>MUELLE COMPLETO</span>;
+      default:
+        return <span className={styles.statusBadge}>{status || 'DESCONOCIDO'}</span>;
+    }
+  };
 
   return (
     <MainLayout>
@@ -176,15 +192,7 @@ const filteredPorts = (ports || []).filter((port) => {
                         {port.provinceName}, {port.countryName}
                       </p>
                     </div>
-                    {port.status === 'OPERATIONAL' ? (
-                      <span className={`${styles.statusBadge} ${styles.statusOPERATIONAL}`}>OPERATIVO</span>
-                    ) : port.status === 'UNDER_MAINTENANCE' ? (
-                      <span className={`${styles.statusBadge} ${styles.statusUNDER_MAINTENANCE}`}>EN MANTENIMIENTO</span>
-                    ) : port.status === 'INACTIVE' ? (
-                      <span className={`${styles.statusBadge} ${styles.statusINACTIVE}`}>INACTIVO</span>
-                    ) : (
-                      <span className={`${styles.statusBadge} ${styles.statusCLOSED}`}>MUELLE COMPLETO</span>
-                    )}
+                    {getStatusBadge(port.status)}
                   </div>
 
                   <div className={styles.cardActions}>
@@ -229,6 +237,10 @@ const filteredPorts = (ports || []).filter((port) => {
                         portLocation={portToDelete.location}
                         mainImageUrl={portToDelete.imageUrl}
                         onCancel={() => setPortToDelete(null)}
+                        onSuccess={() => {
+                          setPortToDelete(null);
+                          fetchPorts();
+                        }}
                       />
                     )}
 

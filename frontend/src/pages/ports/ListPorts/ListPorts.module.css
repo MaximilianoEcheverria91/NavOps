@@ -185,34 +185,38 @@
 }
 
 .statusBadge {
-  padding: 4px 12px;
-  border-radius: 16px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 800;
   text-transform: uppercase;
+  color: #001A41;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .statusOPERATIONAL {
-  border: 1px solid rgba(34, 197, 94, 0.5);
-  background-color: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background-color: #00FF40;
 }
 
 .statusUNDER_MAINTENANCE {
- border: 1px solid rgba(181, 197, 34, 0.5);
- background-color: rgba(246, 255, 170, 0.2);
- color: #a8a629;
+  background-color: #FFC000;
 }
 
-.statusCLOSED, .statusFULL {
-  background-color: #6b7280;
-  color: #ffffff;
+.statusCLOSED {
+  background-color: #FE5000;
 }
 
 .statusINACTIVE {
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background-color: #FE434C;
+}
+
+.statusFULL {
+  background-color: #A855F7; /* Purple to differentiate from closed */
+  color: #FFFFFF;
 }
 
 .cardActions {

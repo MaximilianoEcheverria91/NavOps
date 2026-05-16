@@ -38,11 +38,20 @@ public record PortDetailedResponse(
         @Schema(description = "Maximo calado permitido en el puerto", example = "13")
         double maxDraft,
 
+        @Schema(description = "ID del país donde esta ubicado el puerto")
+        UUID countryId,
+
         @Schema(description = "Pais donde esta ubicado el puerto", example = "Argentina")
         String country,
 
+        @Schema(description = "ID de la provincia donde esta ubicado el puerto")
+        UUID provinceId,
+
         @Schema(description = "Provincia o estado donde esta ubicado el puerto", example = "Buenos Aires")
         String province,
+
+        @Schema(description = "ID de la ciudad donde esta ubicado el puerto")
+        UUID cityId,
 
         @Schema(description = "Ciudad o localidad donde esta ubicado el puerto", example = "Dock Sud")
         String city,

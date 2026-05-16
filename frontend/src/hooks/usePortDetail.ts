@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPortById } from '../services/api/portService';
-import type { PortDetailedResponse } from '../services/api/portService';
+import type { PortDetailedResponse } from '../types/port';
 
 export const usePortDetail = (portId: string | null) => {
   const [data, setData] = useState<PortDetailedResponse | null>(null);
