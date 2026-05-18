@@ -28,8 +28,22 @@ public class Engine {
     @Column(nullable = false, length = 100)
     private String model;
 
+    @Builder.Default
+    @Column(name = "engine_type", nullable = false, length = 50)
+    private String engineType = "UNKNOWN";
+
+    @Builder.Default
+    @Column(name = "power_hp", nullable = false)
+    private Integer powerHp = 0;
+
     @Column(name = "current_engine_hours", nullable = false)
     private Integer currentEngineHours;
+
+    @Column(name = "serial_number", length = 100)
+    private String serialNumber;
+
+    @Column(name = "last_tbo_engine_hours")
+    private Integer lastTboEngineHours;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;

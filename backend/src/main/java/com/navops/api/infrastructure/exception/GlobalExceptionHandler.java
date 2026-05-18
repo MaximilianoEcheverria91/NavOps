@@ -235,6 +235,16 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+    @ExceptionHandler(ShipAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleShipAlreadyExists(ShipAlreadyExistsException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Conflict",
+                ex.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
     @ExceptionHandler(PortNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handlePortNotFound(PortNotFoundException ex) {
         ErrorResponseDto response = new ErrorResponseDto(

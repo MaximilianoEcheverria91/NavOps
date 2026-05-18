@@ -129,6 +129,10 @@
   font-size: 1.1rem;
 }
 
+.error {
+  color: #ef4444;
+}
+
 @media (max-width: 1200px) {
   .portsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -142,10 +146,18 @@
   .portsGrid {
     grid-template-columns: 1fr;
   }
+  
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
   .filtersContainer {
     flex-direction: column;
     gap: 12px;
   }
+  
   .filterDropdown {
     width: 100%;
     justify-content: center;
@@ -181,6 +193,7 @@
   transition: transform 0.3s ease;
   border-radius: 10px;
   margin-top: 4px;
+  margin-left: 6px;
 }
 
 .portCard:hover .portImage {

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { MainLayout } from '../../../layouts/MainLayout';
 import { Filter, Anchor, Edit2, Trash2, X } from 'lucide-react';
-import styles from './ListPorts.module.css'; 
+import styles from './ListPorts.module.css';
 import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
 import { useNavigate } from 'react-router-dom';
 import { PortFilterSidebar } from '../../../components/ui/PortFilterSidebar/PortFilterSidebar';
@@ -31,7 +31,7 @@ export const ListPorts: React.FC = () => {
     location: string;
     imageUrl?: string;
   } | null>(null);
-  
+
   const navigate = useNavigate();
 
   // Acople del Hook Avanzado por POST
@@ -81,7 +81,7 @@ export const ListPorts: React.FC = () => {
 
   const getActiveFilters = () => {
     const chips: { key: string, label: string, value: any, displayValue: string }[] = [];
-    
+
     if (filters.countryId) {
       const c = countries.find((x: any) => x.id === filters.countryId);
       if (c) chips.push({ key: 'countryId', label: 'País', value: filters.countryId, displayValue: c.name });
@@ -100,7 +100,7 @@ export const ListPorts: React.FC = () => {
     if (filters.maxMaxLength) chips.push({ key: 'maxMaxLength', label: 'Eslora Máx.', value: filters.maxMaxLength, displayValue: `${filters.maxMaxLength}m` });
     if (filters.minMaxDraft) chips.push({ key: 'minMaxDraft', label: 'Calado Mín.', value: filters.minMaxDraft, displayValue: `${filters.minMaxDraft}m` });
     if (filters.maxMaxDraft) chips.push({ key: 'maxMaxDraft', label: 'Calado Máx.', value: filters.maxMaxDraft, displayValue: `${filters.maxMaxDraft}m` });
-    
+
     filters.statuses?.forEach(st => {
       let label :string = st;
       if (st === 'OPERATIONAL') label = 'Operativo';
@@ -116,7 +116,7 @@ export const ListPorts: React.FC = () => {
 
   const handleRemoveFilter = (chip: any) => {
     const newFilters = { ...filters };
-    
+
     if (['countryId', 'provinceId', 'cityId', 'minDockCount', 'maxDockCount', 'minMaxLength', 'maxMaxLength', 'minMaxDraft', 'maxMaxDraft'].includes(chip.key)) {
       (newFilters as any)[chip.key] = chip.key.includes('Count') || chip.key.includes('Length') || chip.key.includes('Draft') ? null : '';
       if (chip.key === 'countryId') {
@@ -128,7 +128,7 @@ export const ListPorts: React.FC = () => {
     } else if (chip.key.startsWith('status_')) {
       newFilters.statuses = newFilters.statuses?.filter(x => x !== chip.value) || [];
     }
-    
+
     newFilters.page = 0;
     applyFilters(newFilters);
   };
@@ -138,7 +138,7 @@ export const ListPorts: React.FC = () => {
   return (
     <MainLayout>
       <div className="w-full max-w-7xl mx-auto px-6 py-8">
-        
+
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <header>
@@ -158,13 +158,13 @@ export const ListPorts: React.FC = () => {
 
         {/* TOP BAR */}
         <div className={styles.filtersContainer}>
-          <SearchInput 
+          <SearchInput
             value={searchTerm}
             onChange={setSearchTerm}
             placeholder="Buscar por nombre y código ..."
           />
           
-          <button 
+          <button
             className={styles.filterDropdown}
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
@@ -181,7 +181,7 @@ export const ListPorts: React.FC = () => {
             {activeFiltersChips.map(chip => (
               <div key={chip.key} className={styles.filterChip}>
                 {chip.label}: <span>{chip.displayValue}</span>
-                <button 
+                <button
                   className={styles.chipRemoveBtn}
                   onClick={() => handleRemoveFilter(chip)}
                   title="Quitar filtro"
@@ -198,7 +198,7 @@ export const ListPorts: React.FC = () => {
 
         {/* MAIN LAYOUT (GRID + SIDEBAR) */}
         <div className={styles.mainLayout}>
-          
+
           <div className={styles.gridContainer}>
             {isFetching && data.length === 0 ? (
               <div className={styles.loading}>Cargando puertos...</div>
@@ -216,7 +216,7 @@ export const ListPorts: React.FC = () => {
                 <div className={styles.portsGrid}>
                   {filteredPorts.map((port) => (
                     <div key={port.id} className={styles.portCard}>
-                      
+
                       <div className={styles.imageContainer}>
                         {port.mainImageUrl ? (
                           <img src={port.mainImageUrl} alt={port.name} className={styles.portImage} />
@@ -226,7 +226,7 @@ export const ListPorts: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className={styles.cardContent}>
                         <div className={styles.headerRow}>
                           <div className={styles.portInfo}>
@@ -244,8 +244,8 @@ export const ListPorts: React.FC = () => {
                           </button>
 
                           {port.status === 'INACTIVE' && port.isActive === false ? (
-                            <button 
-                              className={styles.reactivateBtn} 
+                            <button
+                              className={styles.reactivateBtn}
                               onClick={() => setPortToReactivate({
                                 id: port.id,
                                 name: port.name,
@@ -309,8 +309,8 @@ export const ListPorts: React.FC = () => {
                 {/* LOAD MORE */}
                 {pagination.page + 1 < pagination.totalPages && (
                   <div className={styles.loadMoreContainer}>
-                    <button 
-                      className={styles.loadMoreBtn} 
+                    <button
+                      className={styles.loadMoreBtn}
                       onClick={loadMore}
                       disabled={isFetching}
                     >
@@ -324,7 +324,7 @@ export const ListPorts: React.FC = () => {
 
           {/* SIDEBAR RIGHT */}
           {isSidebarOpen && (
-            <PortFilterSidebar 
+            <PortFilterSidebar
               filters={filters}
               onFilterChange={handleFilterChange}
               onApply={() => applyFilters()}

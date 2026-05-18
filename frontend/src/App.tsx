@@ -9,8 +9,9 @@ import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
-import { EditPort } from './pages/ports/EditPort/EditPort';
-import { ListShips } from './pages/Ship/ListShip/ListShips';
+import {EditPort} from "./pages/ports/EditPort/EditPort.tsx";
+import {ListShips} from "./pages/ListShip/ListShips.tsx";
+import {CreateShip} from "./pages/ships/CreateShip/CreateShip.tsx";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/users/create" element={<CreateUser />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
+        <Route path="/barcos/nuevo" element={<CreateShip />} />
       </Routes>
     </BrowserRouter>
   );
