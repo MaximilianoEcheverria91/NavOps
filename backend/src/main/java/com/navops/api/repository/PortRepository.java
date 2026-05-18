@@ -13,6 +13,8 @@ public interface PortRepository extends JpaRepository<Port, UUID> {
     
     boolean existsByCode(String code);
 
+    boolean existsByCodeAndIdNot(String code, UUID id);
+
     @EntityGraph(attributePaths = {"country", "province", "city"})
     List<Port> findAllByIsActiveTrue();
 }

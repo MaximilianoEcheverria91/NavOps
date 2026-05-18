@@ -1,19 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents, Popup} from 'react-leaflet';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import L from 'leaflet';
 import { MainLayout } from '../../../layouts/MainLayout';
-import { useCreatePortForm, countryCoordinates } from '../../../hooks/useCreatePortForm';
+import { useEditPortForm } from '../../../hooks/useEditPortForm';
+import { countryCoordinates } from '../../../hooks/useCreatePortForm';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { getCountries } from '../../../services/api/countryService';
 import { getProvincesByCountry } from '../../../services/api/provinceService';
 import { getCitiesByProvince } from '../../../services/api/cityService';
 import { getAllPorts } from '../../../services/api/portService';
 import type { PortSummaryResponse } from '../../../types/port';
-import styles from './CreatePort.module.css';
+import styles from './EditPort.module.css';
 import 'leaflet/dist/leaflet.css';
 import { Loader2 } from 'lucide-react';
-
 
 // Fix Leaflet default icon issue
 const defaultIcon = L.icon({
@@ -28,9 +28,6 @@ const defaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = defaultIcon;
 
-
-
-// Nuevo componente para mover el mapa cuando escribís coordenadas
 function MapPanToCoords({ coords }: { coords: [number, number] | null }) {
   const map = useMap();
   useEffect(() => {
@@ -41,7 +38,6 @@ function MapPanToCoords({ coords }: { coords: [number, number] | null }) {
   return null;
 }
 
-
 function LocationMarker({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
@@ -51,28 +47,9 @@ function LocationMarker({ onMapClick }: { onMapClick: (lat: number, lng: number)
   return null;
 }
 
-// 1. CORRECCIÓN EN MAPRECENTER (Evita que la pantalla desaparezca)
-
-
-/*function MapRecenter({ countryName }: { countryName: string | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (countryName && countryCoordinates[countryName]) {
-      const coords = countryCoordinates[countryName];
-      map.invalidateSize();
-      setTimeout(() => {
-        map.flyTo(coords, 5, { duration: 1.5 });
-        map.invalidateSize();
-      }, 100);
-    }
-  }, [countryName, map]);
-  return null;
-}*/
-// 1. CORRECCIÓN EN MAPRECENTER (Evita que la pantalla desaparezca)
 function MapRecenter({ countryName }: { countryName: string | null }) {
   const map = useMap();
   useEffect(() => {
-    // Agregamos un chequeo: si el país no tiene coordenadas definidas, no hacemos nada
     if (countryName && countryCoordinates[countryName]) {
       const coords = countryCoordinates[countryName];
       map.flyTo(coords, 5, { duration: 1.5 });
@@ -81,17 +58,15 @@ function MapRecenter({ countryName }: { countryName: string | null }) {
   return null;
 }
 
-// Actualizamos ExistingPortsMarkers para que tengan un icono distinto (opcional)
-function ExistingPortsMarkers({ ports }: { ports: PortSummaryResponse[] }) {
+function ExistingPortsMarkers({ ports, currentId }: { ports: PortSummaryResponse[], currentId?: string }) {
   return (
     <>
-      {ports.map((port) => (
+      {ports.filter(p => p.id !== currentId).map((port) => (
         <Marker
           key={port.id}
           position={[port.latitude, port.longitude]}
-          opacity={0.6} // Menos opacidad para los ya existentes
+          opacity={0.6}
         >
-          {/* Un popup ayuda a saber cuál es el puerto que ya existe*/ }
           <Popup>Puerto registrado: {port.name}</Popup>
         </Marker>
       ))}
@@ -99,11 +74,17 @@ function ExistingPortsMarkers({ ports }: { ports: PortSummaryResponse[] }) {
   );
 }
 
-
-export const CreatePort: React.FC = () => {
-  const { form, errors, image, loading, selectedCountryName, setSelectedCountryName, handleChange, handleImage, submit } = useCreatePortForm();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export const EditPort: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { 
+    form, errors, image, loading, fetching, 
+    selectedCountryName, setSelectedCountryName, 
+    selectedProvinceName, selectedCityName, 
+    handleChange, handleImage, submit 
+  } = useEditPortForm(id);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
   const [countries, setCountries] = useState<any[]>([]);
   const [provinces, setProvinces] = useState<any[]>([]);
@@ -113,13 +94,13 @@ export const CreatePort: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    handleImage(file); // Tu lógica del hook para el form
-    const url = URL.createObjectURL(file); // Creamos la URL para mostrarla
-    setPreviewUrl(url);
-  }
-};
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImage(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
 
   useEffect(() => {
     getCountries().then(setCountries).catch(console.error);
@@ -130,11 +111,8 @@ export const CreatePort: React.FC = () => {
       .catch(console.error);
   }, []);
 
-  // Efecto para Países -> Provincias
   useEffect(() => {
-
-  if (form.countryId) {
-      // Limpiamos provincias y ciudades viejas antes de cargar nuevas
+    if (form.countryId) {
       setProvinces([]);
       setCities([]);
       
@@ -147,7 +125,6 @@ export const CreatePort: React.FC = () => {
         setSelectedCountryName(selected.name);
       }
     } else {
-      // Si no hay país, reseteamos todo
       setProvinces([]);
       setCities([]);
       setSelectedCountryName('');
@@ -155,9 +132,8 @@ export const CreatePort: React.FC = () => {
   }, [form.countryId, countries, setSelectedCountryName]);
 
   useEffect(() => {
-
-  if (form.provinceId) {
-      setCities([]); // Limpiamos ciudades viejas
+    if (form.provinceId) {
+      setCities([]);
       getCitiesByProvince(form.provinceId)
         .then(setCities)
         .catch(console.error);
@@ -166,6 +142,66 @@ export const CreatePort: React.FC = () => {
     }
   }, [form.provinceId]);
 
+  // Robust alignment for Country
+  useEffect(() => {
+    if (countries.length === 0 || fetching) return;
+    const currentId = form.countryId;
+    const matchedById = currentId ? countries.find(c => c.id.toLowerCase() === currentId.toLowerCase()) : null;
+    
+    if (!matchedById && selectedCountryName) {
+      const matchedByName = countries.find(c => c.name.trim().toLowerCase() === selectedCountryName.trim().toLowerCase());
+      if (matchedByName) handleChange('countryId', matchedByName.id);
+    } else if (matchedById && matchedById.id !== currentId) {
+      handleChange('countryId', matchedById.id);
+    }
+  }, [form.countryId, selectedCountryName, countries, fetching]);
+
+  // Robust alignment for Province
+  useEffect(() => {
+    if (provinces.length === 0 || fetching) return;
+    const currentId = form.provinceId;
+    const matchedById = currentId ? provinces.find(p => p.id.toLowerCase() === currentId.toLowerCase()) : null;
+    
+    if (!matchedById && selectedProvinceName) {
+      const matchedByName = provinces.find(p => p.name.trim().toLowerCase() === selectedProvinceName.trim().toLowerCase());
+      if (matchedByName) handleChange('provinceId', matchedByName.id);
+    } else if (matchedById && matchedById.id !== currentId) {
+      handleChange('provinceId', matchedById.id);
+    }
+  }, [form.provinceId, selectedProvinceName, provinces, fetching]);
+
+  // Robust alignment for City
+  useEffect(() => {
+    if (cities.length === 0 || fetching) return;
+    const currentId = form.cityId;
+    const matchedById = currentId ? cities.find(c => c.id.toLowerCase() === currentId.toLowerCase()) : null;
+    
+    if (!matchedById && selectedCityName) {
+      const matchedByName = cities.find(c => c.name.trim().toLowerCase() === selectedCityName.trim().toLowerCase());
+      if (matchedByName) handleChange('cityId', matchedByName.id);
+    } else if (matchedById && matchedById.id !== currentId) {
+      handleChange('cityId', matchedById.id);
+    }
+  }, [form.cityId, selectedCityName, cities, fetching]);
+
+  // Si form trae coordenadas inicialmente, actualizamos el marcador
+  useEffect(() => {
+    if (form.latitude && form.longitude) {
+      const lat = parseFloat(form.latitude);
+      const lng = parseFloat(form.longitude);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setMarkerPosition([lat, lng]);
+      }
+    }
+  }, [form.latitude, form.longitude]);
+
+  // Y para la imagen inicial
+  useEffect(() => {
+    if (image && !previewUrl) {
+      setPreviewUrl(image);
+    }
+  }, [image, previewUrl]);
+
   const handleMapClick = (lat: number, lng: number) => {
     setMarkerPosition([lat, lng]);
     handleChange('latitude', lat.toFixed(6));
@@ -173,46 +209,48 @@ export const CreatePort: React.FC = () => {
   };
 
   const handleSave = async () => {
-    console.log("Intentando guardar... Datos actuales:", form);
-  const response = await submit(); // Aquí ya debería correr tu validateCreatePort
-  if (response.success) {
-    setShowModal(true); // Mostramos el cartel de éxito
-    
-    // Esperamos 2 segundos para que lea el mensaje y redirigimos
-    setTimeout(() => {
-      navigate('/puertos'); 
-    }, 2500);
-  } else {
-    // Aquí podrías manejar errores de validación si el hook no lo hace solo
-    console.log("Errores de validación:", response.error);
-  }
-};
-
-const handleConfirmModal = () => {
-    setShowModal(false);
-    navigate('/usuarios');
+    const response = await submit();
+    if (response.success) {
+      setShowModal(true);
+      setTimeout(() => {
+        navigate('/puertos'); 
+      }, 2500);
+    }
   };
 
-  // Dentro de CreatePort
-const handleInputChange = (field: string, value: string) => {
-  handleChange(field, value);
-  
-  // Si editamos lat o lng, actualizamos el marcador
-  const lat = field === 'latitude' ? parseFloat(value) : parseFloat(form.latitude);
-  const lng = field === 'longitude' ? parseFloat(value) : parseFloat(form.longitude);
-  
-  if (!isNaN(lat) && !isNaN(lng)) {
-    setMarkerPosition([lat, lng]);
+  const handleConfirmModal = () => {
+    setShowModal(false);
+    navigate('/puertos');
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    handleChange(field, value);
+    
+    const lat = field === 'latitude' ? parseFloat(value) : parseFloat(form.latitude);
+    const lng = field === 'longitude' ? parseFloat(value) : parseFloat(form.longitude);
+    
+    if (!isNaN(lat) && !isNaN(lng)) {
+      setMarkerPosition([lat, lng]);
+    }
+  };
+
+  if (fetching) {
+    return (
+      <MainLayout>
+        <div className={styles.container} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Loader2 className={styles.spinner} size={48} color="#0ea5e9" />
+          <span style={{ marginLeft: 16 }}>Cargando datos del puerto...</span>
+        </div>
+      </MainLayout>
+    );
   }
-};
 
   return (
-    
     <MainLayout>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Agregar nuevo Puerto</h1>
-          <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
+          <h1 className={styles.title}>Editar Puerto</h1>
+          <p className={styles.subtitle}>Modifica los datos del puerto seleccionado</p>
         </div>
 
         {/* SECCIÓN FOTOGRAFÍA */}
@@ -235,8 +273,8 @@ const handleInputChange = (field: string, value: string) => {
           <div className={styles.uploadTextInfo}>
             <span className={styles.recommendedBadge}>Recomendado</span>
             <p style={{fontSize: '13px', lineHeight: '1.6', color: 'rgba(255,255,255,0.7)'}}>
-              Se recomienda una fotografía de perfl del Usuario con buena  iluminación. La imagen debe
-              ser clara y mostrar las características  principales de la embarcación.
+              Se recomienda una fotografía del Puerto con buena iluminación. La imagen debe
+              ser clara y mostrar las características principales de la infraestructura.
             </p>
           </div>
         </div>
@@ -244,12 +282,12 @@ const handleInputChange = (field: string, value: string) => {
         {/* GRID CENTRAL: MAPA + INFO GENERAL */}
         <div className={styles.mainGrid}>
           <div className={styles.mapWrapper}>
-            <MapContainer center={[-38.4161, -63.6167]} zoom={4} className={styles.mapContainer}>
+            <MapContainer center={markerPosition || [-38.4161, -63.6167]} zoom={markerPosition ? 13 : 4} className={styles.mapContainer}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <LocationMarker onMapClick={handleMapClick} />
               <MapRecenter countryName={selectedCountryName} />
               <MapPanToCoords coords={markerPosition} />
-              <ExistingPortsMarkers ports={existingPorts} />
+              <ExistingPortsMarkers ports={existingPorts} currentId={id} />
               {markerPosition && <Marker position={markerPosition} />}
             </MapContainer>
           </div>
@@ -277,11 +315,24 @@ const handleInputChange = (field: string, value: string) => {
               {errors['code'] && <span className={styles.errorText}>{errors['code']}</span>}
             </div>
 
+            {/* ESTADO */}
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Estado del Puerto</label>
+              <select className={`${styles.input} ${errors['status'] ? styles.inputError : ''}`}
+                value={form.status} 
+                onChange={(e) => handleChange('status', e.target.value)}>
+                <option value="OPERATIONAL">Operativo</option>
+                <option value="UNDER_MAINTENANCE">En mantenimiento</option>
+                <option value="CLOSED">Cerrado</option>
+                <option value="FULL">Muelle completo</option>
+                <option value="INACTIVE">Inactivo</option>
+              </select>
+            </div>
+
             {/*TIPO DE PUERTO*/}
             <div className={styles.inputGroup}>
               <label className={styles.label}>Tipo de Puerto</label>
               <select className={`${styles.input} ${errors['portType'] ? styles.inputError : ''}`}
-               
                 value={form.portType} 
                 onChange={(e) => handleChange('portType', e.target.value)}>
                 <option value="">Ej: Industrial</option>
@@ -316,7 +367,6 @@ const handleInputChange = (field: string, value: string) => {
             </div>
           </div>
         </div>
-    
 
         {/* FILA: PAÍS*/}
         <div className={styles.fullWidthRow}>
@@ -325,8 +375,12 @@ const handleInputChange = (field: string, value: string) => {
             <select 
               className={`${styles.input} ${errors['countryId'] ? styles.inputError : ''}`}
               value={form.countryId} 
-              onChange={(e) => handleChange('countryId', e.target.value)}>
-              <option value="">Seleccione un País</option> {/* Placeholder */}
+              onChange={(e) => {
+                handleChange('countryId', e.target.value);
+                handleChange('provinceId', '');
+                handleChange('cityId', '');
+              }}>
+              <option value="">Seleccione un País</option>
                 {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -337,7 +391,10 @@ const handleInputChange = (field: string, value: string) => {
             <select 
               className={`${styles.input} ${errors['provinceId'] ? styles.inputError : ''}`}
               value={form.provinceId} 
-              onChange={(e) => handleChange('provinceId', e.target.value)}>
+              onChange={(e) => {
+                handleChange('provinceId', e.target.value);
+                handleChange('cityId', '');
+              }}>
                <option value="">Seleccione una Provincia</option>
                   {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
@@ -364,7 +421,6 @@ const handleInputChange = (field: string, value: string) => {
             <div className={styles.inputGroup}>
               <label className={styles.label}>Tipo de muelle</label>
               <select className={`${styles.input} ${errors['dockType'] ? styles.inputError : ''}`}
-               
                 value={form.dockType} 
                 onChange={(e) => handleChange('dockType', e.target.value)}>
                 <option value="">Ej: Sólido</option>
@@ -441,39 +497,23 @@ const handleInputChange = (field: string, value: string) => {
             <label className={styles.label}>Sitio Web</label>
             <input 
               className={`${styles.input} ${errors['contactWeb'] ? styles.inputError : ''}`}
-              placeholder="mardelplata@gmail.com.ar"
+              placeholder="www.mardelplata.com.ar"
               value={form.contactWeb} 
               onChange={(e) => handleChange('contactWeb', e.target.value)}/>
               {errors['contactWeb'] && <span className={styles.errorText}>{errors['contactWeb']}</span>} 
             </div>
         </div>
 
-        {/* ACCIONES FINAL
-        
-        <button 
-  className={styles.saveBtn} 
-  onClick={handleSave}
-  disabled={loading} // Deshabilitar mientras carga
->
-  {loading ? (
-    <>
-      <Loader2 className={styles.spinner} size={20} />
-      Guardando...
-    </>
-  ) : (
-    'Guardar'
-  )}
-</button>*/}
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={() => navigate('/puertos')}>Cancelar</button>
           <button className={styles.saveBtn} onClick={handleSave} disabled={loading}>
             {loading ? (
               <>
               <Loader2 className={styles.spinner} size={20} />
-              Guardando...
+              Actualizando...
               </>
             ) : (
-                'Guardar'
+                'Actualizar'
             )}
           </button>
         </div>
@@ -484,7 +524,7 @@ const handleInputChange = (field: string, value: string) => {
 
        {showModal && (
               <FeedbackModal
-                message="Usuario creado correctamente"
+                message="El puerto se actualizó correctamente"
                 onClose={handleConfirmModal}
               />
             )}

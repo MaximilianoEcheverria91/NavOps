@@ -10,10 +10,3 @@ export const getShipById = async (id: string): Promise<ShipDetailResponse> => {
   const response = await apiClient.get(`/admin/ships/${id}`);
   return response.data;
 };
-
-export const createShip = async (formData: FormData): Promise<any> => {
-  const response = await apiClient.post('/admin/ships/create-ship', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return response.data;
-};

@@ -1,6 +1,7 @@
 package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.port.PortCreateRequest;
+import com.navops.api.application.dto.request.port.PortUpdateRequest;
 import com.navops.api.application.dto.response.port.PortDetailedResponse;
 import com.navops.api.application.dto.response.port.PortResponse;
 import com.navops.api.application.dto.response.port.PortSummaryResponse;
@@ -74,7 +75,7 @@ public class PortController {
         return ResponseEntity.ok(response);
     }
 
-   
+   // DETAIL PORT
     @GetMapping("/{id}")
     public ResponseEntity<?> getPortById(@PathVariable("id") UUID id){
         log.info("Petición recibida para obtener detalle completo del puerto seleccionado");
@@ -82,6 +83,43 @@ public class PortController {
         return ResponseEntity.ok(responses);
     }
 
+
+    // UPDATE PORT
+    @Operation(summary = "Actualizar puerto", description = "Actualiza los datos de un puerto existente.", responses = {
+            @ApiResponse(responseCode = "200", description = "Puerto actualizado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Error de validación de los datos enviados", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "404", description = "Puerto no encontrado", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto por código de puerto duplicado", content = @Content(schema = @Schema(implementation = Map.class)))
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updatePort(
+            @PathVariable("id") UUID id,
+            @RequestPart("data") @Valid PortUpdateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        log.info("Recibida petición para actualizar puerto ID: {}", id);
+        try {
+            portService.updatePort(id, request, image);
+            return ResponseEntity.ok(Map.of("message", "Puerto actualizado exitosamente."));
+        } catch (PortNotFoundException e) {
+            log.error("Puerto no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (PortAlreadyExistsException e) {
+            log.error("Conflicto al actualizar:", e);
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.error("Argumento inválido:", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            log.error("ERROR AL ACTUALIZAR PUERTO:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    // DELETE PORT
     @Operation(summary = "Desactivar puerto (baja lógica)", description = "Cambia el estado del puerto a INACTIVE y lo marca como no activo. El puerto no se elimina físicamente de la base de datos para mantener el historial.", responses = {
             @ApiResponse(responseCode = "200", description = "Puerto desactivado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Puerto no encontrado", content = @Content(schema = @Schema(implementation = Map.class)))
@@ -99,6 +137,7 @@ public class PortController {
         }
     }
 
+    // ACTIVE PORT
     @Operation(summary = "Reactivar puerto", description = "Restablece el estado del puerto a OPERATIONAL y lo marca como activo. Revierte la baja lógica.", responses = {
             @ApiResponse(responseCode = "200", description = "Puerto reactivado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Puerto no encontrado", content = @Content(schema = @Schema(implementation = Map.class)))
