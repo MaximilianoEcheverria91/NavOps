@@ -10,7 +10,7 @@ import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
 import {EditPort} from "./pages/ports/EditPort/EditPort.tsx";
-import {ListShips} from "./pages/ListShip/ListShips.tsx";
+import {ListShips} from "./pages/ships/ListShips/ListShips.tsx";
 import {CreateShip} from "./pages/ships/CreateShip/CreateShip.tsx";
 
 function App() {
