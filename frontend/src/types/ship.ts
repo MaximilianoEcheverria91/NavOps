@@ -1,3 +1,5 @@
+export type ShipStatus = 'OPERATIONAL' | 'UNDER_MAINTENANCE' | 'INACTIVE' | 'CLOSED' | 'FULL';
+
 export interface ShipSummaryResponse {
   id: string;
   name: string;
