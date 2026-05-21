@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -166,6 +167,17 @@ public class ShipService {
                 .orElse(null);
 
         return toDetailResponse(ship, engine, fuelCapacity, lastMaintDate);
+    }
+
+    @Transactional
+    public void deleteShip(UUID id) {
+        log.info("Eliminando barco id: {}", id);
+        Ship ship = shipRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ShipNotFoundException("El barco no existe o ya fue eliminado."));
+        ship.setDeletedAt(OffsetDateTime.now());
+        ship.setActive(false);
+        shipRepository.save(ship);
+        log.info("Barco eliminado (soft delete) id: {}", id);
     }
 
     private ShipDetailResponse toDetailResponse(Ship ship, Engine engine, BigDecimal fuelCapacity, LocalDate lastMaintDate) {

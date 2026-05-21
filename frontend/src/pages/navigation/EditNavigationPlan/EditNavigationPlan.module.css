@@ -1,0 +1,157 @@
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--text-secondary, #8aa0b4);
+  gap: 1rem;
+  text-align: center;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #8aa0b4);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+  margin-bottom: 0.5rem;
+}
+
+.backBtn:hover {
+  background: var(--color-bg-secondary, #0f1e2e);
+  color: #fff;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.statusDRAFT     { background: rgba(100,116,139,0.2); color: #94a3b8; }
+.statusPLANNED   { background: rgba(14,165,233,0.15); color: #38bdf8; }
+.statusIN_PROGRESS { background: rgba(234,179,8,0.15); color: #facc15; }
+.statusCOMPLETED { background: rgba(34,197,94,0.15);  color: #4ade80; }
+.statusCANCELLED { background: rgba(239,68,68,0.15);  color: #f87171; }
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-bg-secondary, #0f1e2e);
+  border: 1px solid var(--color-border, #1f3448);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-secondary, #0ea5e9);
+}
+
+.cardHeader h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+  margin: 0;
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(14,165,233,0.12);
+  border: 1px solid rgba(14,165,233,0.3);
+  color: #38bdf8;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.editBtn:hover {
+  background: rgba(14,165,233,0.22);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #fff;
+  border-bottom: 1px solid var(--color-border, #1f3448);
+  padding-bottom: 0.4rem;
+}
+
+.infoRow.total {
+  font-weight: 700;
+  border-bottom: none;
+  padding-top: 0.4rem;
+}
+
+.label {
+  color: var(--text-secondary, #8aa0b4);
+  font-size: 0.85rem;
+}
+
+.noData {
+  color: var(--text-secondary, #8aa0b4);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.crewList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.crewItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.role {
+  color: var(--text-secondary, #8aa0b4);
+  font-size: 0.8rem;
+}
+
+.moreItems {
+  font-size: 0.8rem;
+  color: #38bdf8;
+  margin: 0;
+}

@@ -78,6 +78,9 @@ public class Ship {
     @Column(name = "main_image_url", length = 1000)
     private String mainImageUrl;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
+
     @Builder.Default
     @Version
     @Column(nullable = false)

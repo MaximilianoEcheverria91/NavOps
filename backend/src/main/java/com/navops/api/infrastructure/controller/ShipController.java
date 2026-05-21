@@ -72,4 +72,15 @@ public class ShipController {
         log.info("Petición recibida para detalle de barco id: {}", id);
         return ResponseEntity.ok(shipService.getById(id));
     }
+
+    @Operation(summary = "Eliminar barco", description = "Elimina (soft delete) un barco por ID.", responses = {
+            @ApiResponse(responseCode = "204", description = "Barco eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Barco no encontrado")
+    })
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteShip(@PathVariable UUID id) {
+        log.info("Petición recibida para eliminar barco id: {}", id);
+        shipService.deleteShip(id);
+        return ResponseEntity.noContent().build();
+    }
 }

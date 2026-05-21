@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X, Map, ChevronDown } from 'lucide-react';
 import styles from './MainLayout.module.css';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,20 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const isNavActive = location.pathname.startsWith('/navegacion');
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsNavDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className={styles.wrapper}>
@@ -44,12 +58,46 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             >
               <Ship size={18}/> Barcos
             </NavLink>
-            <NavLink 
-              to="/puertos" 
+            <NavLink
+              to="/puertos"
               className={({ isActive }) => isActive ? styles.activeLink : styles.link}
             >
               <Anchor size={18}/> Puertos
             </NavLink>
+
+            <div className={styles.navDropdownWrapper} ref={dropdownRef}>
+              <button
+                className={`${styles.navDropdownTrigger} ${isNavActive ? styles.activeLink : styles.link}`}
+                onClick={() => setIsNavDropdownOpen((prev) => !prev)}
+              >
+                <Map size={18}/> Navegación <ChevronDown size={14} className={`${styles.chevron} ${isNavDropdownOpen ? styles.chevronOpen : ''}`} />
+              </button>
+              {isNavDropdownOpen && (
+                <div className={styles.navDropdown}>
+                  <NavLink
+                    to="/navegacion/nuevo"
+                    className={({ isActive }) => isActive ? styles.dropdownItemActive : styles.dropdownItem}
+                    onClick={() => setIsNavDropdownOpen(false)}
+                  >
+                    Nuevo plan
+                  </NavLink>
+                  <NavLink
+                    to="/navegacion/viajes"
+                    className={({ isActive }) => isActive ? styles.dropdownItemActive : styles.dropdownItem}
+                    onClick={() => setIsNavDropdownOpen(false)}
+                  >
+                    Viajes
+                  </NavLink>
+                  <NavLink
+                    to="/navegacion/historial"
+                    className={({ isActive }) => isActive ? styles.dropdownItemActive : styles.dropdownItem}
+                    onClick={() => setIsNavDropdownOpen(false)}
+                  >
+                    Historial
+                  </NavLink>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

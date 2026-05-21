@@ -1,0 +1,3142 @@
+diff --git a/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipCreateRequest.java b/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipCreateRequest.java
+new file mode 100644
+index 0000000..3dfd8be
+--- /dev/null
++++ b/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipCreateRequest.java
+@@ -0,0 +1,98 @@
++package com.navops.api.application.dto.request.ship;
++
++import io.swagger.v3.oas.annotations.media.Schema;
++import jakarta.validation.constraints.NotBlank;
++import jakarta.validation.constraints.NotNull;
++
++import java.math.BigDecimal;
++import java.time.LocalDate;
++import java.util.UUID;
++
++@Schema(description = "DTO para el registro de un nuevo Barco")
++public record ShipCreateRequest(
++
++    @NotBlank(message = "El nombre del barco es obligatorio")
++    @Schema(description = "Nombre del barco", example = "ARA Almirante Brown")
++    String name,
++
++    @NotBlank(message = "El número IMO es obligatorio")
++    @Schema(description = "Número IMO único", example = "AR-D10-1983")
++    String imoNumber,
++
++    @NotBlank(message = "La matrícula es obligatoria")
++    @Schema(description = "Matrícula única del barco", example = "D-10")
++    String registration,
++
++    @NotBlank(message = "El tipo de barco es obligatorio")
++    @Schema(description = "Tipo de barco", example = "Destructor MEKO 360")
++    String shipType,
++
++    @NotNull(message = "El año de construcción es obligatorio")
++    @Schema(description = "Año de construcción", example = "1983")
++    Short buildYear,
++
++    @NotNull(message = "El país es obligatorio")
++    @Schema(description = "ID del país de bandera")
++    UUID countryId,
++
++    @NotBlank(message = "El estado es obligatorio")
++    @Schema(description = "Estado del barco", example = "OPERATIONAL",
++            allowableValues = {"OPERATIONAL", "MAINTENANCE", "REPAIR", "OUT_OF_SERVICE"})
++    String status,
++
++    @Schema(description = "Número de casco", example = "D-10")
++    String hullNumber,
++
++    @NotNull(message = "La eslora es obligatoria")
++    @Schema(description = "Eslora en metros", example = "125.9")
++    BigDecimal length,
++
++    @NotNull(message = "La manga es obligatoria")
++    @Schema(description = "Manga en metros", example = "14.0")
++    BigDecimal beam,
++
++    @NotNull(message = "El calado es obligatorio")
++    @Schema(description = "Calado en metros", example = "5.8")
++    BigDecimal draft,
++
++    @NotNull(message = "El puntal es obligatorio")
++    @Schema(description = "Puntal en metros", example = "9.28")
++    BigDecimal depth,
++
++    @NotNull(message = "El peso es obligatorio")
++    @Schema(description = "Peso en toneladas (desplazamiento)", example = "3600.0")
++    BigDecimal weightTonnes,
++
++    @NotNull(message = "La capacidad de tripulación es obligatoria")
++    @Schema(description = "Capacidad de tripulación", example = "200")
++    Short crewCapacity,
++
++    @NotNull(message = "La capacidad de carga es obligatoria")
++    @Schema(description = "Capacidad de carga en toneladas", example = "0.0")
++    BigDecimal cargoCapacityTonnes,
++
++    @Schema(description = "Cantidad de bodegas", example = "2")
++    Short holdCount,
++
++    @Schema(description = "Capacidad de combustible en litros", example = "500000.0")
++    BigDecimal fuelCapacityLiters,
++
++    @Schema(description = "Fabricante del motor", example = "Rolls-Royce")
++    String engineManufacturer,
++
++    @Schema(description = "Modelo del motor", example = "Olympus TM3B")
++    String engineModel,
++
++    @Schema(description = "Número de serie del motor", example = "SN-12345")
++    String serialNumber,
++
++    @Schema(description = "Horas actuales del motor", example = "15000")
++    Integer currentEngineHours,
++
++    @Schema(description = "Horas del motor en el último overhaul", example = "10000")
++    Integer lastTboEngineHours,
++
++    @Schema(description = "Fecha del último mantenimiento", example = "2024-01-15")
++    LocalDate lastMaintenanceDate
++
++) {}
+diff --git a/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java b/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
+index 6020a6d..df04ef7 100644
+--- a/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
++++ b/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
+@@ -16,25 +16,20 @@ public record ShipDetailResponse(
+     String countryName,
+     String status,
+     String mainImageUrl,
+-    // Gap 2 — ships.hull_number?
+     String hullNumber,
+-    // Gap 3   ships.hold_count?
+     Short holdCount,
+-    // Especificaciones físicas — presentes en ships
+     BigDecimal length,
+     BigDecimal beam,
+     BigDecimal draft,
+     BigDecimal depth,
+-    // Capacidades — presentes en ships
+     Short crewCapacity,
++    BigDecimal weightTonnes,
+     BigDecimal cargoCapacityTonnes,
+-    // Relacionadas - null por ahora
++    String engineManufacturer,
+     String engineModel,
+-    // Gap 4 — engines.serial_number?
+     String engineSerialNumber,
+     Integer currentEngineHours,
+-    // Gap 5 — tbo.last_tbo_engine_hours?
+     Integer lastTboEngineHours,
+     BigDecimal fuelCapacityLiters,
+     LocalDate lastMaintenanceDate
+-) {}
+\ No newline at end of file
++) {}
+diff --git a/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java b/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
+index bf4f89b..a465e57 100644
+--- a/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
++++ b/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
+@@ -11,4 +11,4 @@ public record ShipSummaryResponse(
+     @Schema(description = "Número IMO", example = "9176187") String imoNumber,
+     @Schema(description = "URL de la imagen principal") String mainImageUrl,
+     @Schema(description = "Estado operativo", example = "OPERATIONAL") String status
+-) {}
+\ No newline at end of file
++) {}
+diff --git a/backend/src/main/java/com/navops/api/application/service/ShipService.java b/backend/src/main/java/com/navops/api/application/service/ShipService.java
+index 1e0c8e7..bfc8cf4 100644
+--- a/backend/src/main/java/com/navops/api/application/service/ShipService.java
++++ b/backend/src/main/java/com/navops/api/application/service/ShipService.java
+@@ -1,14 +1,18 @@
+ package com.navops.api.application.service;
+ 
++import com.navops.api.application.dto.request.ship.ShipCreateRequest;
+ import com.navops.api.application.dto.response.ship.ShipDetailResponse;
+ import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
++import com.navops.api.domain.entity.Country;
+ import com.navops.api.domain.entity.Engine;
+ import com.navops.api.domain.entity.Maintenance;
+ import com.navops.api.domain.entity.Ship;
+ import com.navops.api.domain.entity.ShipTank;
+ import com.navops.api.domain.enums.ShipStatusEnum;
+ import com.navops.api.infrastructure.exception.NoShipsFoundException;
++import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
+ import com.navops.api.infrastructure.exception.ShipNotFoundException;
++import com.navops.api.repository.CountryRepository;
+ import com.navops.api.repository.EngineRepository;
+ import com.navops.api.repository.MaintenanceRepository;
+ import com.navops.api.repository.ShipRepository;
+@@ -17,15 +21,15 @@ import lombok.RequiredArgsConstructor;
+ import lombok.extern.slf4j.Slf4j;
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
++import org.springframework.web.multipart.MultipartFile;
+ 
++import java.io.IOException;
+ import java.math.BigDecimal;
+ import java.time.LocalDate;
+ import java.util.Comparator;
+ import java.util.List;
+-import java.util.Map;
+ import java.util.Objects;
+ import java.util.UUID;
+-import java.util.stream.Collectors;
+ 
+ @Service
+ @RequiredArgsConstructor
+@@ -36,6 +40,85 @@ public class ShipService {
+     private final EngineRepository engineRepository;
+     private final ShipTankRepository shipTankRepository;
+     private final MaintenanceRepository maintenanceRepository;
++    private final CountryRepository countryRepository;
++    private final ImageStorageService imageStorageService;
++
++    @Transactional
++    public ShipDetailResponse createShip(ShipCreateRequest request, MultipartFile image) throws IOException {
++        log.info("Iniciando creación de barco con IMO: {}", request.imoNumber());
++
++        if (shipRepository.existsByImoNumberAndDeletedAtIsNull(request.imoNumber())) {
++            throw new ShipAlreadyExistsException("El número IMO ya se encuentra registrado.");
++        }
++        if (shipRepository.existsByRegistrationAndDeletedAtIsNull(request.registration())) {
++            throw new ShipAlreadyExistsException("La matrícula ya se encuentra registrada.");
++        }
++
++        Country country = countryRepository.findById(request.countryId())
++                .orElseThrow(() -> new IllegalArgumentException("El ID del país provisto no existe."));
++
++        String mainImageUrl = null;
++        if (image != null && !image.isEmpty()) {
++            mainImageUrl = imageStorageService.uploadImage(image, "ships");
++        }
++
++        Ship ship = Ship.builder()
++                .name(request.name())
++                .imoNumber(request.imoNumber())
++                .registration(request.registration())
++                .shipType(request.shipType())
++                .buildYear(request.buildYear())
++                .country(country)
++                .status(ShipStatusEnum.valueOf(request.status()))
++                .hullNumber(request.hullNumber())
++                .holdCount(request.holdCount())
++                .length(request.length())
++                .beam(request.beam())
++                .draft(request.draft())
++                .depth(request.depth())
++                .weightTonnes(request.weightTonnes())
++                .cargoCapacityTonnes(request.cargoCapacityTonnes())
++                .crewCapacity(request.crewCapacity())
++                .mainImageUrl(mainImageUrl)
++                .build();
++        ship = shipRepository.save(ship);
++        log.info("Barco registrado con ID: {}", ship.getId());
++
++        Engine engine = null;
++        if (request.engineManufacturer() != null && !request.engineManufacturer().isBlank()
++                && request.engineModel() != null && !request.engineModel().isBlank()) {
++            engine = Engine.builder()
++                    .shipId(ship.getId())
++                    .manufacturer(request.engineManufacturer())
++                    .model(request.engineModel())
++                    .serialNumber(request.serialNumber())
++                    .currentEngineHours(request.currentEngineHours() != null ? request.currentEngineHours() : 0)
++                    .lastTboEngineHours(request.lastTboEngineHours())
++                    .build();
++            engineRepository.save(engine);
++        }
++
++        if (request.fuelCapacityLiters() != null && request.fuelCapacityLiters().compareTo(BigDecimal.ZERO) > 0) {
++            ShipTank tank = ShipTank.builder()
++                    .shipId(ship.getId())
++                    .contentType("FUEL")
++                    .maxCapacityLiters(request.fuelCapacityLiters())
++                    .build();
++            shipTankRepository.save(tank);
++        }
++
++        if (request.lastMaintenanceDate() != null) {
++            Maintenance maintenance = Maintenance.builder()
++                    .shipId(ship.getId())
++                    .status("COMPLETED")
++                    .scheduledDate(request.lastMaintenanceDate())
++                    .completedDate(request.lastMaintenanceDate())
++                    .build();
++            maintenanceRepository.save(maintenance);
++        }
++
++        return toDetailResponse(ship, engine, null, null);
++    }
+ 
+     @Transactional(readOnly = true)
+     public List<ShipSummaryResponse> getAll() {
+@@ -46,12 +129,6 @@ public class ShipService {
+             throw new NoShipsFoundException("No se encontraron barcos registrados.");
+         }
+ 
+-        List<UUID> shipIds = ships.stream().map(Ship::getId).toList();
+-        Map<UUID, List<Maintenance>> maintenanceByShip = maintenanceRepository
+-                .findAllByShipIdInAndDeletedAtIsNull(shipIds)
+-                .stream()
+-                .collect(Collectors.groupingBy(Maintenance::getShipId));
+-
+         return ships.stream()
+                 .map(ship -> new ShipSummaryResponse(
+                         ship.getId(),
+@@ -59,7 +136,7 @@ public class ShipService {
+                         ship.getRegistration(),
+                         ship.getImoNumber(),
+                         ship.getMainImageUrl(),
+-                        deriveShipStatus(maintenanceByShip.getOrDefault(ship.getId(), List.of()))
++                        ship.getStatus().name()
+                 ))
+                 .toList();
+     }
+@@ -76,8 +153,6 @@ public class ShipService {
+         List<Maintenance> maintenanceList = maintenanceRepository
+                 .findAllByShipIdAndDeletedAtIsNull(id);
+ 
+-        String countryName = ship.getCountry() != null ? ship.getCountry().getName() : null;
+-
+         BigDecimal fuelTotal = fuelTanks.stream()
+                 .map(ShipTank::getMaxCapacityLiters)
+                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+@@ -90,6 +165,11 @@ public class ShipService {
+                 .max(Comparator.naturalOrder())
+                 .orElse(null);
+ 
++        return toDetailResponse(ship, engine, fuelCapacity, lastMaintDate);
++    }
++
++    private ShipDetailResponse toDetailResponse(Ship ship, Engine engine, BigDecimal fuelCapacity, LocalDate lastMaintDate) {
++        String countryName = ship.getCountry() != null ? ship.getCountry().getName() : null;
+         return new ShipDetailResponse(
+                 ship.getId(),
+                 ship.getName(),
+@@ -98,30 +178,24 @@ public class ShipService {
+                 ship.getShipType(),
+                 (int) ship.getBuildYear(),
+                 countryName,
+-                deriveShipStatus(maintenanceList),
++                ship.getStatus().name(),
+                 ship.getMainImageUrl(),
+-                null, // hullNumber        — Gap 2: necesita ALTER TABLE ships ADD COLUMN hull_number VARCHAR(100)
+-                null, // holdCount         — Gap 3: necesita ALTER TABLE ships ADD COLUMN hold_count SMALLINT
++                ship.getHullNumber(),
++                ship.getHoldCount(),
+                 ship.getLength(),
+                 ship.getBeam(),
+                 ship.getDraft(),
+                 ship.getDepth(),
+                 ship.getCrewCapacity(),
++                ship.getWeightTonnes(),
+                 ship.getCargoCapacityTonnes(),
++                engine != null ? engine.getManufacturer() : null,
+                 engine != null ? engine.getModel() : null,
+-                null, // engineSerialNumber — Gap 4: necesita ALTER TABLE engines ADD COLUMN serial_number VARCHAR(100)
++                engine != null ? engine.getSerialNumber() : null,
+                 engine != null ? engine.getCurrentEngineHours() : null,
+-                null, // lastTboEngineHours — Gap 5: necesita ALTER TABLE tbo ADD COLUMN last_tbo_engine_hours INT
++                engine != null ? engine.getLastTboEngineHours() : null,
+                 fuelCapacity,
+                 lastMaintDate
+         );
+     }
+-
+-    // TEMPORAL — reemplazar por ship.getStatus() cuando exista ships.status (ver docs/ships-data-gaps.md Gap 1)
+-    // Para revertir: eliminar este método y cambiar la llamada en getAll() y getById() por ShipStatusEnum.OPERATIONAL.name()
+-    private static String deriveShipStatus(List<Maintenance> records) {
+-        boolean inProgress = records.stream()
+-                .anyMatch(m -> "IN_PROGRESS".equals(m.getStatus()));
+-        return inProgress ? ShipStatusEnum.MAINTENANCE.name() : ShipStatusEnum.OPERATIONAL.name();
+-    }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/domain/entity/Engine.java b/backend/src/main/java/com/navops/api/domain/entity/Engine.java
+index c95e689..9a4735b 100644
+--- a/backend/src/main/java/com/navops/api/domain/entity/Engine.java
++++ b/backend/src/main/java/com/navops/api/domain/entity/Engine.java
+@@ -28,9 +28,23 @@ public class Engine {
+     @Column(nullable = false, length = 100)
+     private String model;
+ 
++    @Builder.Default
++    @Column(name = "engine_type", nullable = false, length = 50)
++    private String engineType = "UNKNOWN";
++
++    @Builder.Default
++    @Column(name = "power_hp", nullable = false)
++    private Integer powerHp = 0;
++
+     @Column(name = "current_engine_hours", nullable = false)
+     private Integer currentEngineHours;
+ 
++    @Column(name = "serial_number", length = 100)
++    private String serialNumber;
++
++    @Column(name = "last_tbo_engine_hours")
++    private Integer lastTboEngineHours;
++
+     @Column(name = "deleted_at")
+     private OffsetDateTime deletedAt;
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/domain/entity/Maintenance.java b/backend/src/main/java/com/navops/api/domain/entity/Maintenance.java
+index e715054..b3b0507 100644
+--- a/backend/src/main/java/com/navops/api/domain/entity/Maintenance.java
++++ b/backend/src/main/java/com/navops/api/domain/entity/Maintenance.java
+@@ -23,12 +23,19 @@ public class Maintenance {
+     @Column(name = "ship_id", nullable = false)
+     private UUID shipId;
+ 
++    @Builder.Default
++    @Column(name = "maintenance_type", nullable = false, length = 50)
++    private String maintenanceType = "GENERAL";
++
+     @Column(nullable = false, length = 50)
+     private String status;
+ 
++    @Column(name = "scheduled_date")
++    private LocalDate scheduledDate;
++
+     @Column(name = "completed_date")
+     private LocalDate completedDate;
+ 
+     @Column(name = "deleted_at")
+     private OffsetDateTime deletedAt;
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/domain/entity/Ship.java b/backend/src/main/java/com/navops/api/domain/entity/Ship.java
+index 706dfda..c185f63 100644
+--- a/backend/src/main/java/com/navops/api/domain/entity/Ship.java
++++ b/backend/src/main/java/com/navops/api/domain/entity/Ship.java
+@@ -9,6 +9,8 @@ import java.math.BigDecimal;
+ import java.time.OffsetDateTime;
+ import java.util.UUID;
+ 
++import com.navops.api.domain.enums.ShipStatusEnum;
++
+ @Entity
+ @Table(name = "ships")
+ @Getter
+@@ -31,6 +33,17 @@ public class Ship {
+     @Column(name = "imo_number", nullable = false, unique = true, length = 50)
+     private String imoNumber;
+ 
++    @Builder.Default
++    @Enumerated(EnumType.STRING)
++    @Column(nullable = false, length = 50)
++    private ShipStatusEnum status = ShipStatusEnum.OPERATIONAL;
++
++    @Column(name = "hull_number", length = 100)
++    private String hullNumber;
++
++    @Column(name = "hold_count")
++    private Short holdCount;
++
+     @Column(name = "ship_type", nullable = false, length = 80)
+     private String shipType;
+ 
+@@ -80,4 +93,4 @@ public class Ship {
+ 
+     @Column(name = "deleted_at")
+     private OffsetDateTime deletedAt;
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java b/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java
+index ab9ace0..6d627c8 100644
+--- a/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java
++++ b/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java
+@@ -23,6 +23,10 @@ public class ShipTank {
+     @Column(name = "ship_id", nullable = false)
+     private UUID shipId;
+ 
++    @Builder.Default
++    @Column(name = "tank_name", nullable = false, length = 50)
++    private String tankName = "PRINCIPAL";
++
+     @Column(name = "content_type", nullable = false, length = 50)
+     private String contentType;
+ 
+@@ -31,4 +35,4 @@ public class ShipTank {
+ 
+     @Column(name = "deleted_at")
+     private OffsetDateTime deletedAt;
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java b/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java
+index 2e090ca..152883e 100644
+--- a/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java
++++ b/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java
+@@ -2,4 +2,4 @@ package com.navops.api.domain.enums;
+ 
+ public enum ShipStatusEnum {
+     OPERATIONAL, MAINTENANCE, REPAIR, OUT_OF_SERVICE
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java b/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java
+index e474068..5aa9a21 100644
+--- a/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java
++++ b/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java
+@@ -1,16 +1,25 @@
+ package com.navops.api.infrastructure.controller;
+ 
++import com.navops.api.application.dto.request.ship.ShipCreateRequest;
+ import com.navops.api.application.dto.response.ship.ShipDetailResponse;
+ import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
+ import com.navops.api.application.service.ShipService;
++import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
+ import io.swagger.v3.oas.annotations.Operation;
++import io.swagger.v3.oas.annotations.media.Content;
++import io.swagger.v3.oas.annotations.media.Schema;
++import io.swagger.v3.oas.annotations.responses.ApiResponse;
+ import io.swagger.v3.oas.annotations.tags.Tag;
++import jakarta.validation.Valid;
+ import lombok.RequiredArgsConstructor;
+ import lombok.extern.slf4j.Slf4j;
++import org.springframework.http.HttpStatus;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.web.bind.annotation.*;
++import org.springframework.web.multipart.MultipartFile;
+ 
+ import java.util.List;
++import java.util.Map;
+ import java.util.UUID;
+ 
+ @RestController
+@@ -22,6 +31,34 @@ public class ShipController {
+ 
+     private final ShipService shipService;
+ 
++    @Operation(summary = "Registrar nuevo barco", description = "Crea un registro de un barco y opcionalmente asocia una imagen principal.", responses = {
++            @ApiResponse(responseCode = "201", description = "Barco registrado exitosamente", content = @Content(schema = @Schema(implementation = ShipDetailResponse.class))),
++            @ApiResponse(responseCode = "400", description = "Error de validación de los datos enviados", content = @Content(schema = @Schema(implementation = Map.class))),
++            @ApiResponse(responseCode = "409", description = "Conflicto por datos duplicados (IMO o matrícula)", content = @Content(schema = @Schema(implementation = Map.class)))
++    })
++    @PostMapping("/create-ship")
++    public ResponseEntity<?> createShip(
++            @RequestPart("data") @Valid ShipCreateRequest request,
++            @RequestPart(value = "image", required = false) MultipartFile image) {
++        log.info("Recibida petición para registrar barco IMO: {}", request.imoNumber());
++        try {
++            ShipDetailResponse response = shipService.createShip(request, image);
++            return ResponseEntity.status(HttpStatus.CREATED).body(response);
++        } catch (ShipAlreadyExistsException e) {
++            log.error("Barco duplicado:", e);
++            return ResponseEntity.status(HttpStatus.CONFLICT)
++                    .body(Map.of("error", e.getMessage()));
++        } catch (IllegalArgumentException e) {
++            log.error("Argumento inválido:", e);
++            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
++                    .body(Map.of("error", e.getMessage()));
++        } catch (Exception e) {
++            log.error("ERROR AL REGISTRAR BARCO:", e);
++            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
++                    .body(Map.of("error", "Error interno: " + e.getMessage()));
++        }
++    }
++
+     @Operation(summary = "Listar barcos", description = "Retorna un listado resumido de todos los barcos registrados.")
+     @GetMapping
+     public ResponseEntity<List<ShipSummaryResponse>> getAll() {
+@@ -35,4 +72,4 @@ public class ShipController {
+         log.info("Petición recibida para detalle de barco id: {}", id);
+         return ResponseEntity.ok(shipService.getById(id));
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java b/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
+index d83e82b..6545bd3 100644
+--- a/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
++++ b/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
+@@ -235,6 +235,16 @@ public class GlobalExceptionHandler {
+         );
+         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+     }
++    @ExceptionHandler(ShipAlreadyExistsException.class)
++    public ResponseEntity<ErrorResponseDto> handleShipAlreadyExists(ShipAlreadyExistsException ex) {
++        ErrorResponseDto response = new ErrorResponseDto(
++                "Conflict",
++                ex.getMessage(),
++                HttpStatus.CONFLICT.value(),
++                OffsetDateTime.now()
++        );
++        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
++    }
+     @ExceptionHandler(PortNotFoundException.class)
+     public ResponseEntity<ErrorResponseDto> handlePortNotFound(PortNotFoundException ex) {
+         ErrorResponseDto response = new ErrorResponseDto(
+diff --git a/backend/src/main/java/com/navops/api/infrastructure/exception/NoShipsFoundException.java b/backend/src/main/java/com/navops/api/infrastructure/exception/NoShipsFoundException.java
+index ec0a4b3..597bb64 100644
+--- a/backend/src/main/java/com/navops/api/infrastructure/exception/NoShipsFoundException.java
++++ b/backend/src/main/java/com/navops/api/infrastructure/exception/NoShipsFoundException.java
+@@ -4,4 +4,4 @@ public class NoShipsFoundException extends RuntimeException {
+     public NoShipsFoundException(String message) {
+         super(message);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/infrastructure/exception/ShipAlreadyExistsException.java b/backend/src/main/java/com/navops/api/infrastructure/exception/ShipAlreadyExistsException.java
+new file mode 100644
+index 0000000..9538961
+--- /dev/null
++++ b/backend/src/main/java/com/navops/api/infrastructure/exception/ShipAlreadyExistsException.java
+@@ -0,0 +1,7 @@
++package com.navops.api.infrastructure.exception;
++
++public class ShipAlreadyExistsException extends RuntimeException {
++    public ShipAlreadyExistsException(String message) {
++        super(message);
++    }
++}
+diff --git a/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java b/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java
+index 9724365..3c40794 100644
+--- a/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java
++++ b/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java
+@@ -4,4 +4,4 @@ public class ShipNotFoundException extends RuntimeException {
+     public ShipNotFoundException(String message) {
+         super(message);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/repository/EngineRepository.java b/backend/src/main/java/com/navops/api/repository/EngineRepository.java
+index 2e235b3..638847a 100644
+--- a/backend/src/main/java/com/navops/api/repository/EngineRepository.java
++++ b/backend/src/main/java/com/navops/api/repository/EngineRepository.java
+@@ -8,4 +8,4 @@ import java.util.UUID;
+ 
+ public interface EngineRepository extends JpaRepository<Engine, UUID> {
+     Optional<Engine> findFirstByShipIdAndDeletedAtIsNull(UUID shipId);
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/repository/MaintenanceRepository.java b/backend/src/main/java/com/navops/api/repository/MaintenanceRepository.java
+index 17b60ce..022186a 100644
+--- a/backend/src/main/java/com/navops/api/repository/MaintenanceRepository.java
++++ b/backend/src/main/java/com/navops/api/repository/MaintenanceRepository.java
+@@ -9,4 +9,4 @@ import java.util.UUID;
+ public interface MaintenanceRepository extends JpaRepository<Maintenance, UUID> {
+     List<Maintenance> findAllByShipIdAndDeletedAtIsNull(UUID shipId);
+     List<Maintenance> findAllByShipIdInAndDeletedAtIsNull(List<UUID> shipIds);
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/java/com/navops/api/repository/ShipRepository.java b/backend/src/main/java/com/navops/api/repository/ShipRepository.java
+index 580d013..3eee380 100644
+--- a/backend/src/main/java/com/navops/api/repository/ShipRepository.java
++++ b/backend/src/main/java/com/navops/api/repository/ShipRepository.java
+@@ -10,4 +10,6 @@ import java.util.UUID;
+ public interface ShipRepository extends JpaRepository<Ship, UUID> {
+     List<Ship> findAllByDeletedAtIsNull();
+     Optional<Ship> findByIdAndDeletedAtIsNull(UUID id);
+-}
+\ No newline at end of file
++    boolean existsByImoNumberAndDeletedAtIsNull(String imoNumber);
++    boolean existsByRegistrationAndDeletedAtIsNull(String registration);
++}
+diff --git a/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java b/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java
+index fd0bbee..f9f5b61 100644
+--- a/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java
++++ b/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java
+@@ -8,4 +8,4 @@ import java.util.UUID;
+ 
+ public interface ShipTankRepository extends JpaRepository<ShipTank, UUID> {
+     List<ShipTank> findAllByShipIdAndContentTypeAndDeletedAtIsNull(UUID shipId, String contentType);
+-}
+\ No newline at end of file
++}
+diff --git a/backend/src/main/resources/db/migration/V10__seed_ships_related.sql b/backend/src/main/resources/db/migration/V10__seed_ships_related.sql
+index 4279f7b..459e8c4 100644
+--- a/backend/src/main/resources/db/migration/V10__seed_ships_related.sql
++++ b/backend/src/main/resources/db/migration/V10__seed_ships_related.sql
+@@ -47,4 +47,4 @@ BEGIN
+     (ship_cordoba,     'PREVENTIVE', 'Mantenimiento semestral de casco y motor', '2024-09-25', '2024-09-30', 'COMPLETED');
+ 
+   RAISE NOTICE 'Ships related data seed completado: motores, tanques y mantenimientos insertados.';
+-END $$;
+\ No newline at end of file
++END $$;
+diff --git a/backend/src/main/resources/db/migration/V11__update_ships_images.sql b/backend/src/main/resources/db/migration/V11__update_ships_images.sql
+index bb14663..8df3df1 100644
+--- a/backend/src/main/resources/db/migration/V11__update_ships_images.sql
++++ b/backend/src/main/resources/db/migration/V11__update_ships_images.sql
+@@ -14,4 +14,4 @@ UPDATE ships SET main_image_url = 'https://dornsife.usc.edu/uscseagrant/wp-conte
+ WHERE registration = 'AR-004-2019';
+ 
+ UPDATE ships SET main_image_url = 'https://www.crfs.com/hs-fs/hubfs/commercial-shipping.jpg?width=640&height=360&name=commercial-shipping.jpg'
+-WHERE registration = 'AR-005-2021';
+\ No newline at end of file
++WHERE registration = 'AR-005-2021';
+diff --git a/backend/src/main/resources/db/migration/V12__add_ship_columns.sql b/backend/src/main/resources/db/migration/V12__add_ship_columns.sql
+new file mode 100644
+index 0000000..5cd9afa
+--- /dev/null
++++ b/backend/src/main/resources/db/migration/V12__add_ship_columns.sql
+@@ -0,0 +1,8 @@
++ALTER TABLE ships
++    ADD COLUMN IF NOT EXISTS status      VARCHAR(50) NOT NULL DEFAULT 'OPERATIONAL',
++    ADD COLUMN IF NOT EXISTS hull_number VARCHAR(100),
++    ADD COLUMN IF NOT EXISTS hold_count  SMALLINT;
++
++ALTER TABLE engines
++    ADD COLUMN IF NOT EXISTS serial_number         VARCHAR(100),
++    ADD COLUMN IF NOT EXISTS last_tbo_engine_hours INTEGER;
+diff --git a/backend/src/main/resources/db/migration/V13__seed_armada_argentina.sql b/backend/src/main/resources/db/migration/V13__seed_armada_argentina.sql
+new file mode 100644
+index 0000000..108bbf8
+--- /dev/null
++++ b/backend/src/main/resources/db/migration/V13__seed_armada_argentina.sql
+@@ -0,0 +1,104 @@
++DO $$
++DECLARE
++  country_ar_id UUID;
++  base_url TEXT := 'https://www.argentina.gob.ar/sites/default/files/';
++BEGIN
++  SELECT id INTO country_ar_id FROM countries WHERE iso_code = 'AR' LIMIT 1;
++
++  -- Eliminar los 6 barcos ficticios del seed V8
++  DELETE FROM ships WHERE imo_number IN (
++    '9176187', '9234512', '9345678', '9456789', '9567890', '9678901'
++  );
++
++  -- Insertar 18 barcos reales de la Armada Argentina
++  -- depth estimado como calado × 1.6
++  -- weight_tonnes = desplazamiento a plena carga
++  -- cargo_capacity_tonnes = 0 para buques de guerra
++  -- imo_number = ficticio formato AR-[pennant sin guion]-[año]
++  -- hull_number = pennant
++  INSERT INTO ships (name, registration, imo_number, hull_number, ship_type,
++                     length, beam, draft, depth,
++                     weight_tonnes, cargo_capacity_tonnes, crew_capacity,
++                     build_year, country_id, main_image_url)
++  VALUES
++    -- Destructores MEKO 360
++    ('ARA Almirante Brown',           'D-10', 'AR-D10-1983', 'D-10', 'Destructor MEKO 360',
++     125.9, 14.0, 5.8,  9.28, 3600,    0, 200, 1983, country_ar_id,
++     base_url || 'destructor_ara_almirante_brown.jpg'),
++
++    ('ARA La Argentina',              'D-11', 'AR-D11-1983', 'D-11', 'Destructor MEKO 360',
++     125.9, 14.0, 5.8,  9.28, 3600,    0, 200, 1983, country_ar_id,
++     base_url || 'destructor_ara_la_argentina.jpg'),
++
++    ('ARA Sarandí',                   'D-13', 'AR-D13-1984', 'D-13', 'Destructor MEKO 360',
++     125.9, 14.0, 5.8,  9.28, 3600,    0, 200, 1984, country_ar_id,
++     base_url || 'destructor_ara_sarandi.jpg'),
++
++    -- Corbetas MEKO 140
++    ('ARA Espora',                    'P-41', 'AR-P41-1985', 'P-41', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 1985, country_ar_id,
++     base_url || 'corbeta-ara-espora.jpg'),
++
++    ('ARA Rosales',                   'P-42', 'AR-P42-1986', 'P-42', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 1986, country_ar_id,
++     base_url || 'corbeta_ara_rosales.jpg'),
++
++    ('ARA Spiro',                     'P-43', 'AR-P43-1988', 'P-43', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 1988, country_ar_id,
++     base_url || 'corbeta_ara_spiro_0.jpg'),
++
++    ('ARA Parker',                    'P-44', 'AR-P44-1990', 'P-44', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 1990, country_ar_id,
++     base_url || 'araparker.jpg'),
++
++    ('ARA Robinson',                  'P-45', 'AR-P45-2003', 'P-45', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 2003, country_ar_id,
++     base_url || 'corbeta_ara_robinson_0.jpg'),
++
++    ('ARA Gómez Roca',                'P-46', 'AR-P46-2005', 'P-46', 'Corbeta MEKO 140',
++     91.2, 11.1, 4.5,  7.20, 1790,    0, 100, 2005, country_ar_id,
++     base_url || 'corbeta_ara_gomez_roca_0.jpg'),
++
++    -- Patrullero
++    ('ARA King',                      'P-21', 'AR-P21-1946', 'P-21', 'Patrullero',
++     77.0,  9.0, 4.0,  6.40,  875,    0, 130, 1946, country_ar_id,
++     base_url || 'patrullero_ara_king_imagen.jpg'),
++
++    -- Patrulleros Oceánicos OPV
++    ('ARA Bouchard',                  'P-51', 'AR-P51-2020', 'P-51', 'Patrullero Oceánico OPV',
++     87.0, 13.6, 3.8,  6.08, 1930,    0,  39, 2020, country_ar_id,
++     base_url || 'ara_bouchard_en_alta_mar.jpeg'),
++
++    ('ARA Piedrabuena',               'P-52', 'AR-P52-2021', 'P-52', 'Patrullero Oceánico OPV',
++     87.0, 13.6, 4.2,  6.72, 1930,    0,  40, 2021, country_ar_id,
++     base_url || 'arapiedrabuena.jpg'),
++
++    ('ARA Storni',                    'P-53', 'AR-P53-2021', 'P-53', 'Patrullero Oceánico OPV',
++     87.0, 13.6, 4.2,  6.72, 1930,    0,  40, 2021, country_ar_id,
++     base_url || '0412_arriboarastorni_00-1024x612_1.jpg'),
++
++    ('ARA Contraalmirante Cordero',   'P-54', 'AR-P54-2022', 'P-54', 'Patrullero Oceánico OPV',
++     87.0, 13.6, 4.2,  6.72, 1930,    0,  40, 2022, country_ar_id,
++     base_url || 'p-54.jpg'),
++
++    -- Buque Escuela
++    ('Fragata ARA Libertad',          'Q-2',  'AR-Q2-1963',  'Q-2',  'Buque Escuela',
++     91.7, 14.3, 6.6, 10.56, 2587,    0, 350, 1963, country_ar_id,
++     base_url || 'fragara_ara_libertad.jpg'),
++
++    -- Rompehielos
++    ('ARA Almirante Irízar',          'Q-5',  'AR-Q5-1977',  'Q-5',  'Rompehielos',
++     121.3, 25.2, 9.5, 15.20, 14900, 3000, 312, 1977, country_ar_id,
++     base_url || 'rompehielos_ara_almirante_irizar.jpg'),
++
++    -- Avisos
++    ('ARA Puerto Argentino',          'A-21', 'AR-A21-1989', 'A-21', 'Aviso',
++     81.4, 16.3, 5.2,  8.32, 2100,  500,  30, 1989, country_ar_id,
++     base_url || 'aviso_puerto_argentino.jpg'),
++
++    ('ARA Islas Malvinas',            'A-24', 'AR-A24-1987', 'A-24', 'Aviso',
++     81.4, 16.3, 5.2,  8.32, 2100,  500,  30, 1987, country_ar_id,
++     base_url || 'aviso_islas_malvinas.jpg');
++
++  RAISE NOTICE 'V12 seed completado: 6 barcos ficticios eliminados, 18 barcos reales de la Armada Argentina insertados.';
++END $$;
+diff --git a/backend/src/test/java/com/navops/api/application/service/ShipServiceTest.java b/backend/src/test/java/com/navops/api/application/service/ShipServiceTest.java
+index efba26a..656e90f 100644
+--- a/backend/src/test/java/com/navops/api/application/service/ShipServiceTest.java
++++ b/backend/src/test/java/com/navops/api/application/service/ShipServiceTest.java
+@@ -1,11 +1,16 @@
+ package com.navops.api.application.service;
+ 
++import com.navops.api.application.dto.request.ship.ShipCreateRequest;
+ import com.navops.api.application.dto.response.ship.ShipDetailResponse;
++import com.navops.api.domain.entity.Country;
+ import com.navops.api.domain.entity.Engine;
+ import com.navops.api.domain.entity.Maintenance;
+ import com.navops.api.domain.entity.Ship;
+ import com.navops.api.domain.entity.ShipTank;
++import com.navops.api.domain.enums.ShipStatusEnum;
++import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
+ import com.navops.api.infrastructure.exception.ShipNotFoundException;
++import com.navops.api.repository.CountryRepository;
+ import com.navops.api.repository.EngineRepository;
+ import com.navops.api.repository.MaintenanceRepository;
+ import com.navops.api.repository.ShipRepository;
+@@ -25,6 +30,7 @@ import java.util.Optional;
+ import java.util.UUID;
+ 
+ import static org.junit.jupiter.api.Assertions.*;
++import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.Mockito.when;
+ 
+ @ExtendWith(MockitoExtension.class)
+@@ -34,6 +40,8 @@ class ShipServiceTest {
+     @Mock private EngineRepository engineRepository;
+     @Mock private ShipTankRepository shipTankRepository;
+     @Mock private MaintenanceRepository maintenanceRepository;
++    @Mock private CountryRepository countryRepository;
++    @Mock private ImageStorageService imageStorageService;
+ 
+     @InjectMocks private ShipService shipService;
+ 
+@@ -61,6 +69,70 @@ class ShipServiceTest {
+         when(shipRepository.findByIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.of(ship));
+     }
+ 
++    // ── createShip ────────────────────────────────────────────────────────────
++
++    private ShipCreateRequest minimalRequest(UUID countryId) {
++        return new ShipCreateRequest(
++                "ARA Almirante Brown", "AR-D10-1983", "D-10", "Destructor", (short) 1983,
++                countryId, "OPERATIONAL", null,
++                new BigDecimal("125.9"), new BigDecimal("14.0"), new BigDecimal("5.8"), new BigDecimal("9.28"),
++                new BigDecimal("3600"), (short) 200, BigDecimal.ZERO,
++                null, null, null, null, null, null, null, null
++        );
++    }
++
++    @Test
++    @DisplayName("IMO duplicado → ShipAlreadyExistsException")
++    void createShip_whenDuplicateImo_throwsException() {
++        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(true);
++
++        assertThrows(ShipAlreadyExistsException.class,
++                () -> shipService.createShip(minimalRequest(UUID.randomUUID()), null));
++    }
++
++    @Test
++    @DisplayName("Matrícula duplicada → ShipAlreadyExistsException")
++    void createShip_whenDuplicateRegistration_throwsException() {
++        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
++        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(true);
++
++        assertThrows(ShipAlreadyExistsException.class,
++                () -> shipService.createShip(minimalRequest(UUID.randomUUID()), null));
++    }
++
++    @Test
++    @DisplayName("País inexistente → IllegalArgumentException")
++    void createShip_whenCountryNotFound_throwsException() {
++        UUID unknownCountryId = UUID.randomUUID();
++        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
++        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(false);
++        when(countryRepository.findById(unknownCountryId)).thenReturn(Optional.empty());
++
++        assertThrows(IllegalArgumentException.class,
++                () -> shipService.createShip(minimalRequest(unknownCountryId), null));
++    }
++
++    @Test
++    @DisplayName("Happy path → barco creado, ShipDetailResponse retornado")
++    void createShip_happyPath_returnsDetailResponse() throws Exception {
++        UUID countryId = UUID.randomUUID();
++        Country country = Country.builder().id(countryId).name("Argentina").isoCode("AR").version(0).build();
++
++        when(shipRepository.existsByImoNumberAndDeletedAtIsNull("AR-D10-1983")).thenReturn(false);
++        when(shipRepository.existsByRegistrationAndDeletedAtIsNull("D-10")).thenReturn(false);
++        when(countryRepository.findById(countryId)).thenReturn(Optional.of(country));
++        when(shipRepository.save(any(Ship.class))).thenAnswer(inv -> inv.getArgument(0));
++
++        ShipDetailResponse result = shipService.createShip(minimalRequest(countryId), null);
++
++        assertNotNull(result);
++        assertEquals("ARA Almirante Brown", result.name());
++        assertEquals("AR-D10-1983", result.imoNumber());
++        assertEquals("OPERATIONAL", result.status());
++    }
++
++    // ── getById ───────────────────────────────────────────────────────────────
++
+     @Test
+     @DisplayName("Motor encontrado → engineModel y currentEngineHours se rellenan")
+     void getById_whenEngineExists_returnsEngineFields() {
+@@ -122,13 +194,12 @@ class ShipServiceTest {
+     }
+ 
+     @Test
+-    @DisplayName("Maintenance IN_PROGRESS → status es MAINTENANCE")
+-    void getById_whenMaintenanceInProgress_returnsMaintenanceStatus() {
+-        Maintenance inProgress = Maintenance.builder()
+-                .id(UUID.randomUUID()).shipId(shipId).status("IN_PROGRESS").build();
++    @DisplayName("Barco con status MAINTENANCE → getById devuelve MAINTENANCE")
++    void getById_whenShipStatusIsMaintenance_returnsMaintenance() {
++        ship.setStatus(ShipStatusEnum.MAINTENANCE);
+         when(engineRepository.findFirstByShipIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.empty());
+         when(shipTankRepository.findAllByShipIdAndContentTypeAndDeletedAtIsNull(shipId, "FUEL")).thenReturn(List.of());
+-        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of(inProgress));
++        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of());
+ 
+         ShipDetailResponse result = shipService.getById(shipId);
+ 
+@@ -136,14 +207,11 @@ class ShipServiceTest {
+     }
+ 
+     @Test
+-    @DisplayName("Sin IN_PROGRESS → status es OPERATIONAL")
+-    void getById_whenNoInProgressMaintenance_returnsOperational() {
+-        Maintenance completed = Maintenance.builder()
+-                .id(UUID.randomUUID()).shipId(shipId).status("COMPLETED")
+-                .completedDate(LocalDate.of(2025, 3, 10)).build();
++    @DisplayName("Barco con status OPERATIONAL → getById devuelve OPERATIONAL")
++    void getById_whenShipStatusIsOperational_returnsOperational() {
+         when(engineRepository.findFirstByShipIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.empty());
+         when(shipTankRepository.findAllByShipIdAndContentTypeAndDeletedAtIsNull(shipId, "FUEL")).thenReturn(List.of());
+-        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of(completed));
++        when(maintenanceRepository.findAllByShipIdAndDeletedAtIsNull(shipId)).thenReturn(List.of());
+ 
+         ShipDetailResponse result = shipService.getById(shipId);
+ 
+@@ -188,4 +256,4 @@ class ShipServiceTest {
+ 
+         assertThrows(ShipNotFoundException.class, () -> shipService.getById(unknown));
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst b/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+index a83a07a..e69de29 100644
+--- a/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
++++ b/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+@@ -1,154 +0,0 @@
+-com/navops/api/repository/filters/PersonFilterRepository.class
+-com/navops/api/domain/entity/City.class
+-com/navops/api/domain/entity/Province.class
+-com/navops/api/domain/entity/Maintenance$MaintenanceBuilder.class
+-com/navops/api/domain/entity/LoginAttempt.class
+-com/navops/api/application/service/CountryService.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$GeneralInfo.class
+-com/navops/api/domain/entity/User.class
+-com/navops/api/MaritimeApiApplication.class
+-com/navops/api/application/dto/response/ErrorResponseDto.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse$ContactInfo.class
+-com/navops/api/domain/entity/ShipTank.class
+-com/navops/api/domain/entity/LoginAttempt$LoginAttemptBuilder.class
+-com/navops/api/infrastructure/exception/PortAlreadyExistsException.class
+-com/navops/api/infrastructure/controller/CountryController.class
+-com/navops/api/domain/entity/Engine.class
+-com/navops/api/repository/PersonRepository.class
+-com/navops/api/infrastructure/exception/PortNotFoundException.class
+-com/navops/api/security/UserDetailsServiceImpl.class
+-com/navops/api/domain/entity/Port$PortBuilder.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$GeneralInfo$GeneralInfoBuilder.class
+-com/navops/api/repository/CountryRepository.class
+-com/navops/api/repository/PasswordResetCodeRepository.class
+-com/navops/api/application/dto/request/ForgotPasswordRequest.class
+-com/navops/api/infrastructure/controller/PersonnelController.class
+-com/navops/api/infrastructure/controller/PortController.class
+-com/navops/api/infrastructure/controller/ImageController$UploadResponse.class
+-com/navops/api/application/dto/request/VerifyCodeRequest.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$SystemAccessData$SystemAccessDataBuilder.class
+-com/navops/api/application/dto/response/port/PortDetailedResponse.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest.class
+-com/navops/api/infrastructure/exception/EmailNotFoundException.class
+-com/navops/api/infrastructure/exception/InvalidResetCodeException.class
+-com/navops/api/domain/enums/GenderEnum.class
+-com/navops/api/repository/MaintenanceRepository.class
+-com/navops/api/application/dto/request/LoginRequest.class
+-com/navops/api/application/dto/response/ship/ShipSummaryResponse.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$SystemAccessData.class
+-com/navops/api/infrastructure/exception/NoPortsFoundException.class
+-com/navops/api/config/SecurityConfig.class
+-com/navops/api/domain/enums/PeopleStatusEnum.class
+-com/navops/api/application/service/RoleService.class
+-com/navops/api/domain/entity/Ship$ShipBuilder.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse.class
+-com/navops/api/domain/enums/SystemRoleFilterEnum.class
+-com/navops/api/application/dto/response/port/PortSummaryResponse.class
+-com/navops/api/application/dto/request/user/StatusUpdateRequest.class
+-com/navops/api/application/dto/request/ResetPasswordRequest.class
+-com/navops/api/application/dto/response/CountryResponseDto.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ContactInfo.class
+-com/navops/api/application/service/PersonnelService.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ResidenceInfo$ResidenceInfoBuilder.class
+-com/navops/api/application/dto/response/auth/LoginResponseDto.class
+-com/navops/api/infrastructure/exception/NoPersonnelFoundException.class
+-com/navops/api/domain/enums/ShipStatusEnum.class
+-com/navops/api/infrastructure/controller/RoleController.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$LaborData$LaborDataBuilder.class
+-com/navops/api/domain/entity/CrewMember$CrewMemberBuilder.class
+-com/navops/api/infrastructure/exception/NoRoleFoundException.class
+-com/navops/api/application/service/ImageStorageService.class
+-com/navops/api/domain/entity/Country$CountryBuilder.class
+-com/navops/api/application/service/CityService.class
+-com/navops/api/application/service/EmailService.class
+-com/navops/api/repository/ProvinceRepository.class
+-com/navops/api/infrastructure/exception/UserNotFoundException.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$SystemAccessData.class
+-com/navops/api/security/JwtService.class
+-com/navops/api/repository/CrewMemberRepository.class
+-com/navops/api/domain/entity/User$UserBuilder.class
+-com/navops/api/domain/specification/PersonnelFilterSpecification.class
+-com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.class
+-com/navops/api/domain/enums/DockTypeEnum.class
+-com/navops/api/repository/EngineRepository.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse$GeneralInfo.class
+-com/navops/api/domain/entity/Person$PersonBuilder.class
+-com/navops/api/domain/entity/Country.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ContactInfo$ContactInfoBuilder.class
+-com/navops/api/domain/entity/Person.class
+-com/navops/api/domain/entity/Port.class
+-com/navops/api/repository/PortRepository.class
+-com/navops/api/application/dto/response/LocationResponseDto.class
+-com/navops/api/domain/entity/City$CityBuilder.class
+-com/navops/api/domain/entity/Ship.class
+-com/navops/api/infrastructure/exception/NoCitiesFoundException.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse$LaborData.class
+-com/navops/api/domain/entity/Engine$EngineBuilder.class
+-com/navops/api/application/dto/response/user/PersonnelSummaryResponse.class
+-com/navops/api/infrastructure/controller/ProvinceController.class
+-com/navops/api/domain/enums/PortStatusEnum.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ResidenceInfo.class
+-com/navops/api/config/OpenApiConfig.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$SystemAccessData$SystemAccessDataBuilder.class
+-com/navops/api/domain/entity/CrewMember.class
+-com/navops/api/domain/enums/MaritalStatusEnum.class
+-com/navops/api/infrastructure/controller/AuthController.class
+-com/navops/api/application/dto/request/port/PortCreateRequest.class
+-com/navops/api/application/service/ShipService.class
+-com/navops/api/application/service/PersonnelFilterService.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$LaborData.class
+-com/navops/api/application/service/AuthService.class
+-com/navops/api/infrastructure/exception/ShipNotFoundException.class
+-com/navops/api/domain/entity/ShipTank$ShipTankBuilder.class
+-com/navops/api/infrastructure/exception/GlobalExceptionHandler.class
+-com/navops/api/domain/enums/CrewMemberStatusEnum.class
+-com/navops/api/domain/specification/PersonnelFilterSpecification$1.class
+-com/navops/api/repository/UserRepository.class
+-com/navops/api/infrastructure/controller/filters/PersonnelFilterController.class
+-com/navops/api/repository/RoleRepository.class
+-com/navops/api/infrastructure/exception/ExpiredResetCodeException.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse$ResidenceInfo.class
+-com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.class
+-com/navops/api/application/service/ProvinceService.class
+-com/navops/api/application/service/PortService.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$GeneralInfo.class
+-com/navops/api/infrastructure/exception/NoShipsFoundException.class
+-com/navops/api/domain/enums/AccessStatusEnum.class
+-com/navops/api/repository/ShipTankRepository.class
+-com/navops/api/application/dto/response/port/PortResponse.class
+-com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.class
+-com/navops/api/repository/ShipRepository.class
+-com/navops/api/application/dto/request/user/PersonnelFilterRequest.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$ContactInfo$ContactInfoBuilder.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$LaborData.class
+-com/navops/api/infrastructure/controller/CityController.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$ResidenceInfo.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$ResidenceInfo$ResidenceInfoBuilder.class
+-com/navops/api/application/dto/response/user/PersonnelEditResponse$SystemAccessData.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$GeneralInfo$GeneralInfoBuilder.class
+-com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$LaborData$LaborDataBuilder.class
+-com/navops/api/infrastructure/exception/NoProvincesFoundException.class
+-com/navops/api/domain/enums/NavigationRoleEnum.class
+-com/navops/api/config/CloudinaryConfig.class
+-com/navops/api/repository/LoginAttemptRepository.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest.class
+-com/navops/api/domain/entity/Province$ProvinceBuilder.class
+-com/navops/api/application/dto/response/user/PersonnelDetailedResponse.class
+-com/navops/api/domain/entity/Role$RoleBuilder.class
+-com/navops/api/application/dto/response/ship/ShipDetailResponse.class
+-com/navops/api/domain/enums/DocumentTypeEnum.class
+-com/navops/api/domain/entity/Role.class
+-com/navops/api/domain/entity/Maintenance.class
+-com/navops/api/infrastructure/controller/ImageController.class
+-com/navops/api/domain/entity/PasswordResetCode$PasswordResetCodeBuilder.class
+-com/navops/api/application/dto/request/user/UserUpdateRequest$ContactInfo.class
+-com/navops/api/application/dto/response/RoleResponseDto.class
+-com/navops/api/infrastructure/exception/NoCountriesFoundException.class
+-com/navops/api/security/JwtAuthenticationFilter.class
+-com/navops/api/repository/CityRepository.class
+-com/navops/api/application/dto/response/user/StatsUserResponse.class
+-com/navops/api/infrastructure/controller/ShipController.class
+-com/navops/api/application/service/dashboard/DashboardAdminService.class
+-com/navops/api/application/dto/response/user/PersonnelFilterResponse.class
+-com/navops/api/domain/entity/PasswordResetCode.class
+-com/navops/api/domain/enums/TypePortEnum.class
+diff --git a/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst b/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+index f23f510..e9e7413 100644
+--- a/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
++++ b/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+@@ -1,113 +1,106 @@
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/MaritimeApiApplication.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ForgotPasswordRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/LoginRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ResetPasswordRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/VerifyCodeRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/port/PortCreateRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelFilterRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelRegistrationRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/StatusUpdateRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/UserUpdateRequest.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/CountryResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ErrorResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/LocationResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/RoleResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/LoginResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortDetailedResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/port/PortSummaryResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelDetailedResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelEditResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelFilterResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelSummaryResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/StatsUserResponse.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/AuthService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CityService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/CountryService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/EmailService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ImageStorageService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PersonnelFilterService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PersonnelService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/PortService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ProvinceService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/RoleService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/ShipService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/dashboard/DashboardAdminService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/CloudinaryConfig.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/OpenApiConfig.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/SecurityConfig.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/City.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Country.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/CrewMember.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Engine.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/LoginAttempt.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Maintenance.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/PasswordResetCode.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Person.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Port.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Province.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Role.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Ship.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/User.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/AccessStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/CrewMemberStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/DockTypeEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/DocumentTypeEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/GenderEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/MaritalStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/NavigationRoleEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/PeopleStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/PortStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/SystemRoleFilterEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/TypePortEnum.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/specification/PersonnelFilterSpecification.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/AuthController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CityController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/CountryController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ImageController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/PersonnelController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/PortController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ProvinceController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/RoleController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/PersonnelFilterController.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/EmailNotFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ExpiredResetCodeException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/GlobalExceptionHandler.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/InvalidResetCodeException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCitiesFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoCountriesFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoPersonnelFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoPortsFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoProvincesFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoRoleFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/NoShipsFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortAlreadyExistsException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortNotFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/UserNotFoundException.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CityRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CountryRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/CrewMemberRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/EngineRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/LoginAttemptRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/MaintenanceRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PasswordResetCodeRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PersonRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/PortRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ProvinceRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/RoleRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ShipRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/UserRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/filters/PersonFilterRepository.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtAuthenticationFilter.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/JwtService.java
+-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/security/UserDetailsServiceImpl.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\ForgotPasswordRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\LoginRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\port\PortCreateRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\ResetPasswordRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\ship\ShipCreateRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\user\PersonnelRegistrationRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\user\StatusUpdateRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\user\UserUpdateRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\request\VerifyCodeRequest.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\auth\ForgotPasswordResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\auth\LoginResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\auth\VerifyCodeResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\CountryResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\ErrorResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\LocationResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\port\PortResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\port\PortSummaryResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\RoleResponseDto.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\ship\ShipDetailResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\ship\ShipSummaryResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\user\PersonnelDetailedResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\user\PersonnelEditResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\user\PersonnelSummaryResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\dto\response\user\StatsUserResponse.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\AuthService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\CityService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\CountryService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\dashboard\DashboardAdminService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\EmailService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\ImageStorageService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\PersonnelService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\PortService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\ProvinceService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\RoleService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\application\service\ShipService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\config\CloudinaryConfig.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\config\OpenApiConfig.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\config\SecurityConfig.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\City.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Country.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\CrewMember.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Engine.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\LoginAttempt.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Maintenance.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\PasswordResetCode.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Person.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Port.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Province.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Role.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\Ship.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\ShipTank.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\entity\User.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\CrewMemberStatusEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\DockTypeEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\DocumentTypeEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\GenderEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\MaritalStatusEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\NavigationRoleEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\PeopleStatusEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\PortStatusEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\ShipStatusEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\domain\enums\TypePortEnum.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\AuthController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\CityController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\CountryController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\ImageController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\PersonnelController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\PortController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\ProvinceController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\RoleController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\controller\ShipController.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\EmailNotFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\ExpiredResetCodeException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\GlobalExceptionHandler.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\InvalidResetCodeException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoCitiesFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoCountriesFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoPersonnelFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoPortsFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoProvincesFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoRoleFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\NoShipsFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\PortAlreadyExistsException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\PortNotFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\ResourceAlreadyExistsException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\ShipAlreadyExistsException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\ShipNotFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\infrastructure\exception\UserNotFoundException.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\MaritimeApiApplication.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\CityRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\CountryRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\CrewMemberRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\EngineRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\LoginAttemptRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\MaintenanceRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\PasswordResetCodeRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\PersonRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\PortRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\ProvinceRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\RoleRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\ShipRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\ShipTankRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\repository\UserRepository.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\security\JwtAuthenticationFilter.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\security\JwtService.java
++C:\Users\Lucas\NavOps\backend\src\main\java\com\navops\api\security\UserDetailsServiceImpl.java
+diff --git a/docker-compose.yml b/docker-compose.yml
+index 5347b27..1143ca3 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -28,11 +28,9 @@ services:
+       - postgres
+     environment:
+       #Servicio de PostgreSQL
+-      - DB_HOST=postgres
+-      - DB_PORT=5432
+-      - DB_NAME=${DB_NAME}
+-      - DB_USER=${DB_USER}
+-      - DB_PASSWORD=${DB_PASSWORD}
++      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${DB_NAME}
++      - SPRING_DATASOURCE_USERNAME=${DB_USER}
++      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+ 
+       #Servicio de Claudinary
+       - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+diff --git a/frontend/src/App.tsx b/frontend/src/App.tsx
+index bbcd912..c4c3f8a 100644
+--- a/frontend/src/App.tsx
++++ b/frontend/src/App.tsx
+@@ -9,6 +9,8 @@ import { CreateUser } from './pages/Users/CreateUser/CreateUser';
+ import { EditUser } from './pages/Users/EditUser/EditUser';
+ import { ListPorts } from './pages/ports/ListPorts/ListPorts';
+ import { CreatePort } from './pages/ports/CreatePort/CreatePort';
++import { ListShips } from './pages/ships/ListShips/ListShips';
++import { CreateShip } from './pages/ships/CreateShip/CreateShip';
+ 
+ function App() {
+   return (
+@@ -20,11 +22,14 @@ function App() {
+         <Route path="/usuarios" element={<UsersList />} />
+         <Route path="/puertos" element={<ListPorts />} />
+         <Route path="/puertos/create" element={<CreatePort />} />
++        <Route path="/barcos" element={<ListShips />} />
++        <Route path="/barcos/:id" element={<ListShips />} />
+         <Route path="/forgot-password" element={<ForgotPassword />} />
+         <Route path="/verify-code" element={<VerifyToken />} />
+         <Route path="/reset-password" element={<ResetPassword />} />
+         <Route path="/users/create" element={<CreateUser />} />
+         <Route path="/users/edit/:id" element={<EditUser />} />
++        <Route path="/barcos/nuevo" element={<CreateShip />} />
+       </Routes>
+     </BrowserRouter>
+   );
+diff --git a/frontend/src/hooks/useCreateShipForm.ts b/frontend/src/hooks/useCreateShipForm.ts
+new file mode 100644
+index 0000000..35864e7
+--- /dev/null
++++ b/frontend/src/hooks/useCreateShipForm.ts
+@@ -0,0 +1,120 @@
++import { useState } from 'react';
++import { createShip } from '../services/api/shipService';
++import { validateCreateShip } from '../validators/shipValidator';
++
++export const useCreateShipForm = () => {
++  const [form, setForm] = useState({
++    name: '',
++    imoNumber: '',
++    registration: '',
++    shipType: '',
++    buildYear: '',
++    countryId: '',
++    status: 'OPERATIONAL',
++    hullNumber: '',
++    length: '',
++    beam: '',
++    draft: '',
++    depth: '',
++    weightTonnes: '',
++    crewCapacity: '',
++    cargoCapacityTonnes: '',
++    holdCount: '',
++    fuelCapacityLiters: '',
++    engineManufacturer: '',
++    engineModel: '',
++    serialNumber: '',
++    currentEngineHours: '',
++    lastTboEngineHours: '',
++    lastMaintenanceDate: '',
++  });
++
++  const [errors, setErrors] = useState<Record<string, string>>({});
++  const [imageFile, setImageFile] = useState<File | null>(null);
++  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
++  const [loading, setLoading] = useState(false);
++
++  const handleChange = (field: string, value: any) => {
++    setForm(prev => ({ ...prev, [field]: value }));
++    setErrors(prev => {
++      const next = { ...prev };
++      delete next[field];
++      return next;
++    });
++  };
++
++  const handleImage = (file: File) => {
++    if (!['image/png', 'image/jpeg'].includes(file.type)) {
++      throw new Error('Formato inválido. Solo PNG o JPG.');
++    }
++    if (file.size > 5 * 1024 * 1024) {
++      throw new Error('La imagen no puede superar 5MB.');
++    }
++    setImageFile(file);
++    setPreviewUrl(URL.createObjectURL(file));
++  };
++
++  const submit = async () => {
++    const validationErrors = validateCreateShip(form);
++    if (Object.keys(validationErrors).length > 0) {
++      setErrors(validationErrors);
++      return { success: false };
++    }
++
++    setLoading(true);
++    try {
++      const dataToSend = {
++        name: form.name,
++        imoNumber: form.imoNumber,
++        registration: form.registration,
++        shipType: form.shipType,
++        buildYear: Number(form.buildYear),
++        countryId: form.countryId,
++        status: form.status,
++        hullNumber: form.hullNumber || null,
++        length: Number(form.length),
++        beam: Number(form.beam),
++        draft: Number(form.draft),
++        depth: Number(form.depth),
++        weightTonnes: Number(form.weightTonnes),
++        crewCapacity: Number(form.crewCapacity),
++        cargoCapacityTonnes: Number(form.cargoCapacityTonnes),
++        holdCount: form.holdCount ? Number(form.holdCount) : null,
++        fuelCapacityLiters: form.fuelCapacityLiters ? Number(form.fuelCapacityLiters) : null,
++        engineManufacturer: form.engineManufacturer || null,
++        engineModel: form.engineModel || null,
++        serialNumber: form.serialNumber || null,
++        currentEngineHours: form.currentEngineHours ? Number(form.currentEngineHours) : null,
++        lastTboEngineHours: form.lastTboEngineHours ? Number(form.lastTboEngineHours) : null,
++        lastMaintenanceDate: form.lastMaintenanceDate || null,
++      };
++
++      const formData = new FormData();
++      formData.append('data', new Blob([JSON.stringify(dataToSend)], { type: 'application/json' }));
++      if (imageFile) {
++        formData.append('image', imageFile);
++      }
++
++      await createShip(formData);
++      return { success: true };
++    } catch (err: any) {
++      if (err.response?.status === 409) {
++        return { success: false, error: 'El IMO o la matrícula ya se encuentran registrados.' };
++      }
++      const detail = err.response?.data?.message || err.response?.data?.error || 'Error de servidor.';
++      return { success: false, error: detail };
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  return {
++    form,
++    errors,
++    loading,
++    previewUrl,
++    handleChange,
++    handleImage,
++    submit,
++  };
++};
+diff --git a/frontend/src/hooks/useShipDetail.ts b/frontend/src/hooks/useShipDetail.ts
+index 9546787..b829996 100644
+--- a/frontend/src/hooks/useShipDetail.ts
++++ b/frontend/src/hooks/useShipDetail.ts
+@@ -15,7 +15,7 @@ export const useShipDetail = (shipId: string) => {
+       .then(setData)
+       .catch(() => setError('No se pudo cargar la información del barco.'))
+       .finally(() => setLoading(false));
+-  } , [shipId]);
++  }, [shipId]);
+ 
+   return { data, loading, error };
+-};
+\ No newline at end of file
++};
+diff --git a/frontend/src/pages/ships/CreateShip/CreateShip.module.css b/frontend/src/pages/ships/CreateShip/CreateShip.module.css
+new file mode 100644
+index 0000000..1101035
+--- /dev/null
++++ b/frontend/src/pages/ships/CreateShip/CreateShip.module.css
+@@ -0,0 +1,277 @@
++.container {
++  width: 100%;
++  max-width: 1400px;
++  margin: 0 auto;
++  padding: 20px 40px;
++  color:white;
++}
++
++.header {
++  margin-bottom: 30px;
++}
++
++.title {
++  font-size: 28px;
++  font-weight: 500;
++  color: var(--text-primary);
++  margin: 0;
++}
++
++.subtitle {
++  font-size: 14px;
++  color: var(--color-subtitle);
++  margin-top: 4px;
++}
++
++.section {
++  margin-bottom: 32px;
++}
++
++.sectionTitle {
++  font-size: 18px;
++  color: var(--text-primary);
++  margin-bottom: 16px;
++  display: flex;
++  padding-top: 10px;
++  border-top: 1px solid rgba(255, 255, 255, 0.1);
++  align-items: center;
++  gap:12px;
++  margin: 30px 0 20px;
++}
++
++.sectionTitle::before {
++  content: "";
++  width: 8px;
++  height: 8px;
++  border-radius: 50%;
++  background-color: var(--color-primary, #0ea5e9);
++}
++
++.imageUploadBar {
++  width: 100%;
++  padding: 16px 20px;
++  background: transparent;
++  display: flex;
++  align-items: flex-start;
++  gap: 40px;
++  padding-top: 20px;
++  box-sizing: border-box;
++}
++
++.dropzone {
++  width: 250px;
++  height: 140px;
++  border: 2px dashed #0ea5e9;
++  border-radius: 12px;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  cursor: pointer;
++  background: rgba(14, 165, 233, 0.05);
++  overflow: hidden;
++}
++
++.previewImage {
++  width: 250px;
++  height: 140px;
++  object-fit: cover;
++  top: 0;
++  left: 0;
++}
++
++.recommendedBadge {
++  background: rgba(99, 186, 207, 0.2);
++  color: #63bacf;
++  padding: 4px 12px;
++  border-radius: 4px;
++  font-size: 12px;
++  display: inline-block;
++  margin-bottom: 10px;
++}
++
++.uploadTextInfo {
++  flex: 1;
++  font-size: 14px;
++  color: var(--text-secondary, #94a3b8);
++  max-width: 600px;
++}
++
++.fullWidthRow {
++  display: grid;
++  grid-template-columns: 1fr 1fr 1fr;
++  gap: 30px;
++  margin-top: 30px;
++}
++
++.formRow2 {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 30px;
++  margin-top: 30px;
++}
++
++.formRow4 {
++  display: grid;
++  grid-template-columns: 1fr 1fr 1fr 1fr;
++  gap: 30px;
++  margin-top: 30px;
++}
++
++.formRow5 {
++  display: grid;
++  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
++  gap: 30px;
++  margin-top: 30px;
++}
++
++.inputGroup {
++  display: flex;
++  flex-direction: column;
++}
++
++.label {
++  font-size: 13px;
++  color: #4A90A4;
++  margin-bottom: 8px;
++}
++
++.input {
++  padding: 10px 14px;
++  border-radius: 6px;
++  border: 1px solid #63bacf;
++  background: transparent;
++  color: white;
++  outline: none;
++  transition: 0.2s;
++  font-size: 14px;
++  width: 100%;
++  box-sizing: border-box;
++  border-radius: 8px;
++}
++
++.input::placeholder {
++  color: #64748b;
++}
++
++select.input {
++  appearance: none;
++  -webkit-appearance: none;
++  background-color: transparent;
++  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
++  background-repeat: no-repeat;
++  background-position: right 14px center;
++  padding: 12px;
++  cursor: pointer;
++}
++
++select.input option {
++  background-color: #0f172a;
++  color: white;
++}
++
++.input:focus {
++  border-color: var(--color-primary, #0ea5e9);
++  background: var(--color-input-background);
++}
++
++.inputError {
++  border-color: #ef4444 !important;
++}
++
++.errorText {
++  color: #ef4444;
++  font-size: 11px;
++  margin-top: 4px;
++}
++
++.actions {
++  display: flex;
++  justify-content: flex-end;
++  gap: 16px;
++  margin-top: 50px;
++  padding-bottom: 40px;
++}
++
++.cancelBtn {
++  padding: 10px 60px;
++  border-radius: 8px;
++  border: 1px solid rgba(255, 255, 255, 0.2);
++  background: transparent;
++  color: var(--text-primary);
++  cursor: pointer;
++  font-size: 14px;
++  transition: 0.2s;
++}
++
++.cancelBtn:hover {
++  background: rgba(255, 255, 255, 0.05);
++}
++
++.saveBtn {
++  padding: 12px 60px;
++  border-radius: 8px;
++  font-weight: 600;
++  border: none;
++  cursor: pointer;
++  font-size: 14px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  min-width: 140px;
++  gap: 10px;
++  transition: 0.2s;
++  background: linear-gradient(90deg, #11A5E1 0%, #0A52C6 100%);
++  color: white;
++}
++
++.saveBtn:hover {
++  filter: brightness(1.1);
++}
++
++.saveBtn:disabled {
++  opacity: 0.6;
++  cursor: not-allowed;
++}
++
++.footerText {
++  text-align: center;
++  margin-top: 60px;
++  color: var(--text-secondary, #64748b);
++  font-size: 13px;
++}
++
++.spinner {
++  animation: spin 0.8s linear infinite;
++}
++
++@keyframes spin {
++  to {
++    transform: rotate(360deg);
++  }
++}
++
++@media (max-width: 1200px) {
++  .formRow4, .formRow5 {
++    grid-template-columns: 1fr 1fr;
++  }
++  .fullWidthRow {
++    grid-template-columns: 1fr 1fr;
++  }
++}
++
++@media (max-width: 600px) {
++  .container {
++    padding: 20px 16px;
++  }
++  .fullWidthRow, .formRow2, .formRow4, .formRow5 {
++    grid-template-columns: 1fr;
++  }
++  .actions {
++    flex-direction: column;
++  }
++  .cancelBtn, .saveBtn {
++    width: 100%;
++    justify-content: center;
++  }
++}
+diff --git a/frontend/src/pages/ships/CreateShip/CreateShip.tsx b/frontend/src/pages/ships/CreateShip/CreateShip.tsx
+new file mode 100644
+index 0000000..3e41ab2
+--- /dev/null
++++ b/frontend/src/pages/ships/CreateShip/CreateShip.tsx
+@@ -0,0 +1,419 @@
++import React, { useRef, useState, useEffect } from 'react';
++import { useNavigate } from 'react-router-dom';
++import { MainLayout } from '../../../layouts/MainLayout';
++import { useCreateShipForm } from '../../../hooks/useCreateShipForm';
++import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
++import { getCountries } from '../../../services/api/countryService';
++import styles from './CreateShip.module.css';
++import { Loader2 } from 'lucide-react';
++
++export const CreateShip: React.FC = () => {
++  const { form, errors, loading, previewUrl, handleChange, handleImage, submit } = useCreateShipForm();
++  const fileInputRef = useRef<HTMLInputElement>(null);
++  const navigate = useNavigate();
++  const [showModal, setShowModal] = useState(false);
++  const [countries, setCountries] = useState<any[]>([]);
++  const [imageError, setImageError] = useState<string | null>(null);
++
++  useEffect(() => {
++    getCountries().then(setCountries).catch(console.error);
++  }, []);
++
++  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
++    const file = e.target.files?.[0];
++    if (file) {
++      try {
++        handleImage(file);
++        setImageError(null);
++      } catch (err: any) {
++        setImageError(err.message);
++      }
++    }
++  };
++
++  const handleSave = async () => {
++    const response = await submit();
++    if (response.success) {
++      setShowModal(true);
++    } else {
++      console.log('Errores de validación:', response.error);
++    }
++  };
++
++  const handleConfirmModal = () => {
++    setShowModal(false);
++    navigate('/barcos');
++  };
++
++  return (
++    <MainLayout>
++      <div className={styles.container}>
++        <div className={styles.header}>
++          <h1 className={styles.title}>Agregar nuevo Barco</h1>
++          <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
++        </div>
++
++        {/* SECCIÓN 1: FOTOGRAFÍA */}
++        <h3 className={styles.sectionTitle}>Fotografía</h3>
++        <div className={styles.imageUploadBar}>
++          <div className={styles.dropzone} onClick={() => fileInputRef.current?.click()}>
++            {previewUrl ? (
++              <img src={previewUrl} alt="Preview" className={styles.previewImage} />
++            ) : (
++              <>
++                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="1.5">
++                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
++                </svg>
++                <p style={{fontSize: '12px', color: '#0ea5e9', marginTop: '10px'}}>Cargar Foto</p>
++              </>
++            )}
++            <input
++              type="file"
++              ref={fileInputRef}
++              style={{display: 'none'}}
++              accept="image/png,image/jpeg"
++              onChange={handleImageChange}
++            />
++          </div>
++
++          <div className={styles.uploadTextInfo}>
++            <span className={styles.recommendedBadge}>Recomendado</span>
++            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'rgba(255,255,255,0.7)'}}>
++              Se recomienda una fotografía de perfil del barco con buena iluminación. La imagen debe
++              ser clara y mostrar las características principales de la embarcación. Solo PNG/JPG, máx. 5MB.
++            </p>
++            {imageError && <span className={styles.errorText}>{imageError}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 2: INFORMACIÓN GENERAL */}
++        <h3 className={styles.sectionTitle}>Información General</h3>
++
++        {/* Fila 1: nombre, IMO, matrícula */}
++        <div className={styles.fullWidthRow}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Nombre</label>
++            <input
++              className={`${styles.input} ${errors['name'] ? styles.inputError : ''}`}
++              placeholder="Ej: ARA San Martín"
++              value={form.name}
++              onChange={(e) => handleChange('name', e.target.value)}
++            />
++            {errors['name'] && <span className={styles.errorText}>{errors['name']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>IMO</label>
++            <input
++              className={`${styles.input} ${errors['imoNumber'] ? styles.inputError : ''}`}
++              placeholder="Ej: IMO1234567"
++              value={form.imoNumber}
++              onChange={(e) => handleChange('imoNumber', e.target.value)}
++            />
++            {errors['imoNumber'] && <span className={styles.errorText}>{errors['imoNumber']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Matrícula</label>
++            <input
++              className={`${styles.input} ${errors['registration'] ? styles.inputError : ''}`}
++              placeholder="Ej: AR-00123"
++              value={form.registration}
++              onChange={(e) => handleChange('registration', e.target.value)}
++            />
++            {errors['registration'] && <span className={styles.errorText}>{errors['registration']}</span>}
++          </div>
++        </div>
++
++        {/* Fila 2: tipo de barco, año, país, estado */}
++        <div className={styles.formRow4} style={{marginTop: '30px'}}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Tipo de Barco</label>
++            <input
++              className={`${styles.input} ${errors['shipType'] ? styles.inputError : ''}`}
++              placeholder="Ej: Carguero"
++              value={form.shipType}
++              onChange={(e) => handleChange('shipType', e.target.value)}
++            />
++            {errors['shipType'] && <span className={styles.errorText}>{errors['shipType']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Año de Construcción</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['buildYear'] ? styles.inputError : ''}`}
++              placeholder="Ej: 2005"
++              value={form.buildYear}
++              onChange={(e) => handleChange('buildYear', e.target.value)}
++            />
++            {errors['buildYear'] && <span className={styles.errorText}>{errors['buildYear']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>País</label>
++            <select
++              className={`${styles.input} ${errors['countryId'] ? styles.inputError : ''}`}
++              value={form.countryId}
++              onChange={(e) => handleChange('countryId', e.target.value)}
++            >
++              <option value="">Seleccione un País</option>
++              {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
++            </select>
++            {errors['countryId'] && <span className={styles.errorText}>{errors['countryId']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Estado</label>
++            <select
++              className={`${styles.input} ${errors['status'] ? styles.inputError : ''}`}
++              value={form.status}
++              onChange={(e) => handleChange('status', e.target.value)}
++            >
++              <option value="OPERATIONAL">Operativo</option>
++              <option value="MAINTENANCE">Mantenimiento</option>
++              <option value="REPAIR">Reparación</option>
++              <option value="OUT_OF_SERVICE">Fuera de Servicio</option>
++            </select>
++            {errors['status'] && <span className={styles.errorText}>{errors['status']}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 3: IDENTIFICACIÓN TÉCNICA */}
++        <h3 className={styles.sectionTitle}>Identificación Técnica</h3>
++        <div className={styles.formRow2}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Número de Casco</label>
++            <input
++              className={`${styles.input} ${errors['hullNumber'] ? styles.inputError : ''}`}
++              placeholder="Ej: HULL-00456"
++              value={form.hullNumber}
++              onChange={(e) => handleChange('hullNumber', e.target.value)}
++            />
++            {errors['hullNumber'] && <span className={styles.errorText}>{errors['hullNumber']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Número de Motor</label>
++            <input
++              className={`${styles.input} ${errors['serialNumber'] ? styles.inputError : ''}`}
++              placeholder="Ej: SN-789ABC"
++              value={form.serialNumber}
++              onChange={(e) => handleChange('serialNumber', e.target.value)}
++            />
++            {errors['serialNumber'] && <span className={styles.errorText}>{errors['serialNumber']}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 4: ESPECIFICACIONES FÍSICAS */}
++        <h3 className={styles.sectionTitle}>Especificaciones Físicas</h3>
++        <div className={styles.formRow5}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Eslora (m)</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['length'] ? styles.inputError : ''}`}
++              placeholder="Ej: 120.5"
++              value={form.length}
++              onChange={(e) => handleChange('length', e.target.value)}
++            />
++            {errors['length'] && <span className={styles.errorText}>{errors['length']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Manga (m)</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['beam'] ? styles.inputError : ''}`}
++              placeholder="Ej: 18.0"
++              value={form.beam}
++              onChange={(e) => handleChange('beam', e.target.value)}
++            />
++            {errors['beam'] && <span className={styles.errorText}>{errors['beam']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Calado (m)</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['draft'] ? styles.inputError : ''}`}
++              placeholder="Ej: 6.5"
++              value={form.draft}
++              onChange={(e) => handleChange('draft', e.target.value)}
++            />
++            {errors['draft'] && <span className={styles.errorText}>{errors['draft']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Puntal (m)</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['depth'] ? styles.inputError : ''}`}
++              placeholder="Ej: 10.0"
++              value={form.depth}
++              onChange={(e) => handleChange('depth', e.target.value)}
++            />
++            {errors['depth'] && <span className={styles.errorText}>{errors['depth']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Peso en Toneladas</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['weightTonnes'] ? styles.inputError : ''}`}
++              placeholder="Ej: 5000"
++              value={form.weightTonnes}
++              onChange={(e) => handleChange('weightTonnes', e.target.value)}
++            />
++            {errors['weightTonnes'] && <span className={styles.errorText}>{errors['weightTonnes']}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 5: CAPACIDADES */}
++        <h3 className={styles.sectionTitle}>Capacidades</h3>
++        <div className={styles.formRow4}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Tripulantes</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['crewCapacity'] ? styles.inputError : ''}`}
++              placeholder="Ej: 25"
++              value={form.crewCapacity}
++              onChange={(e) => handleChange('crewCapacity', e.target.value)}
++            />
++            {errors['crewCapacity'] && <span className={styles.errorText}>{errors['crewCapacity']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Bodegas</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['holdCount'] ? styles.inputError : ''}`}
++              placeholder="Ej: 4"
++              value={form.holdCount}
++              onChange={(e) => handleChange('holdCount', e.target.value)}
++            />
++            {errors['holdCount'] && <span className={styles.errorText}>{errors['holdCount']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Carga en Ton</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['cargoCapacityTonnes'] ? styles.inputError : ''}`}
++              placeholder="Ej: 3000"
++              value={form.cargoCapacityTonnes}
++              onChange={(e) => handleChange('cargoCapacityTonnes', e.target.value)}
++            />
++            {errors['cargoCapacityTonnes'] && <span className={styles.errorText}>{errors['cargoCapacityTonnes']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Nafta en Litros</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['fuelCapacityLiters'] ? styles.inputError : ''}`}
++              placeholder="Ej: 50000"
++              value={form.fuelCapacityLiters}
++              onChange={(e) => handleChange('fuelCapacityLiters', e.target.value)}
++            />
++            {errors['fuelCapacityLiters'] && <span className={styles.errorText}>{errors['fuelCapacityLiters']}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 6: MOTOR Y MANTENIMIENTO */}
++        <h3 className={styles.sectionTitle}>Motor y Mantenimiento</h3>
++
++        {/* Fila 1: fabricante motor, modelo motor, horas acumuladas */}
++        <div className={styles.fullWidthRow}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Fabricante del Motor</label>
++            <input
++              className={`${styles.input} ${errors['engineManufacturer'] ? styles.inputError : ''}`}
++              placeholder="Ej: Caterpillar"
++              value={form.engineManufacturer}
++              onChange={(e) => handleChange('engineManufacturer', e.target.value)}
++            />
++            {errors['engineManufacturer'] && <span className={styles.errorText}>{errors['engineManufacturer']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Modelo del Motor</label>
++            <input
++              className={`${styles.input} ${errors['engineModel'] ? styles.inputError : ''}`}
++              placeholder="Ej: 3516C"
++              value={form.engineModel}
++              onChange={(e) => handleChange('engineModel', e.target.value)}
++            />
++            {errors['engineModel'] && <span className={styles.errorText}>{errors['engineModel']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Horas Acumuladas</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['currentEngineHours'] ? styles.inputError : ''}`}
++              placeholder="Ej: 12000"
++              value={form.currentEngineHours}
++              onChange={(e) => handleChange('currentEngineHours', e.target.value)}
++            />
++            {errors['currentEngineHours'] && <span className={styles.errorText}>{errors['currentEngineHours']}</span>}
++          </div>
++        </div>
++
++        {/* Fila 2: horas último overhaul, fecha último mantenimiento */}
++        <div className={styles.formRow2}>
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Horas Último Overhaul</label>
++            <input
++              type="number"
++              className={`${styles.input} ${errors['lastTboEngineHours'] ? styles.inputError : ''}`}
++              placeholder="Ej: 8000"
++              value={form.lastTboEngineHours}
++              onChange={(e) => handleChange('lastTboEngineHours', e.target.value)}
++            />
++            {errors['lastTboEngineHours'] && <span className={styles.errorText}>{errors['lastTboEngineHours']}</span>}
++          </div>
++
++          <div className={styles.inputGroup}>
++            <label className={styles.label}>Fecha Último Mantenimiento</label>
++            <input
++              type="date"
++              className={`${styles.input} ${errors['lastMaintenanceDate'] ? styles.inputError : ''}`}
++              value={form.lastMaintenanceDate}
++              onChange={(e) => handleChange('lastMaintenanceDate', e.target.value)}
++            />
++            {errors['lastMaintenanceDate'] && <span className={styles.errorText}>{errors['lastMaintenanceDate']}</span>}
++          </div>
++        </div>
++
++        {/* SECCIÓN 7: ACCIONES */}
++        <div className={styles.actions}>
++          <button className={styles.cancelBtn} onClick={() => navigate('/barcos')}>Cancelar</button>
++          <button className={styles.saveBtn} onClick={handleSave} disabled={loading}>
++            {loading ? (
++              <>
++                <Loader2 className={styles.spinner} size={20} />
++                Guardando...
++              </>
++            ) : (
++              'Guardar'
++            )}
++          </button>
++        </div>
++
++        <p className={styles.footerText}>
++          Sistema de Gestión Maritima V.1
++        </p>
++      </div>
++
++      {showModal && (
++        <FeedbackModal
++          message="Barco registrado correctamente"
++          onClose={handleConfirmModal}
++        />
++      )}
++
++    </MainLayout>
++  );
++};
+diff --git a/frontend/src/pages/ships/ListShips/ListShips.module.css b/frontend/src/pages/ships/ListShips/ListShips.module.css
+new file mode 100644
+index 0000000..f003349
+--- /dev/null
++++ b/frontend/src/pages/ships/ListShips/ListShips.module.css
+@@ -0,0 +1,222 @@
++/* frontend/src/pages/ships/ListShips/ListShips.module.css */
++.addButton {
++  background: transparent;
++  border: 1px solid #0ea5e9;
++  border-radius: 15px;
++  padding: 8px 20px;
++  color: #0ea5e9;
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  cursor: pointer;
++  transition: all 0.2s;
++  font-weight: 500;
++}
++
++.addButton:hover {
++  background: rgba(14, 165, 233, 0.1);
++}
++
++.filtersContainer {
++  display: flex;
++  justify-content: space-between;
++  margin-bottom: 24px;
++  gap: 16px;
++}
++
++.filterDropdown {
++  display: flex;
++  align-items: center;
++  background: transparent;
++  border: 1px solid #3a617c;
++  border-radius: 6px;
++  padding: 8px 16px;
++  min-width: 200px;
++}
++
++.filterIcon {
++  color: #9EB0C7;
++  margin-right: 8px;
++}
++
++.selectInput {
++  background: transparent;
++  border: none;
++  color: #94a3b8;
++  width: 100%;
++  outline: none;
++  appearance: none;
++  cursor: pointer;
++}
++
++.selectInput option {
++  background: #082842;
++  color: #ffffff;
++}
++
++.shipsGrid {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 20px;
++}
++
++.loading, .error {
++  text-align: center;
++  padding: 40px;
++  color: #94a3b8;
++  font-size: 1.1rem;
++}
++
++.error { color: #ef4444; }
++
++@media (max-width: 1200px) { .shipsGrid { grid-template-columns: repeat(2, 1fr); } }
++@media (max-width: 768px)  { .shipsGrid { grid-template-columns: 1fr; } }
++
++.shipCard {
++  background: var(--background-color-card, #0f172a);
++  border: 1.5px solid rgba(14, 165, 233, 0.5);
++  border-radius: 12px;
++  overflow: hidden;
++  box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
++  display: flex;
++  flex-direction: column;
++  position: relative;
++}
++
++.imageContainer {
++  width: 100%;
++  height: 160px;
++  overflow: hidden;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  position: relative;
++}
++
++.shipImage {
++  width: 97%;
++  height: 95%;
++  object-fit: cover;
++  border-radius: 10px;
++  transition: transform 0.3s ease;
++}
++
++.cardContent {
++  padding: 16px;
++  padding-top: 4px;
++  display: flex;
++  flex-direction: column;
++  flex: 1;
++}
++
++.headerRow {
++  display: flex;
++  justify-content: space-between;
++  align-items: flex-start;
++  margin-bottom: 12px;
++}
++
++.shipInfo { flex: 1; padding-right: 12px; }
++
++.shipName {
++  font-size: 1.1rem;
++  font-weight: 500;
++  color: var(--color-title2, #ffffff);
++  margin: 0 0 4px 0;
++  display: flex;
++  gap: 8px;
++  position: absolute;
++  bottom: 0;
++  left: 12px;
++}
++
++.shipMeta {
++  display: flex;
++  justify-content: space-evenly;
++  gap: 16px;
++  margin-top: 4px;
++}
++
++.metaItem {
++  display: flex;
++  flex-direction: column;
++  font-size: 0.78rem;
++}
++
++.metaLabel { color: #64748b; }
++.metaValue { color: #94a3b8; }
++
++.statusBadge {
++  padding: 4px 12px;
++  border-radius: 16px;
++  font-size: 0.75rem;
++  font-weight: 600;
++  white-space: nowrap;
++  position: absolute;
++  top: 12px;
++  right: 12px;
++}
++
++.statusOPERATIONAL {
++  background-color: #17F647;
++  color: #0f172a;
++}
++
++.statusMAINTENANCE {
++  background-color: #FFF600;
++  color: #0f172a;
++}
++
++.statusREPAIR {
++  background-color: #FF9D00;
++  color: #0f172a;
++}
++
++.statusOUT_OF_SERVICE {
++  background-color: #FF0000;
++  color: #0f172a;
++}
++
++.cardActions {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding-top: 16px;
++  border-top: 1px solid rgba(14, 165, 233, 0.5);
++  margin-top: auto;
++  gap: 24px;
++}
++
++.viewDetailBtn {
++  background: #38bdf8;
++  color: #0f172a;
++  border: none;
++  border-radius: 12px;
++  padding: 6px 16px;
++  font-size: 0.85rem;
++  font-weight: 600;
++  cursor: pointer;
++  transition: all 0.2s;
++  flex: 1;
++}
++
++.viewDetailBtn:hover { background: #7dd3fc; }
++
++.editBtn, .deleteBtn {
++  background: transparent;
++  border-radius: 12px;
++  width: 50px;
++  height: 32px;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  cursor: pointer;
++  transition: all 0.2s;
++  flex: 1;
++}
++
++.editBtn { border: 1px solid #38bdf8; color: #38bdf8; }
++.editBtn:hover { background: rgba(56, 189, 248, 0.1); }
++
++.deleteBtn { border: 1px solid #7f1d1d; color: #ef4444; }
++.deleteBtn:hover { background: rgba(127, 29, 29, 0.4); }
+diff --git a/frontend/src/pages/ships/ListShips/ListShips.tsx b/frontend/src/pages/ships/ListShips/ListShips.tsx
+new file mode 100644
+index 0000000..4fa0f4d
+--- /dev/null
++++ b/frontend/src/pages/ships/ListShips/ListShips.tsx
+@@ -0,0 +1,157 @@
++// frontend/src/pages/ships/ListShips/ListShips.tsx
++import React, { useState, useEffect } from 'react';
++import { useNavigate, useParams } from 'react-router-dom';
++import { MainLayout } from '../../../layouts/MainLayout';
++import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
++import { Filter, Anchor, Edit2, Trash2 } from 'lucide-react';
++import { useDebounce } from '../../../hooks/useDebounce';
++import { getAllShips } from '../../../services/api/shipService';
++import { ShipDetailModal } from '../ShipDetailModal/ShipDetailModal';
++import type { ShipSummaryResponse, ShipStatus } from '../../../types/ship';
++import styles from './ListShips.module.css';
++
++const STATUS_LABELS: Record<ShipStatus, string> = {
++  OPERATIONAL: 'Operativo',
++  MAINTENANCE: 'Mantenimiento',
++  REPAIR: 'Reparación',
++  OUT_OF_SERVICE: 'Fuera de servicio',
++};
++
++export const ListShips: React.FC = () => {
++  const { id } = useParams<{ id: string }>();
++  const navigate = useNavigate();
++  const [searchTerm, setSearchTerm] = useState('');
++  const [statusFilter, setStatusFilter] = useState('');
++  const [ships, setShips] = useState<ShipSummaryResponse[]>([]);
++  const [isLoading, setIsLoading] = useState(true);
++  const [errorMsg, setErrorMsg] = useState<string | null>(null);
++  const debouncedSearch = useDebounce(searchTerm, 300);
++
++  useEffect(() => {
++    getAllShips()
++      .then(setShips)
++      .catch(() => setErrorMsg('Error al cargar la lista de barcos.'))
++      .finally(() => setIsLoading(false));
++  }, []);
++
++  const filtered = ships.filter((ship) => {
++    const term = debouncedSearch.toLowerCase();
++    const matchesSearch =
++      ship.name.toLowerCase().includes(term) ||
++      ship.registration.toLowerCase().includes(term) ||
++      ship.imoNumber.toLowerCase().includes(term);
++    const matchesStatus = statusFilter ? ship.status === statusFilter : true;
++    return matchesSearch && matchesStatus;
++  });
++
++  return (
++    <MainLayout>
++      <div className="w-full max-w-7xl mx-auto px-6 py-8">
++        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
++          <header>
++            <h1 className="text-3xl text-[var(--text-secondary)] font-medium">Gestión de Barcos</h1>
++            <p className="text-slate-400 mt-1 text-sm">Bienvenido al sistema de gestión y Navegación</p>
++          </header>
++          <button className={styles.addButton} onClick={() => navigate('/barcos/nuevo')}>
++            <Anchor size={24} />
++            <span>+</span>
++          </button>
++        </div>
++
++        <div className={styles.filtersContainer}>
++          <SearchInput
++            value={searchTerm}
++            onChange={setSearchTerm}
++            placeholder="Buscar por nombre, matrícula o IMO..."
++          />
++          <div className={styles.filterDropdown}>
++            <Filter size={18} className={styles.filterIcon} />
++            <select
++              className={styles.selectInput}
++              value={statusFilter}
++              onChange={(e) => setStatusFilter(e.target.value)}
++            >
++              <option value="">Todos</option>
++              <option value="OPERATIONAL">Operativo</option>
++              <option value="MAINTENANCE">Mantenimiento</option>
++              <option value="REPAIR">Reparación</option>
++              <option value="OUT_OF_SERVICE">Fuera de servicio</option>
++            </select>
++          </div>
++        </div>
++
++        {isLoading ? (
++          <div className={styles.loading}>Cargando barcos...</div>
++        ) : errorMsg ? (
++          <div className={styles.error}>{errorMsg}</div>
++        ) : (
++          <div className={styles.shipsGrid}>
++            {filtered.map((ship) => (
++              <div key={ship.id} className={styles.shipCard}>
++                <div className={styles.imageContainer}>
++                  {ship.mainImageUrl ? (
++                    <img src={ship.mainImageUrl} alt={ship.name} className={styles.shipImage} />
++                  ) : (
++                    <Anchor size={48} color="rgba(14,165,233,0.4)" />
++                  )}
++
++                  <h3 className={styles.shipName}>
++                    <Anchor size={24} color="var(--text-secondary)" />
++                    {ship.name}
++                  </h3>
++                </div>
++
++                <span className={`${styles.statusBadge} ${styles[`status${ship.status}`]}`}>
++                  {STATUS_LABELS[ship.status]}
++                </span>
++
++                <div className={styles.cardContent}>
++                  <div className={styles.headerRow}>
++                    <div className={styles.shipInfo}>
++                      <div className={styles.shipMeta}>
++                        <div className={styles.metaItem}>
++                          <span className={styles.metaLabel}>Matrícula</span>
++                          <span className={styles.metaValue}>{ship.registration}</span>
++                        </div>
++                        <div className={styles.metaItem}>
++                          <span className={styles.metaLabel}>Número de IMO</span>
++                          <span className={styles.metaValue}>{ship.imoNumber}</span>
++                        </div>
++                      </div>
++                    </div>
++                  </div>
++
++                  <div className={styles.cardActions}>
++                    <button
++                      className={styles.viewDetailBtn}
++                      onClick={() => navigate(`/barcos/${ship.id}`)}
++                    >
++                      Ver detalle
++                    </button>
++                    <button className={styles.editBtn} title="Editar">
++                      <Edit2 size={16} />
++                    </button>
++                    <button className={styles.deleteBtn} title="Eliminar">
++                      <Trash2 size={16} />
++                    </button>
++                  </div>
++                </div>
++              </div>
++            ))}
++            {filtered.length === 0 && (
++              <div className={styles.loading} style={{ gridColumn: '1 / -1' }}>
++                No existen barcos registrados.
++              </div>
++            )}
++          </div>
++        )}
++
++        {id && <ShipDetailModal shipId={id} onClose={() => navigate('/barcos')} />}
++
++        <footer className="text-center mt-12 text-xs text-slate-500 pb-6">
++          Sistema de Gestión Marítima V.1
++        </footer>
++      </div>
++    </MainLayout>
++  );
++};
+diff --git a/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.module.css b/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.module.css
+new file mode 100644
+index 0000000..e75b2ab
+--- /dev/null
++++ b/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.module.css
+@@ -0,0 +1,155 @@
++/* frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.module.css */
++.overlay {
++  position: fixed;
++  top: 0; left: 0;
++  width: 100vw; height: 100vh;
++  background-color: rgba(0, 0, 0, 0.6);
++  backdrop-filter: blur(4px);
++  z-index: 1000;
++  display: flex;
++  justify-content: center;
++  align-items: center;
++  padding: 20px;
++}
++
++.modal {
++  background-color: var(--background-color-detail);
++  width: 100%;
++  max-width: 900px;
++  max-height: 95vh;
++  border-radius: 12px;
++  border: 1px solid var(--border-input, rgba(99, 186, 207, 0.3));
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
++  display: flex;
++  flex-direction: column;
++  overflow: hidden;
++  color: var(--text-primary);
++}
++
++.header {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 16px 24px;
++  background-color: var(--color-input-background, var(--background-color-card));
++  border-bottom: 1px solid var(--border-input, rgba(99, 186, 207, 0.2));
++}
++
++.titleArea { display: flex; align-items: center; gap: 12px; }
++
++.title { font-size: 18px; font-weight: 500; margin: 0; color: var(--text-primary); }
++
++.closeBtn {
++  background: none;
++  border: 1px solid var(--border-button-dowload);
++  color: var(--button-download);
++  cursor: pointer;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  padding: 4px;
++  border-radius: 50%;
++  transition: 0.2s;
++}
++
++.closeBtn:hover { background: rgba(99, 186, 207, 0.2); color: white; }
++
++.content {
++  flex: 1;
++  overflow-y: auto;
++  padding: 24px;
++  display: flex;
++  flex-direction: column;
++  gap: 24px;
++}
++
++.topSection {
++  display: flex;
++  flex-direction: column;
++  gap: 32px;
++  align-items: start;
++}
++
++.shipImageWrapper {
++  width: 100%;
++  height: 250px;
++  border-radius: 10px;
++  overflow: hidden;
++  border: 1px solid rgba(99, 186, 207, 0.3);
++  background-color: #1a2235;
++  display: flex;
++  justify-content: center;
++  align-items: center;
++  flex-shrink: 0;
++}
++
++.shipImage { width: 100%; height: 100%; object-fit: cover; }
++
++.modalContentWrapper {
++  border: 1px solid rgba(99, 186, 207, 0.3);
++  border-radius: 10px;
++  padding: 16px 24px;
++  display: flex;
++  flex-direction: column;
++  gap: 12px
++}
++
++.infoBlock { display: flex; flex-direction: column; }
++
++.infoBlockDivider {
++  width: 98%;
++  height: 1px;
++  background-color: rgba(99, 186, 207, 0.3);
++  margin: 12px auto;
++}
++
++.sectionTitle {
++  font-size: 24px;
++  color: var(--text-primary);
++  font-weight: 500;
++  padding-bottom: 8px;
++}
++
++.gridData {
++  display: grid;
++  grid-template-columns: repeat(2, 1fr);
++  gap: 10px 24px;
++  padding: 0 24px;
++}
++
++.dataRow { display: flex; font-size: 13px; gap: 6px; }
++
++.dataLabel { font-weight: 500; color: var(--text-primary, #a0aec0); }
++
++.dataValue { color: var(--color-subtitle); }
++
++.centerMessage {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  min-height: 250px;
++  text-align: center;
++  gap: 16px;
++}
++
++.errorText { color: #ef4444; font-size: 15px; }
++
++.retryBtn {
++  background: transparent;
++  color: #63BACF;
++  border: 1px solid rgba(99, 186, 207, 0.4);
++  padding: 8px 20px;
++  border-radius: 16px;
++  cursor: pointer;
++  font-size: 14px;
++  transition: 0.2s;
++}
++
++.retryBtn:hover { background: rgba(99, 186, 207, 0.1); }
++
++@media (max-width: 768px) {
++  .topSection { grid-template-columns: 1fr; }
++  .shipImageWrapper { width: 100%; height: 180px; }
++  .gridData { grid-template-columns: 1fr; }
++}
+diff --git a/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.tsx b/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.tsx
+new file mode 100644
+index 0000000..dbd73eb
+--- /dev/null
++++ b/frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.tsx
+@@ -0,0 +1,204 @@
++// frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.tsx
++import React from 'react';
++import { X, Anchor } from 'lucide-react';
++import { useShipDetail } from '../../../hooks/useShipDetail';
++import type { ShipStatus } from '../../../types/ship';
++import styles from './ShipDetailModal.module.css';
++
++interface ShipDetailModalProps {
++  shipId: string;
++  onClose: () => void;
++}
++
++const STATUS_LABELS: Record<ShipStatus, string> = {
++  OPERATIONAL: 'Operativo',
++  MAINTENANCE: 'Mantenimiento',
++  REPAIR: 'Reparación',
++  OUT_OF_SERVICE: 'Fuera de servicio',
++};
++
++const val = (v: string | number | null | undefined): string =>
++  v !== null && v !== undefined ? String(v) : '—';
++
++export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClose }) => {
++  const { data: ship, loading, error } = useShipDetail(shipId);
++
++  const handleModalClick = (e: React.MouseEvent) => e.stopPropagation();
++
++  return (
++    <div className={styles.overlay} onClick={onClose}>
++      <div className={styles.modal} onClick={handleModalClick}>
++
++        <div className={styles.header}>
++          <div className={styles.titleArea}>
++            <Anchor size={22} color="#63BACF" />
++            <h2 className={styles.title}>Detalle del Barco</h2>
++          </div>
++          <button className={styles.closeBtn} onClick={onClose}>
++            <X size={18} />
++          </button>
++        </div>
++
++        <div className={styles.content}>
++          {loading ? (
++            <div className={styles.centerMessage}>
++              <p>Cargando información del barco...</p>
++            </div>
++          ) : error ? (
++            <div className={styles.centerMessage}>
++              <p className={styles.errorText}>{error}</p>
++              <button className={styles.retryBtn} onClick={onClose}>Volver</button>
++            </div>
++          ) : ship ? (
++            <>
++              <div className={styles.shipImageWrapper}>
++                {ship.mainImageUrl ? (
++                  <img src={ship.mainImageUrl} alt={ship.name} className={styles.shipImage} />
++                ) : (
++                  <Anchor size={56} color="rgba(14,165,233,0.3)" />
++                )}
++              </div>
++
++              <div className={styles.modalContentWrapper}>
++                {/* TOP: imagen + info general */}
++                <div className={styles.infoBlock}>
++                  <h3 className={styles.sectionTitle}>Información General</h3>
++                  <div className={styles.gridData}>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Nombre:</span>
++                      <span className={styles.dataValue}>{val(ship.name)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Matrícula:</span>
++                      <span className={styles.dataValue}>{val(ship.registration)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Modelo:</span>
++                      <span className={styles.dataValue}>{val(ship.engineModel)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Número IMO:</span>
++                      <span className={styles.dataValue}>{val(ship.imoNumber)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Tipo de Barco:</span>
++                      <span className={styles.dataValue}>{val(ship.shipType)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Año de Construcción:</span>
++                      <span className={styles.dataValue}>{val(ship.buildYear)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Bandera / País:</span>
++                      <span className={styles.dataValue}>{val(ship.countryName)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Estado:</span>
++                      <span className={styles.dataValue}>{STATUS_LABELS[ship.status] ?? val(ship.status)}</span>
++                    </div>
++                  </div>
++                </div>
++
++                <div className={styles.infoBlockDivider} />
++
++                {/* Identificación Técnica */}
++                <div className={styles.infoBlock}>
++                  <h3 className={styles.sectionTitle}>Identificación Técnica</h3>
++                  <div className={styles.gridData}>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Número de Casco:</span>
++                      <span className={styles.dataValue}>{val(ship.hullNumber)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Número de Motor:</span>
++                      <span className={styles.dataValue}>{val(ship.engineSerialNumber)}</span>
++                    </div>
++                  </div>
++                </div>
++
++                <div className={styles.infoBlockDivider} />
++
++                {/* Especificaciones Físicas */}
++                <div className={styles.infoBlock}>
++                  <h3 className={styles.sectionTitle}>Especificaciones Físicas</h3>
++                  <div className={styles.gridData}>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Eslora (metros):</span>
++                      <span className={styles.dataValue}>{val(ship.length)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Manga (metros):</span>
++                      <span className={styles.dataValue}>{val(ship.beam)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Calado (metros):</span>
++                      <span className={styles.dataValue}>{val(ship.draft)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Puntal (metros):</span>
++                      <span className={styles.dataValue}>{val(ship.depth)}</span>
++                    </div>
++                  </div>
++                </div>
++
++                <div className={styles.infoBlockDivider} />
++
++                {/* Capacidades */}
++                <div className={styles.infoBlock}>
++                  <h3 className={styles.sectionTitle}>Capacidades</h3>
++                  <div className={styles.gridData}>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Capacidad de Tripulantes:</span>
++                      <span className={styles.dataValue}>{val(ship.crewCapacity)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Peso (Toneladas):</span>
++                      <span className={styles.dataValue}>{val(ship.weightTonnes)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Cantidad de Bodegas:</span>
++                      <span className={styles.dataValue}>{val(ship.holdCount)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Capacidad de Nafta (Litros):</span>
++                      <span className={styles.dataValue}>{val(ship.fuelCapacityLiters)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Capacidad de Carga (Toneladas):</span>
++                      <span className={styles.dataValue}>{val(ship.cargoCapacityTonnes)}</span>
++                    </div>
++                  </div>
++                </div>
++
++                <div className={styles.infoBlockDivider} />
++
++                {/* Motor y Mantenimiento */}
++                <div className={styles.infoBlock}>
++                  <h3 className={styles.sectionTitle}>Motor y Mantenimiento</h3>
++                  <div className={styles.gridData}>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Fabricante del Motor:</span>
++                      <span className={styles.dataValue}>{val(ship.engineManufacturer)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Horas Acumuladas:</span>
++                      <span className={styles.dataValue}>{val(ship.currentEngineHours)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Horas del Último Overhaul:</span>
++                      <span className={styles.dataValue}>{val(ship.lastTboEngineHours)}</span>
++                    </div>
++                    <div className={styles.dataRow}>
++                      <span className={styles.dataLabel}>Fecha Último Mantenimiento:</span>
++                      <span className={styles.dataValue}>{val(ship.lastMaintenanceDate)}</span>
++                    </div>
++                  </div>
++                </div>
++              </div>
++            </>
++          ) : null}
++        </div>
++      </div>
++    </div>
++  );
++};
+diff --git a/frontend/src/services/api/shipService.ts b/frontend/src/services/api/shipService.ts
+index 195959b..b6422dc 100644
+--- a/frontend/src/services/api/shipService.ts
++++ b/frontend/src/services/api/shipService.ts
+@@ -9,4 +9,11 @@ export const getAllShips = async (): Promise<ShipSummaryResponse[]> => {
+ export const getShipById = async (id: string): Promise<ShipDetailResponse> => {
+   const response = await apiClient.get(`/admin/ships/${id}`);
+   return response.data;
+-};
+\ No newline at end of file
++};
++
++export const createShip = async (formData: FormData): Promise<any> => {
++  const response = await apiClient.post('/admin/ships/create-ship', formData, {
++    headers: { 'Content-Type': 'multipart/form-data' },
++  });
++  return response.data;
++};
+diff --git a/frontend/src/types/ship.ts b/frontend/src/types/ship.ts
+index 9a5d623..837fc96 100644
+--- a/frontend/src/types/ship.ts
++++ b/frontend/src/types/ship.ts
+@@ -19,12 +19,14 @@ export interface ShipDetailResponse extends ShipSummaryResponse {
+   draft: number;
+   depth: number;
+   crewCapacity: number;
++  weightTonnes: number;
+   holdCount: number | null;
+   cargoCapacityTonnes: number;
++  engineManufacturer: string | null;
+   engineModel: string | null;
+   engineSerialNumber: string | null;
+   currentEngineHours: number | null;
+   lastTboEngineHours: number | null;
+   fuelCapacityLiters: number | null;
+   lastMaintenanceDate: string | null;
+-}
+\ No newline at end of file
++}
+diff --git a/frontend/src/validators/shipValidator.ts b/frontend/src/validators/shipValidator.ts
+new file mode 100644
+index 0000000..cc48d33
+--- /dev/null
++++ b/frontend/src/validators/shipValidator.ts
+@@ -0,0 +1,98 @@
++const CURRENT_YEAR = new Date().getFullYear();
++
++export const validateCreateShip = (form: any) => {
++  const errors: Record<string, string> = {};
++
++  if (!form.name || form.name.trim() === '') {
++    errors.name = 'El nombre del barco es obligatorio';
++  }
++
++  if (!form.imoNumber || form.imoNumber.trim() === '') {
++    errors.imoNumber = 'El número IMO es obligatorio';
++  }
++
++  if (!form.registration || form.registration.trim() === '') {
++    errors.registration = 'La matrícula es obligatoria';
++  }
++
++  if (!form.shipType || form.shipType.trim() === '') {
++    errors.shipType = 'El tipo de barco es obligatorio';
++  }
++
++  if (!form.buildYear) {
++    errors.buildYear = 'El año de construcción es obligatorio';
++  } else {
++    const year = Number(form.buildYear);
++    if (isNaN(year) || year < 1800 || year > CURRENT_YEAR) {
++      errors.buildYear = `El año debe estar entre 1800 y ${CURRENT_YEAR}`;
++    }
++  }
++
++  if (!form.countryId) {
++    errors.countryId = 'Debe seleccionar un país';
++  }
++
++  if (!form.status) {
++    errors.status = 'El estado es obligatorio';
++  }
++
++  const positiveNumericFields: [string, string][] = [
++    ['length', 'La eslora debe ser mayor a 0'],
++    ['beam', 'La manga debe ser mayor a 0'],
++    ['draft', 'El calado debe ser mayor a 0'],
++    ['depth', 'El puntal debe ser mayor a 0'],
++    ['weightTonnes', 'El peso debe ser mayor a 0'],
++  ];
++
++  for (const [field, msg] of positiveNumericFields) {
++    if (!form[field]) {
++      errors[field] = `${msg.split(' debe')[0]} es obligatorio`;
++    } else {
++      const val = Number(form[field]);
++      if (isNaN(val) || val <= 0) {
++        errors[field] = msg;
++      }
++    }
++  }
++
++  if (!form.crewCapacity) {
++    errors.crewCapacity = 'La capacidad de tripulación es obligatoria';
++  } else {
++    const crew = Number(form.crewCapacity);
++    if (isNaN(crew) || crew <= 0) {
++      errors.crewCapacity = 'La capacidad de tripulación debe ser mayor a 0';
++    }
++  }
++
++  if (!form.cargoCapacityTonnes && form.cargoCapacityTonnes !== 0 && form.cargoCapacityTonnes !== '0') {
++    errors.cargoCapacityTonnes = 'La capacidad de carga es obligatoria';
++  } else {
++    const cargo = Number(form.cargoCapacityTonnes);
++    if (isNaN(cargo) || cargo < 0) {
++      errors.cargoCapacityTonnes = 'La capacidad de carga debe ser 0 o mayor';
++    }
++  }
++
++  if (form.fuelCapacityLiters) {
++    const fuel = Number(form.fuelCapacityLiters);
++    if (isNaN(fuel) || fuel < 0) {
++      errors.fuelCapacityLiters = 'La capacidad de combustible debe ser mayor a 0';
++    }
++  }
++
++  if (form.currentEngineHours) {
++    const hours = Number(form.currentEngineHours);
++    if (isNaN(hours) || hours < 0) {
++      errors.currentEngineHours = 'Las horas del motor deben ser 0 o más';
++    }
++  }
++
++  if (form.lastTboEngineHours) {
++    const tbo = Number(form.lastTboEngineHours);
++    if (isNaN(tbo) || tbo < 0) {
++      errors.lastTboEngineHours = 'Las horas del overhaul deben ser 0 o más';
++    }
++  }
++
++  return errors;
++};

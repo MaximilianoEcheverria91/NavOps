@@ -255,6 +255,17 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+    @ExceptionHandler(NavigationPlanNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNavigationPlanNotFound(NavigationPlanNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Not Found",
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(NoPortsFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNoPortsFound(NoPortsFoundException ex) {
         ErrorResponseDto response = new ErrorResponseDto(

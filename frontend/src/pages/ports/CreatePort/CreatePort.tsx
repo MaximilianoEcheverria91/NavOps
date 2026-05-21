@@ -8,7 +8,8 @@ import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModa
 import { getCountries } from '../../../services/api/countryService';
 import { getProvincesByCountry } from '../../../services/api/provinceService';
 import { getCitiesByProvince } from '../../../services/api/cityService';
-import { getAllPorts, type PortSummaryResponse } from '../../../services/api/portService';
+import { getAllPorts } from '../../../services/api/portService';
+import type { PortSummaryResponse } from '../../../types/port';
 import styles from './CreatePort.module.css';
 import 'leaflet/dist/leaflet.css';
 import { Loader2 } from 'lucide-react';

@@ -9,8 +9,13 @@ import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
-import { ListShips } from './pages/ships/ListShips/ListShips';
-import { CreateShip } from './pages/ships/CreateShip/CreateShip';
+import {EditPort} from "./pages/ports/EditPort/EditPort.tsx";
+import {ListShips} from "./pages/ships/ListShips/ListShips.tsx";
+import {CreateShip} from "./pages/ships/CreateShip/CreateShip.tsx";
+import { NavigationHistory } from './pages/navigation/NavigationHistory/NavigationHistory.tsx';
+import { ListNavigationPlans } from './pages/navigation/ListNavigationPlans/ListNavigationPlans.tsx';
+import { CreateNavigationPlan } from './pages/navigation/CreateNavigationPlan/CreateNavigationPlan.tsx';
+import { EditNavigationPlan } from './pages/navigation/EditNavigationPlan/EditNavigationPlan.tsx';
 
 function App() {
   return (
@@ -22,6 +27,7 @@ function App() {
         <Route path="/usuarios" element={<UsersList />} />
         <Route path="/puertos" element={<ListPorts />} />
         <Route path="/puertos/create" element={<CreatePort />} />
+        <Route path="/puertos/edit/:id" element={<EditPort />} />
         <Route path="/barcos" element={<ListShips />} />
         <Route path="/barcos/:id" element={<ListShips />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -30,6 +36,10 @@ function App() {
         <Route path="/users/create" element={<CreateUser />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
         <Route path="/barcos/nuevo" element={<CreateShip />} />
+        <Route path="/navegacion/viajes" element={<ListNavigationPlans />} />
+        <Route path="/navegacion/nuevo" element={<CreateNavigationPlan />} />
+        <Route path="/navegacion/historial" element={<NavigationHistory />} />
+        <Route path="/navegacion/plan/:id/editar" element={<EditNavigationPlan />} />
       </Routes>
     </BrowserRouter>
   );

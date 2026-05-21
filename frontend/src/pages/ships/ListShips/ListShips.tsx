@@ -7,6 +7,7 @@ import { Filter, Anchor, Edit2, Trash2 } from 'lucide-react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllShips } from '../../../services/api/shipService';
 import { ShipDetailModal } from '../ShipDetailModal/ShipDetailModal';
+import { DeleteShipModal } from '../DeleteShipModal/DeleteShipModal';
 import type { ShipSummaryResponse, ShipStatus } from '../../../types/ship';
 import styles from './ListShips.module.css';
 
@@ -25,13 +26,19 @@ export const ListShips: React.FC = () => {
   const [ships, setShips] = useState<ShipSummaryResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [shipToDelete, setShipToDelete] = useState<ShipSummaryResponse | null>(null);
   const debouncedSearch = useDebounce(searchTerm, 300);
 
-  useEffect(() => {
+  const loadShips = () => {
+    setIsLoading(true);
     getAllShips()
       .then(setShips)
       .catch(() => setErrorMsg('Error al cargar la lista de barcos.'))
       .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    loadShips();
   }, []);
 
   const filtered = ships.filter((ship) => {
@@ -131,7 +138,11 @@ export const ListShips: React.FC = () => {
                     <button className={styles.editBtn} title="Editar">
                       <Edit2 size={16} />
                     </button>
-                    <button className={styles.deleteBtn} title="Eliminar">
+                    <button
+                      className={styles.deleteBtn}
+                      title="Eliminar"
+                      onClick={() => setShipToDelete(ship)}
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -147,6 +158,20 @@ export const ListShips: React.FC = () => {
         )}
 
         {id && <ShipDetailModal shipId={id} onClose={() => navigate('/barcos')} />}
+
+        {shipToDelete && (
+          <DeleteShipModal
+            shipId={shipToDelete.id}
+            shipName={shipToDelete.name}
+            registration={shipToDelete.registration}
+            mainImageUrl={shipToDelete.mainImageUrl}
+            onCancel={() => setShipToDelete(null)}
+            onDeleted={() => {
+              setShipToDelete(null);
+              loadShips();
+            }}
+          />
+        )}
 
         <footer className="text-center mt-12 text-xs text-slate-500 pb-6">
           Sistema de Gestión Marítima V.1

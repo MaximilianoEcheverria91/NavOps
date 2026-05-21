@@ -17,3 +17,7 @@ export const createShip = async (formData: FormData): Promise<any> => {
   });
   return response.data;
 };
+
+export const deleteShip = async (id: string): Promise<void> => {
+  await apiClient.delete(`/admin/ships/${id}`);
+};
