@@ -1,6 +1,7 @@
 package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.ship.ShipCreateRequest;
+import com.navops.api.application.dto.request.ship.ShipUpdateRequest;
 import com.navops.api.application.dto.response.ship.ShipDetailResponse;
 import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
 import com.navops.api.domain.entity.Country;
@@ -9,6 +10,7 @@ import com.navops.api.domain.entity.Maintenance;
 import com.navops.api.domain.entity.Ship;
 import com.navops.api.domain.entity.ShipTank;
 import com.navops.api.domain.enums.ShipStatusEnum;
+import com.navops.api.domain.enums.ShipTypeEnum;
 import com.navops.api.infrastructure.exception.NoShipsFoundException;
 import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
 import com.navops.api.infrastructure.exception.ShipNotFoundException;
@@ -66,7 +68,7 @@ public class ShipService {
                 .name(request.name())
                 .imoNumber(request.imoNumber())
                 .registration(request.registration())
-                .shipType(request.shipType())
+                .shipType(ShipTypeEnum.valueOf(request.shipType().toUpperCase()))
                 .buildYear(request.buildYear())
                 .country(country)
                 .status(ShipStatusEnum.valueOf(request.status()))
@@ -141,6 +143,115 @@ public class ShipService {
                 .toList();
     }
 
+    @Transactional
+    public ShipDetailResponse updateShip(UUID id, ShipUpdateRequest request, MultipartFile image) throws IOException {
+        log.info("Actualizando barco con ID: {}", id);
+
+        Ship ship = shipRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ShipNotFoundException("Barco no encontrado con id: " + id));
+
+        if (!ship.getImoNumber().equals(request.imoNumber())
+                && shipRepository.existsByImoNumberAndIdNotAndDeletedAtIsNull(request.imoNumber(), id)) {
+            throw new ShipAlreadyExistsException("El número IMO ya se encuentra registrado por otro barco.");
+        }
+        if (!ship.getRegistration().equals(request.registration())
+                && shipRepository.existsByRegistrationAndIdNotAndDeletedAtIsNull(request.registration(), id)) {
+            throw new ShipAlreadyExistsException("La matrícula ya se encuentra registrada por otro barco.");
+        }
+
+        Country country = countryRepository.findById(request.countryId())
+                .orElseThrow(() -> new IllegalArgumentException("El ID del país provisto no existe."));
+
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = imageStorageService.uploadImage(image, "ships");
+            ship.setMainImageUrl(imageUrl);
+        }
+
+        ship.setName(request.name());
+        ship.setImoNumber(request.imoNumber());
+        ship.setRegistration(request.registration());
+        ship.setShipType(ShipTypeEnum.valueOf(request.shipType().toUpperCase()));
+        ship.setBuildYear(request.buildYear());
+        ship.setCountry(country);
+        ship.setStatus(ShipStatusEnum.valueOf(request.status().toUpperCase()));
+        ship.setHullNumber(request.hullNumber());
+        ship.setHoldCount(request.holdCount());
+        ship.setLength(request.length());
+        ship.setBeam(request.beam());
+        ship.setDraft(request.draft());
+        ship.setDepth(request.depth());
+        ship.setWeightTonnes(request.weightTonnes());
+        ship.setCargoCapacityTonnes(request.cargoCapacityTonnes());
+        ship.setCrewCapacity(request.crewCapacity());
+
+        Engine engine = engineRepository.findFirstByShipIdAndDeletedAtIsNull(id).orElse(null);
+        boolean hasEngineFields = request.engineManufacturer() != null && !request.engineManufacturer().isBlank()
+                && request.engineModel() != null && !request.engineModel().isBlank();
+
+        if (hasEngineFields) {
+            if (engine != null) {
+                engine.setManufacturer(request.engineManufacturer());
+                engine.setModel(request.engineModel());
+                if (request.engineType() != null) engine.setEngineType(request.engineType());
+                if (request.powerHp() != null) engine.setPowerHp(request.powerHp());
+                if (request.serialNumber() != null) engine.setSerialNumber(request.serialNumber());
+                if (request.lastTboEngineHours() != null) engine.setLastTboEngineHours(request.lastTboEngineHours());
+                engineRepository.save(engine);
+            } else {
+                engine = Engine.builder()
+                        .shipId(ship.getId())
+                        .manufacturer(request.engineManufacturer())
+                        .model(request.engineModel())
+                        .engineType(request.engineType() != null ? request.engineType() : "UNKNOWN")
+                        .powerHp(request.powerHp() != null ? request.powerHp() : 0)
+                        .serialNumber(request.serialNumber())
+                        .currentEngineHours(0)
+                        .lastTboEngineHours(request.lastTboEngineHours())
+                        .build();
+                engineRepository.save(engine);
+            }
+        }
+
+        if (request.fuelCapacityLiters() != null) {
+            List<ShipTank> tanks = shipTankRepository.findAllByShipIdAndDeletedAtIsNull(id);
+            ShipTank tank = tanks.isEmpty() ? null : tanks.get(0);
+
+            if (tank != null) {
+                if (request.tankName() != null) tank.setTankName(request.tankName());
+                if (request.contentType() != null) tank.setContentType(request.contentType());
+                tank.setMaxCapacityLiters(request.fuelCapacityLiters());
+                shipTankRepository.save(tank);
+            } else {
+                tank = ShipTank.builder()
+                        .shipId(ship.getId())
+                        .tankName(request.tankName() != null ? request.tankName() : "PRINCIPAL")
+                        .contentType(request.contentType() != null ? request.contentType() : "FUEL")
+                        .maxCapacityLiters(request.fuelCapacityLiters())
+                        .build();
+                shipTankRepository.save(tank);
+            }
+        }
+
+        List<ShipTank> fuelTanks = shipTankRepository
+                .findAllByShipIdAndContentTypeAndDeletedAtIsNull(id, request.contentType() != null ? request.contentType() : "FUEL");
+        BigDecimal fuelTotal = fuelTanks.stream()
+                .map(ShipTank::getMaxCapacityLiters)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal fuelCapacity = fuelTotal.compareTo(BigDecimal.ZERO) == 0 ? null : fuelTotal;
+
+        List<Maintenance> maintenanceList = maintenanceRepository
+                .findAllByShipIdAndDeletedAtIsNull(id);
+        LocalDate lastMaintDate = maintenanceList.stream()
+                .filter(m -> "COMPLETED".equals(m.getStatus()))
+                .map(Maintenance::getCompletedDate)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
+        log.info("Barco con ID {} actualizado exitosamente.", id);
+        return toDetailResponse(ship, engine, fuelCapacity, lastMaintDate);
+    }
+
     @Transactional(readOnly = true)
     public ShipDetailResponse getById(UUID id) {
         log.info("Recuperando detalle de barco id: {}", id);
@@ -175,7 +286,7 @@ public class ShipService {
                 ship.getName(),
                 ship.getRegistration(),
                 ship.getImoNumber(),
-                ship.getShipType(),
+                ship.getShipType().name(),
                 (int) ship.getBuildYear(),
                 countryName,
                 ship.getStatus().name(),

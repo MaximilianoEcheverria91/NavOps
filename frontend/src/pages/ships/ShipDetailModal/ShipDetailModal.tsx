@@ -2,7 +2,7 @@
 import React from 'react';
 import { X, Anchor } from 'lucide-react';
 import { useShipDetail } from '../../../hooks/useShipDetail';
-import type { ShipStatus } from '../../../types/ship';
+import type { ShipStatus, ShipType } from '../../../types/ship';
 import styles from './ShipDetailModal.module.css';
 
 interface ShipDetailModalProps {
@@ -15,6 +15,38 @@ const STATUS_LABELS: Record<ShipStatus, string> = {
   MAINTENANCE: 'Mantenimiento',
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
+};
+
+const SHIP_TYPE_LABEL: Record<ShipType, string>={
+  AIRCRAFT_CARRIER: 'Portaviones',
+  BARGE: 'Barcaza',
+  BULK_CARRIER: 'Granelero',
+  CONTAINER_SHIP: 'Portacontenedor',
+  CORVETTE: 'Corbeta',
+  CRUISE_SHIP: 'Crucero',
+  DESTROYER: 'Destructor',
+  FERRY: 'Ferry',
+  FISHING_VESSEL: 'Pesquero',
+  FRIGATE: 'Fragata',
+  HOSPITAL_SHIP: 'Buque Hospital',
+  LANDING_SHIP: 'Buque de Desembarco',
+  OTHER: 'Otro',
+  PASSENGER_SHIP: 'Buque de Pasajero',
+  PATROL_BOAT: 'Patrulla',
+  PILOT_BOAT: 'Barco Piloto',
+  RESEARCH_VESSEL: 'Buque de investigación',
+  RO_RO: 'RO-RO',
+  ICEBREAKER: 'Rompehielos',
+  SAILBOAT: 'Velero',
+  SPEEDBOAT: 'Lancha',
+  SUBMARINE: 'Submarino',
+  SUPPLY_SHIP: 'Buque de Suministro',
+  TANKER: 'Petrolero',
+  TRAINING_SHIP: 'Buque Escuela',
+  TUGBOAT: 'Remolque',
+  YACHT: 'Yate',
+  NOTICE_SHIP: 'Buque de Aviso',
+  OCEAN_PATROL_OPV: 'Patrullero oceánico OPV', 
 };
 
 const val = (v: string | number | null | undefined): string =>
@@ -82,7 +114,7 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                     </div>
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Tipo de Barco:</span>
-                      <span className={styles.dataValue}>{val(ship.shipType)}</span>
+                      <span className={styles.dataValue}>{SHIP_TYPE_LABEL[ship.shipType] ?? val(ship.shipType)}</span>
                     </div>
                     <div className={styles.dataRow}>
                       <span className={styles.dataLabel}>Año de Construcción:</span>

@@ -17,3 +17,13 @@ export const createShip = async (formData: FormData): Promise<any> => {
   });
   return response.data;
 };
+
+export const updateShip = async (id: string, request: any): Promise<void> => {
+  // We check if request is FormData, otherwise send as JSON
+  const isFormData = request instanceof FormData;
+  const response = await apiClient.put(`/admin/ships/${id}`, request, {
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+  });
+  return response.data;
+};
+

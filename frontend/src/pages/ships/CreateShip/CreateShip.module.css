@@ -141,7 +141,7 @@
   border-radius: 6px;
   border: 1px solid #63bacf;
   background: transparent;
-  color: white;
+  color: var(--text-secondary);
   outline: none;
   transition: 0.2s;
   font-size: 14px;

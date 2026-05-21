@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface ShipTankRepository extends JpaRepository<ShipTank, UUID> {
     List<ShipTank> findAllByShipIdAndContentTypeAndDeletedAtIsNull(UUID shipId, String contentType);
+    List<ShipTank> findAllByShipIdAndDeletedAtIsNull(UUID shipId);
 }

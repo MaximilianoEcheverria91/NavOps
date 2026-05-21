@@ -1,5 +1,6 @@
 package com.navops.api.domain.entity;
 
+import com.navops.api.domain.enums.ShipTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,8 +45,9 @@ public class Ship {
     @Column(name = "hold_count")
     private Short holdCount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ship_type", nullable = false, length = 80)
-    private String shipType;
+    private ShipTypeEnum shipType;
 
     @Column(nullable = false, precision = 8, scale = 2)
     private BigDecimal length;

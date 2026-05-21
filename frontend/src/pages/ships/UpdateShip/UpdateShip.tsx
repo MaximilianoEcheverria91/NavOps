@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../../../layouts/MainLayout';
-import { useCreateShipForm } from '../../../hooks/useCreateShipForm';
+import { useUpdateShip } from '../../../hooks/useUpdateShip';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { getCountries } from '../../../services/api/countryService';
-import styles from './CreateShip.module.css';
+import styles from '../CreateShip/CreateShip.module.css';
 import { Loader2 } from 'lucide-react';
 
-export const CreateShip: React.FC = () => {
-  const { form, errors, loading, previewUrl, handleChange, handleImage, submit } = useCreateShipForm();
+export const UpdateShip: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { form, errors, loading, fetching, previewUrl, handleChange, handleImage, handleUpdate } = useUpdateShip(id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -32,11 +33,11 @@ export const CreateShip: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const response = await submit();
-    if (response.success) {
+    const response = await handleUpdate();
+    if (response?.success) {
       setShowModal(true);
     } else {
-      console.log('Errores de validación:', response.error);
+      console.log('Errores de validación:', response?.error);
     }
   };
 
@@ -45,11 +46,21 @@ export const CreateShip: React.FC = () => {
     navigate('/barcos');
   };
 
+  if (fetching) {
+    return (
+      <MainLayout>
+        <div className={styles.container} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <Loader2 className={styles.spinner} size={40} color="#0ea5e9" />
+        </div>
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Agregar nuevo Barco</h1>
+          <h1 className={styles.title}>Editar Barco</h1>
           <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
         </div>
 
@@ -78,7 +89,7 @@ export const CreateShip: React.FC = () => {
 
           <div className={styles.uploadTextInfo}>
             <span className={styles.recommendedBadge}>Recomendado</span>
-            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'var(--text-secondary)'}}>
+            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'rgba(255,255,255,0.7)'}}>
               Se recomienda una fotografía de perfil del barco con buena iluminación. La imagen debe
               ser clara y mostrar las características principales de la embarcación. Solo PNG/JPG, máx. 5MB.
             </p>
@@ -108,6 +119,8 @@ export const CreateShip: React.FC = () => {
               className={`${styles.input} ${errors['imoNumber'] ? styles.inputError : ''}`}
               placeholder="Ej: IMO1234567"
               value={form.imoNumber}
+              disabled
+              style={{ opacity: 0.6, cursor: 'not-allowed' }}
               onChange={(e) => handleChange('imoNumber', e.target.value)}
             />
             {errors['imoNumber'] && <span className={styles.errorText}>{errors['imoNumber']}</span>}
@@ -119,6 +132,8 @@ export const CreateShip: React.FC = () => {
               className={`${styles.input} ${errors['registration'] ? styles.inputError : ''}`}
               placeholder="Ej: AR-00123"
               value={form.registration}
+              disabled
+              style={{ opacity: 0.6, cursor: 'not-allowed' }}
               onChange={(e) => handleChange('registration', e.target.value)}
             />
             {errors['registration'] && <span className={styles.errorText}>{errors['registration']}</span>}
@@ -134,7 +149,7 @@ export const CreateShip: React.FC = () => {
               value={form.shipType}
               onChange={(e) => handleChange('shipType', e.target.value)}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Seleccionar tipo de barco
               </option>
               <option value="AIRCRAFT_CARRIER">Portaviones</option>
@@ -163,7 +178,6 @@ export const CreateShip: React.FC = () => {
               <option value="SPEEDBOAT">Lancha</option>              
               <option value="SUPPLY_SHIP">Buque de Suministro</option>
               <option value="TANKER">Petrolero</option>
-              <option value="TRAINING_SHIP">Buque Escuela</option>
               <option value="TUGBOAT">Remolque</option>
               <option value="YACHT">Yate</option>          
               <option value="OTHER">Otro</option>    
@@ -178,6 +192,8 @@ export const CreateShip: React.FC = () => {
               className={`${styles.input} ${errors['buildYear'] ? styles.inputError : ''}`}
               placeholder="Ej: 2005"
               value={form.buildYear}
+              disabled
+              style={{ opacity: 0.6, cursor: 'not-allowed' }}
               onChange={(e) => handleChange('buildYear', e.target.value)}
             />
             {errors['buildYear'] && <span className={styles.errorText}>{errors['buildYear']}</span>}
@@ -442,7 +458,7 @@ export const CreateShip: React.FC = () => {
 
       {showModal && (
         <FeedbackModal
-          message="Barco registrado correctamente"
+          message="Barco actualizado correctamente"
           onClose={handleConfirmModal}
         />
       )}
