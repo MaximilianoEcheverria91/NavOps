@@ -1,6 +1,7 @@
 package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.ship.ShipCreateRequest;
+import com.navops.api.application.dto.request.ship.ShipUpdateRequest;
 import com.navops.api.application.dto.response.ship.ShipDetailResponse;
 import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
 import com.navops.api.application.service.ShipService;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.navops.api.infrastructure.exception.ShipNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,40 @@ public class ShipController {
     public ResponseEntity<List<ShipSummaryResponse>> getAll() {
         log.info("Petición recibida para listar barcos");
         return ResponseEntity.ok(shipService.getAll());
+    }
+
+    @Operation(summary = "Actualizar barco", description = "Actualiza los datos de un barco existente, incluyendo motor y tanques asociados.", responses = {
+            @ApiResponse(responseCode = "200", description = "Barco actualizado exitosamente", content = @Content(schema = @Schema(implementation = ShipDetailResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Error de validación de los datos enviados", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "404", description = "Barco no encontrado", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto por datos duplicados (IMO o matrícula)", content = @Content(schema = @Schema(implementation = Map.class)))
+    })
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateShip(
+            @PathVariable("id") UUID id,
+            @RequestPart("data") @Valid ShipUpdateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        log.info("Recibida petición para actualizar barco ID: {}", id);
+        try {
+            ShipDetailResponse response = shipService.updateShip(id, request, image);
+            return ResponseEntity.ok(response);
+        } catch (ShipNotFoundException e) {
+            log.error("Barco no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (ShipAlreadyExistsException e) {
+            log.error("Conflicto al actualizar:", e);
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.error("Argumento inválido:", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            log.error("ERROR AL ACTUALIZAR BARCO:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
     }
 
     @Operation(summary = "Detalle de barco", description = "Retorna el detalle completo de un barco por ID.")

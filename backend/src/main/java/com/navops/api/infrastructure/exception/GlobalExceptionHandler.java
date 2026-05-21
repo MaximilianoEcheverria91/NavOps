@@ -1,13 +1,18 @@
 package com.navops.api.infrastructure.exception;
 import com.navops.api.application.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
 import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
 @Slf4j
@@ -56,7 +61,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
         log.error("Error al leer el mensaje HTTP: ", ex);
         ErrorResponseDto response = new ErrorResponseDto(
@@ -67,7 +72,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponseDto> handleTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
         log.error("Error de tipo en argumento: ", ex);
         ErrorResponseDto response = new ErrorResponseDto(
@@ -78,7 +83,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    @ExceptionHandler(org.springframework.web.multipart.support.MissingServletRequestPartException.class)
+    @ExceptionHandler(MissingServletRequestPartException.class)
     public ResponseEntity<ErrorResponseDto> handleMissingPart(org.springframework.web.multipart.support.MissingServletRequestPartException ex) {
         log.error("Falta parte en la petición multipart: ", ex);
         ErrorResponseDto response = new ErrorResponseDto(
@@ -164,7 +169,7 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
-    @ExceptionHandler(org.springframework.dao.InvalidDataAccessApiUsageException.class)
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidDataAccess(org.springframework.dao.InvalidDataAccessApiUsageException ex) {
         log.error("Error de integridad de datos: ", ex);
         ErrorResponseDto response = new ErrorResponseDto(

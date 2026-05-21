@@ -7,7 +7,7 @@ import { Filter, Anchor, Edit2, Trash2 } from 'lucide-react';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getAllShips } from '../../../services/api/shipService';
 import { ShipDetailModal } from '../ShipDetailModal/ShipDetailModal';
-import type { ShipSummaryResponse, ShipStatus } from '../../../types/ship';
+import type { ShipSummaryResponse, ShipStatus, ShipType} from '../../../types/ship';
 import styles from './ListShips.module.css';
 
 const STATUS_LABELS: Record<ShipStatus, string> = {
@@ -15,6 +15,38 @@ const STATUS_LABELS: Record<ShipStatus, string> = {
   MAINTENANCE: 'Mantenimiento',
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
+};
+
+const SHIP_TYPE_LABEL: Record<ShipType, string>={
+  AIRCRAFT_CARRIER: 'Portaviones',
+  BARGE: 'Barcaza',
+  BULK_CARRIER: 'Granelero',
+  CONTAINER_SHIP: 'Portacontenedor',
+  CORVETTE: 'Corbeta',
+  CRUISE_SHIP: 'Crucero',
+  DESTROYER: 'Destructor',
+  FERRY: 'Ferry',
+  FISHING_VESSEL: 'Pesquero',
+  FRIGATE: 'Fragata',
+  HOSPITAL_SHIP: 'Buque Hospital',
+  LANDING_SHIP: 'Buque de Desembarco',
+  OTHER: 'Otro',
+  PASSENGER_SHIP: 'Buque de Pasajero',
+  PATROL_BOAT: 'Patrulla',
+  PILOT_BOAT: 'Barco Piloto',
+  RESEARCH_VESSEL: 'Buque de investigación',
+  RO_RO: 'RO-RO',
+  ICEBREAKER: 'Rompehielos',
+  SAILBOAT: 'Velero',
+  SPEEDBOAT: 'Lancha',
+  SUBMARINE: 'Submarino',
+  SUPPLY_SHIP: 'Buque de Suministro',
+  TANKER: 'Petrolero',
+  TRAINING_SHIP: 'Buque Escuela',
+  TUGBOAT: 'Remolque',
+  YACHT: 'Yate',
+  NOTICE_SHIP: 'Buque de Aviso',
+  OCEAN_PATROL_OPV: 'Patrullero oceánico OPV', 
 };
 
 export const ListShips: React.FC = () => {
@@ -128,7 +160,10 @@ export const ListShips: React.FC = () => {
                     >
                       Ver detalle
                     </button>
-                    <button className={styles.editBtn} title="Editar">
+                    <button className={styles.editBtn} 
+                      title="Editar"
+                      onClick={()=> navigate(`//barcos/edit/${ship.id}`)}
+                      >
                       <Edit2 size={16} />
                     </button>
                     <button className={styles.deleteBtn} title="Eliminar">

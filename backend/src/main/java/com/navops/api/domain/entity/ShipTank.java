@@ -2,6 +2,8 @@ package com.navops.api.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -32,6 +34,19 @@ public class ShipTank {
 
     @Column(name = "max_capacity_liters", nullable = false, precision = 12, scale = 2)
     private BigDecimal maxCapacityLiters;
+
+    @Builder.Default
+    @Version
+    @Column(nullable = false)
+    private Integer version = 0;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;

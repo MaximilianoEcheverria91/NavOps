@@ -12,6 +12,7 @@ import { CreatePort } from './pages/ports/CreatePort/CreatePort';
 import {EditPort} from "./pages/ports/EditPort/EditPort.tsx";
 import {ListShips} from "./pages/ships/ListShips/ListShips.tsx";
 import {CreateShip} from "./pages/ships/CreateShip/CreateShip.tsx";
+import {UpdateShip} from "./pages/ships/UpdateShip/UpdateShip.tsx";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/users/create" element={<CreateUser />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
         <Route path="/barcos/nuevo" element={<CreateShip />} />
+        <Route path="/barcos/edit/:id" element={<UpdateShip />} />
       </Routes>
     </BrowserRouter>
   );
