@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Ship, Anchor, ChevronRight } from 'lucide-react';
 import styles from './ManagementGrid.module.css';
-import { getDashboardStats, getUserStatusCount } from '../../../services/api/dashboardService';
-import type { UserStatusCountResponse } from '../../../types/dashboard';
+import { getDashboardStats, getPortStatusCount, getUserStatusCount } from '../../../services/api/dashboardService';
+import type { UserStatusCountResponse, PortStatusCountResponse } from '../../../types/dashboard';
 
 export const ManagementGrid: React.FC = () => {
 
@@ -13,18 +13,22 @@ export const ManagementGrid: React.FC = () => {
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [userStatusStats, setUserStatusStats] = useState<UserStatusCountResponse | null>(null);
+  const [portStatusStats, setPortStatusStats] = useState<PortStatusCountResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [data, statusData] = await Promise.all([
+        const [data, statusData, portStatus] = await Promise.all([
           getDashboardStats(),
-          getUserStatusCount()
+          getUserStatusCount(),
+          getPortStatusCount(),
+          
         ]);
         setStats(data);
         setUserStatusStats(statusData);
+        setPortStatusStats(portStatus)
       } catch (error) {
         console.error('Error fetching dashboard stats', error);
       } finally {
@@ -47,6 +51,7 @@ export const ManagementGrid: React.FC = () => {
     { 
       title: 'Gestión de Barcos', 
       desc: 'Administrar Flota y Embarcaciones', 
+      count: portStatusStats?.total ?? 0, 
       value: '—', 
       icon: <Ship />, 
       link: '/barcos' 

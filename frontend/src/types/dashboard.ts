@@ -7,3 +7,12 @@ export interface UserStatusCountResponse {
   total: number;
   totalUsersWithSystemAccess: number;
 }
+
+export interface PortStatusCountResponse{
+  operational: number;
+  underMaintenance: number;
+  closed: number;
+  full: number;
+  inactive: number;
+  total: number;
+}

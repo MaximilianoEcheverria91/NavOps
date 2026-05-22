@@ -1,6 +1,7 @@
 package com.navops.api.infrastructure.controller.dashboadAdmin;
 
 import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
 import com.navops.api.application.service.dashboardAdmin.DashboardAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,6 +45,30 @@ public class DashboardAdminController {
     public ResponseEntity<PeopleStatusCountResponse> countUsersByStatus() {
         log.info("Solicitando conteo de usuarios por estado");
         PeopleStatusCountResponse response = dashboardAdminService.countUsersByStatus();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Obtener conteo de puertos por estado",
+            description = "Retorna la cantidad de puertos agrupados por cada estado: " +
+                    "OPERATIONAL, UNDER_MAINTENANCE, CLOSED, FULL e INACTIVE.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Conteo obtenido correctamente",
+                            content = @Content(schema = @Schema(implementation = PortStatusCountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(schema = @Schema(implementation = java.util.Map.class))
+                    )
+            }
+    )
+    @GetMapping("/ports/status-count")
+    public ResponseEntity<PortStatusCountResponse> countPortsByStatus() {
+        log.info("Solicitando conteo de puertos por estado");
+        PortStatusCountResponse response = dashboardAdminService.countPortsByStatus();
         return ResponseEntity.ok(response);
     }
 }
