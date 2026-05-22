@@ -1,5 +1,6 @@
 import { apiClient } from '../../api/apiClient';
-import type { ShipSummaryResponse, ShipDetailResponse } from '../../types/ship';
+import type { ShipSummaryResponse, ShipDetailResponse, ShipFilterRequest } from '../../types/ship';
+import type { PaginatedFilterResponse } from './filterService';
 
 export const getAllShips = async (): Promise<ShipSummaryResponse[]> => {
   const response = await apiClient.get('/admin/ships/');
@@ -26,4 +27,10 @@ export const updateShip = async (id: string, request: any): Promise<void> => {
   });
   return response.data;
 };
+
+export const getFilteredShips = async (filters: ShipFilterRequest): Promise<PaginatedFilterResponse<ShipSummaryResponse>> => {
+  const response = await apiClient.post('/admin/ships/filters', filters);
+  return response.data;
+};
+
 

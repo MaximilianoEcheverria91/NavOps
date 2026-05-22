@@ -72,3 +72,32 @@ export interface ShipEditRequest {
   data: ShipEditData;
   image?: string | File | null;
 }
+
+export interface ShipFilterRequest {
+  shipTypes?: string[];
+  countryId?: string;
+  statuses?: string[];
+  minBuildYear?: number | null;
+  maxBuildYear?: number | null;
+  minLength?: number | null;
+  maxLength?: number | null;
+  minBeam?: number | null;
+  maxBeam?: number | null;
+  minDraft?: number | null;
+  maxDraft?: number | null;
+  minDepth?: number | null;
+  maxDepth?: number | null;
+  minCargoCapacityTonnes?: number | null;
+  maxCargoCapacityTonnes?: number | null;
+  minCrewCapacity?: number | null;
+  maxCrewCapacity?: number | null;
+  minHoldCount?: number | null;
+  maxHoldCount?: number | null;
+  minMaxCapacityLiters?: number | null;
+  maxMaxCapacityLiters?: number | null;
+  page: number;
+  size: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+

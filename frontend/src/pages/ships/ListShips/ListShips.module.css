@@ -220,3 +220,114 @@
 
 .deleteBtn { border: 1px solid #7f1d1d; color: #ef4444; }
 .deleteBtn:hover { background: rgba(127, 29, 29, 0.4); }
+
+/* Layout and Chip Filters */
+.activeFiltersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: transparent;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-filter2, #94a3b8);
+}
+
+.filterChip span {
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+.chipRemoveBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.chipRemoveBtn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.clearFiltersBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.clearFiltersBtn:hover {
+  color: #fff;
+}
+
+/* Coordinación del layout Flex para que el sidebar se abra al costado */
+.mainLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.gridContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.portsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loadMoreBtn {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  border-radius: 20px;
+  padding: 10px 32px;
+  color: #0ea5e9;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.loadMoreBtn:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.loadMoreBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1200px) {
+  .portsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .portsGrid { grid-template-columns: 1fr; }
+  .mainLayout { flex-direction: column-reverse; }
+}
