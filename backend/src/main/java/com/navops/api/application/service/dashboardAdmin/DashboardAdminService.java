@@ -3,6 +3,7 @@ package com.navops.api.application.service.dashboardAdmin;
 import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.ShipStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.UserSystemAccessCountResponse;
 import com.navops.api.application.dto.response.user.StatsUserResponse;
 import com.navops.api.domain.enums.PeopleStatusEnum;
 import com.navops.api.domain.enums.PortStatusEnum;
@@ -11,6 +12,7 @@ import com.navops.api.repository.CrewMemberRepository;
 import com.navops.api.repository.PersonRepository;
 import com.navops.api.repository.PortRepository;
 import com.navops.api.repository.ShipRepository;
+import com.navops.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class DashboardAdminService {
     private final PersonRepository personRepository;
     private final PortRepository portRepository;
     private final ShipRepository shipRepository;
+    private final UserRepository userRepository;
 
     public StatsUserResponse getAdminDashboardStats() {
 
@@ -80,5 +83,19 @@ public class DashboardAdminService {
         long total = operational + maintenance + repair + inTransit + outOfService + inactive;
 
         return new ShipStatusCountResponse(operational, maintenance, repair, inTransit, outOfService, inactive, total);
+    }
+
+    public UserSystemAccessCountResponse countUsersBySystemAccess() {
+        log.info("Contando usuarios del sistema por tipo de acceso");
+
+        long adminUsers = userRepository.countByRole_Name("ADMIN");
+        long chiefNavigationUsers = userRepository.countByRole_Name("CHIEF_NAVIGATION");
+        long chiefOperationUsers = userRepository.countByRole_Name("CHIEF_OPERATION");
+        long activeUsers = userRepository.countByIsActiveTrue();
+        long blockedUsers = userRepository.countBlockedUsers();
+        long inactiveUsers = userRepository.countByIsActiveFalse();
+        long total = adminUsers + chiefNavigationUsers + chiefOperationUsers;
+
+        return new UserSystemAccessCountResponse(adminUsers, chiefNavigationUsers, chiefOperationUsers, activeUsers, blockedUsers, inactiveUsers, total);
     }
 }

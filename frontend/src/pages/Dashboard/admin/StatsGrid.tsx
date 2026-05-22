@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Users, Ship, Anchor, Shield } from 'lucide-react';
-import { getDashboardStats, getUserStatusCount, getPortStatusCount,getShipStatusCount } from '../../../services/api/dashboardService';
-import type { UserStatusCountResponse, PortStatusCountResponse , ShipStatusCountResponse} from '../../../types/dashboard';
+import { getDashboardStats, getUserStatusCount, getPortStatusCount,getShipStatusCount, getUserSystemAccesStatusCount } from '../../../services/api/dashboardService';
+import type { UserStatusCountResponse, PortStatusCountResponse , ShipStatusCountResponse, UserSystemAccesStatusCountResponse} from '../../../types/dashboard';
 import styles from './StatsGrid.module.css';
 
 export const StatsGrid: React.FC = () => {
@@ -15,22 +15,25 @@ export const StatsGrid: React.FC = () => {
   const [userStatusStats, setUserStatusStats] = useState<UserStatusCountResponse | null>(null);
   const [portStatusStats, setPortStatusStats] = useState<PortStatusCountResponse | null>(null);
   const [shipStatusStats, setShipStatusStats] = useState<ShipStatusCountResponse | null>(null);
+  const [userSystemAccesStatus, setUserSystemAccesStatus] = useState<UserSystemAccesStatusCountResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [data, statusData, portData, shipData] = await Promise.all([
+        const [data, statusData, portData, shipData, systemAccesData] = await Promise.all([
           getDashboardStats(),
           getUserStatusCount(),
           getPortStatusCount(),
-          getShipStatusCount()
+          getShipStatusCount(),
+          getUserSystemAccesStatusCount(),
           
         ]);
         setStats(data);
         setUserStatusStats(statusData);
         setPortStatusStats(portData);
         setShipStatusStats(shipData);
+        setUserSystemAccesStatus(systemAccesData);
       } catch (error) {
         console.error('Error fetching dashboard stats', error);
       } finally {
@@ -76,7 +79,7 @@ export const StatsGrid: React.FC = () => {
           <h3 className={styles.cardValue}>
             {loading ? '...' : userStatusStats?.totalUsersWithSystemAccess ?? 0}
           </h3>
-          <p className={styles.cardTitle}>Total Usuarios</p>
+          <p className={styles.cardTitle}>Total del personal</p>
         </div>
       </div>
 
@@ -138,11 +141,43 @@ export const StatsGrid: React.FC = () => {
         
         <div className={styles.info}>
           <h3 className={styles.cardValue}>
-            {loading ? '...' : portStatusStats?.total ?? 0}
+            {loading ? '...' : shipStatusStats?.total ?? 0}
           </h3>
-          <p className={styles.cardTitle}>Total Puertos</p>
+          <p className={styles.cardTitle}>Total Barcos</p>
         </div>
-      </div>    
+      </div>   
+
+      {/* 4. Card de User System Acces */}
+      <div className={styles.card}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.adminUsers ?? 0} Administrador`}
+          </div>
+           <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.chiefNavigationUsers ?? 0} Jefe de Navegación`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.chiefOperationUsers ?? 0} Jefe de Operaciones`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.blockedUsers ?? 0} Bloqueados`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.inactiveUsers ?? 0} Inactivo`}
+          </div>
+        </div>
+        
+        <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+          <Shield strokeWidth={1.5} size={40} />
+        </div>
+        
+        <div className={styles.info}>
+          <h3 className={styles.cardValue}>
+            {loading ? '...' : userSystemAccesStatus?.total ?? 0}
+          </h3>
+          <p className={styles.cardTitle}>Total de usuarios</p>
+        </div>
+      </div>     
     </div>
   );
 };

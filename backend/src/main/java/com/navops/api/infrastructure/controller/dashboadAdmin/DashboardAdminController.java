@@ -3,6 +3,7 @@ package com.navops.api.infrastructure.controller.dashboadAdmin;
 import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.ShipStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.UserSystemAccessCountResponse;
 import com.navops.api.application.service.dashboardAdmin.DashboardAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -94,6 +95,30 @@ public class DashboardAdminController {
     public ResponseEntity<ShipStatusCountResponse> countShipsByStatus() {
         log.info("Solicitando conteo de barcos por estado");
         ShipStatusCountResponse response = dashboardAdminService.countShipsByStatus();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Obtener conteo de usuarios del sistema por tipo de acceso",
+            description = "Retorna la cantidad de usuarios por rol (ADMIN, CHIEF_NAVIGATION, CHIEF_OPERATIONS), " +
+                    "activos, bloqueados, inactivos y el total sumando solo los 3 roles.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Conteo obtenido correctamente",
+                            content = @Content(schema = @Schema(implementation = UserSystemAccessCountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(schema = @Schema(implementation = java.util.Map.class))
+                    )
+            }
+    )
+    @GetMapping("/users/system-access-count")
+    public ResponseEntity<UserSystemAccessCountResponse> countUsersBySystemAccess() {
+        log.info("Solicitando conteo de usuarios del sistema por tipo de acceso");
+        UserSystemAccessCountResponse response = dashboardAdminService.countUsersBySystemAccess();
         return ResponseEntity.ok(response);
     }
 }
