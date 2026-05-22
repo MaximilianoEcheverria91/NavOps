@@ -1,3 +1,4 @@
+import { ApiLevel } from '@testing-library/user-event/dist/cjs/utils/index.js';
 import { apiClient } from '../../api/apiClient';
 
 export const getDashboardStats = async () => {
@@ -12,5 +13,10 @@ export const getUserStatusCount = async () => {
 
 export const getPortStatusCount = async () => {
   const response = await apiClient.get('/admin/dashboard/ports/status-count');
+  return response.data;
+}
+
+export const getShipStatusCount = async () => {
+  const response = await apiClient.get('admin/dashboard/ships/status-count');
   return response.data;
 }

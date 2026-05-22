@@ -2,12 +2,15 @@ package com.navops.api.application.service.dashboardAdmin;
 
 import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.ShipStatusCountResponse;
 import com.navops.api.application.dto.response.user.StatsUserResponse;
 import com.navops.api.domain.enums.PeopleStatusEnum;
 import com.navops.api.domain.enums.PortStatusEnum;
+import com.navops.api.domain.enums.ShipStatusEnum;
 import com.navops.api.repository.CrewMemberRepository;
 import com.navops.api.repository.PersonRepository;
 import com.navops.api.repository.PortRepository;
+import com.navops.api.repository.ShipRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class DashboardAdminService {
     private final CrewMemberRepository crewMemberRepository;
     private final PersonRepository personRepository;
     private final PortRepository portRepository;
+    private final ShipRepository shipRepository;
 
     public StatsUserResponse getAdminDashboardStats() {
 
@@ -62,5 +66,19 @@ public class DashboardAdminService {
         long total = operational + underMaintenance + closed + full + inactive;
 
         return new PortStatusCountResponse(operational, underMaintenance, closed, full, inactive, total);
+    }
+
+    public ShipStatusCountResponse countShipsByStatus() {
+        log.info("Contando barcos por estado");
+
+        long operational = shipRepository.countByStatus(ShipStatusEnum.OPERATIONAL);
+        long maintenance = shipRepository.countByStatus(ShipStatusEnum.MAINTENANCE);
+        long repair = shipRepository.countByStatus(ShipStatusEnum.REPAIR);
+        long inTransit = shipRepository.countByStatus(ShipStatusEnum.IN_TRANSIT);
+        long outOfService = shipRepository.countByStatus(ShipStatusEnum.OUT_OF_SERVICE);
+        long inactive = shipRepository.countByStatus(ShipStatusEnum.INACTIVE);
+        long total = operational + maintenance + repair + inTransit + outOfService + inactive;
+
+        return new ShipStatusCountResponse(operational, maintenance, repair, inTransit, outOfService, inactive, total);
     }
 }

@@ -2,6 +2,7 @@ package com.navops.api.infrastructure.controller.dashboadAdmin;
 
 import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
 import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.ShipStatusCountResponse;
 import com.navops.api.application.service.dashboardAdmin.DashboardAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -69,6 +70,30 @@ public class DashboardAdminController {
     public ResponseEntity<PortStatusCountResponse> countPortsByStatus() {
         log.info("Solicitando conteo de puertos por estado");
         PortStatusCountResponse response = dashboardAdminService.countPortsByStatus();
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Obtener conteo de barcos por estado",
+            description = "Retorna la cantidad de barcos agrupados por cada estado: " +
+                    "OPERATIONAL, MAINTENANCE, REPAIR, IN_TRANSIT, OUT_OF_SERVICE e INACTIVE.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Conteo obtenido correctamente",
+                            content = @Content(schema = @Schema(implementation = ShipStatusCountResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(schema = @Schema(implementation = java.util.Map.class))
+                    )
+            }
+    )
+    @GetMapping("/ships/status-count")
+    public ResponseEntity<ShipStatusCountResponse> countShipsByStatus() {
+        log.info("Solicitando conteo de barcos por estado");
+        ShipStatusCountResponse response = dashboardAdminService.countShipsByStatus();
         return ResponseEntity.ok(response);
     }
 }
