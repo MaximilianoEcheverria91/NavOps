@@ -19,4 +19,5 @@ public interface PersonRepository extends JpaRepository<Person, UUID>  {
     Optional<Person> findByDocumentNumber(String documentNumber);
     List<Person> findAllByStatus(PeopleStatusEnum status);
     long countByStatus(PeopleStatusEnum status);
+    long countByUserIsNotNull();
 }
