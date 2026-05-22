@@ -1,57 +1,183 @@
 import React, { useEffect, useState } from 'react';
-import { Users,Ship, Anchor,Shield } from 'lucide-react';
-import { getDashboardStats } from '../../../services/api/dashboardService';
+import { Users, Ship, Anchor, Shield } from 'lucide-react';
+import { getDashboardStats, getUserStatusCount, getPortStatusCount,getShipStatusCount, getUserSystemAccesStatusCount } from '../../../services/api/dashboardService';
+import type { UserStatusCountResponse, PortStatusCountResponse , ShipStatusCountResponse, UserSystemAccesStatusCountResponse} from '../../../types/dashboard';
 import styles from './StatsGrid.module.css';
-
 
 export const StatsGrid: React.FC = () => {
 
   type DashboardStats = {
-  totalUsers: number;
-  activeUsers: number;
-};
-
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-  const fetchStats = async () => {
-    try {
-      const data = await getDashboardStats();
-      setStats(data);
-    } catch (error) {
-      console.error('Error fetching dashboard stats', error);
-    } finally {
-      setLoading(false);
-    }
+    totalUsers: number;
+    activeUsers: number;
   };
 
-  fetchStats();
-}, []);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [userStatusStats, setUserStatusStats] = useState<UserStatusCountResponse | null>(null);
+  const [portStatusStats, setPortStatusStats] = useState<PortStatusCountResponse | null>(null);
+  const [shipStatusStats, setShipStatusStats] = useState<ShipStatusCountResponse | null>(null);
+  const [userSystemAccesStatus, setUserSystemAccesStatus] = useState<UserSystemAccesStatusCountResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [data, statusData, portData, shipData, systemAccesData] = await Promise.all([
+          getDashboardStats(),
+          getUserStatusCount(),
+          getPortStatusCount(),
+          getShipStatusCount(),
+          getUserSystemAccesStatusCount(),
+          
+        ]);
+        setStats(data);
+        setUserStatusStats(statusData);
+        setPortStatusStats(portData);
+        setShipStatusStats(shipData);
+        setUserSystemAccesStatus(systemAccesData);
+      } catch (error) {
+        console.error('Error fetching dashboard stats', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const cards = [
-    { title: 'Total Usuarios', value:stats?.totalUsers ?? 0, 
-      active: `${stats?.activeUsers ?? 0} Disponibles`,
-      icon: <Users /> },
-    { title: 'Total Barcos', value: '—',  icon: <Ship /> },
-    { title: 'Total Puertos', value: '—', icon: <Anchor /> },
+    { title: 'Total Barcos', value: '—', icon: <Ship /> },
     { title: 'Roles de administrador', value: '—', icon: <Shield /> },
   ];
 
   return (
     <div className={styles.grid}>
-      {cards.map((card, index) => (
-        <div key={index} className={styles.card}>
-          <div className={styles.activeBadge}>{card.active}</div>
-          <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
-            {React.cloneElement(card.icon, { strokeWidth: 1.5, size: 40 })}
+      {/* 1. Card de Usuarios Modificada */}
+      <div className={styles.card}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userStatusStats?.active ?? 0} Activos`}
           </div>
-          <div className={styles.info}>
-            <h3 className={styles.cardValue}>{loading ? '...' : card.value}</h3>
-            <p className={styles.cardTitle}>{card.title}</p>
+          <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userStatusStats?.vacation ?? 0} Vacaciones`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userStatusStats?.medicalLeave ?? 0} Licencia Médica`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userStatusStats?.suspended ?? 0} Suspendidos`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userStatusStats?.inactive ?? 0} Inactivos`}
           </div>
         </div>
-      ))}
+        
+        <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+          <Users strokeWidth={1.5} size={40} />
+        </div>
+        
+        <div className={styles.info}>
+          <h3 className={styles.cardValue}>
+            {loading ? '...' : userStatusStats?.totalUsersWithSystemAccess ?? 0}
+          </h3>
+          <p className={styles.cardTitle}>Total del personal</p>
+        </div>
+      </div>
+
+      {/* 2. Card de Puertos Modificada */}
+      <div className={styles.card}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${portStatusStats?.operational ?? 0} Operativo`}
+          </div>
+           <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${portStatusStats?.full ?? 0} Lleno`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${portStatusStats?.underMaintenance ?? 0} Mantenimiento`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${portStatusStats?.closed ?? 0} Cerrado`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${portStatusStats?.inactive ?? 0} Inactivo`}
+          </div>
+        </div>
+        
+        <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+          <Anchor strokeWidth={1.5} size={40} />
+        </div>
+        
+        <div className={styles.info}>
+          <h3 className={styles.cardValue}>
+            {loading ? '...' : portStatusStats?.total ?? 0}
+          </h3>
+          <p className={styles.cardTitle}>Total Puertos</p>
+        </div>
+      </div>
+
+      {/* 2. Card de Puertos Modificada */}
+      <div className={styles.card}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${shipStatusStats?.operational ?? 0} Operativo`}
+          </div>
+           <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${shipStatusStats?.inTransit ?? 0} En Curso`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${shipStatusStats?.maintenance ?? 0} Mantenimiento`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${shipStatusStats?.repair ?? 0} Reparación`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${shipStatusStats?.outOfService ?? 0} Fuera de servicio`}
+          </div>
+        </div>
+        
+        <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+          <Ship strokeWidth={1.5} size={40} />
+        </div>
+        
+        <div className={styles.info}>
+          <h3 className={styles.cardValue}>
+            {loading ? '...' : shipStatusStats?.total ?? 0}
+          </h3>
+          <p className={styles.cardTitle}>Total Barcos</p>
+        </div>
+      </div>   
+
+      {/* 4. Card de User System Acces */}
+      <div className={styles.card}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.adminUsers ?? 0} Administrador`}
+          </div>
+           <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.chiefNavigationUsers ?? 0} Jefe de Navegación`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(14, 165, 233, 0.15)', color: '#0ea5e9', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.chiefOperationUsers ?? 0} Jefe de Operaciones`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.15)', color: '#f97316', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.blockedUsers ?? 0} Bloqueados`}
+          </div>
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '2px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: 500 }}>
+            {loading ? '...' : `${userSystemAccesStatus?.inactiveUsers ?? 0} Inactivo`}
+          </div>
+        </div>
+        
+        <div className={styles.iconWrapper} style={{ color: '#38bdf8' }}>
+          <Shield strokeWidth={1.5} size={40} />
+        </div>
+        
+        <div className={styles.info}>
+          <h3 className={styles.cardValue}>
+            {loading ? '...' : userSystemAccesStatus?.total ?? 0}
+          </h3>
+          <p className={styles.cardTitle}>Total de usuarios</p>
+        </div>
+      </div>     
     </div>
   );
 };

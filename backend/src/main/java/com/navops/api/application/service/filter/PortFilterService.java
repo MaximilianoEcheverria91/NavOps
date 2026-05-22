@@ -1,4 +1,4 @@
-package com.navops.api.application.service;
+package com.navops.api.application.service.filter;
 
 import com.navops.api.application.dto.request.port.PortFilterRequest;
 import com.navops.api.application.dto.response.port.PortFilterResponse;

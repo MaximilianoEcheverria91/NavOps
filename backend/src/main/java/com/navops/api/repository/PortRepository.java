@@ -1,6 +1,7 @@
 package com.navops.api.repository;
 
 import com.navops.api.domain.entity.Port;
+import com.navops.api.domain.enums.PortStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface PortRepository extends JpaRepository<Port, UUID> {
 
     @EntityGraph(attributePaths = {"country", "province", "city"})
     List<Port> findAllByIsActiveTrue();
+
+    long countByStatus(PortStatusEnum status);
 }

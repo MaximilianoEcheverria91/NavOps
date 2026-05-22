@@ -1,0 +1,38 @@
+export const SHIP_STATUSES = [
+  { value: 'OPERATIONAL', label: 'Operativo' },
+  { value: 'REPAIR', label: 'Reparación' },
+  { value: 'MAINTENANCE', label: 'En Mantenimiento' },
+  { value: 'OUT_OF_SERVICE', label: 'Fuera de servicio' },
+  { value: 'IN_PROGRESS', label: 'En Curso' }
+];
+
+export const SHIP_TYPES = [
+  { value: 'DESTROYER', label: 'Destructor' },
+  { value: 'AIRCRAFT_CARRIER', label: 'Portaaviones' },
+  { value: 'FRIGATE', label: 'Fragata' },
+  { value: 'CORVETTE', label: 'Corbeta' },
+  { value: 'SUBMARINE', label: 'Submarino' },
+  { value: 'PATROL_BOAT', label: 'Patrulla' },
+  { value: 'LANDING_SHIP', label: 'Buque de Desembarco' },
+  { value: 'ICEBREAKER', label: 'Rompehielo' },
+  { value: 'OCEAN_PATROL_OPV', label: 'Patrulla Oceánica OPV' },
+  { value: 'NOTICE_SHIP', label: 'Buque de Aviso' },
+  { value: 'CONTAINER_SHIP', label: 'Portacontenedores' },
+  { value: 'TRAINING_SHIP', label: 'Buque Escuela' },
+  { value: 'TANKER', label: 'Buque Petrolero' },
+  { value: 'FISHING_VESSEL', label: 'Pesquero' },
+  { value: 'SUPPLY_SHIP', label: 'Buque de Suministro' },
+  { value: 'RO_RO', label: 'RO-RO' },
+  { value: 'RESEARCH_VESSEL', label: 'Buque de Investigación' },
+  { value: 'TUGBOAT', label: 'Remolque' },
+  { value: 'HOSPITAL_SHIP', label: 'Buque Hospital' },
+  { value: 'PILOT_BOAT', label: 'Buque Piloto' },
+  { value: 'BULK_CARRIER', label: 'Granelero' },
+  { value: 'CRUISE_SHIP', label: 'Crucero' },
+  { value: 'YACHT', label: 'Yate' },
+  { value: 'FERRY', label: 'Ferry' },
+  { value: 'SPEEDBOAT', label: 'Lancha' },
+  { value: 'PASSENGER_SHIP', label: 'Buque de Pasajero' },
+  { value: 'BARGE', label: 'Barcaza' },
+  { value: 'OTHER', label: 'Otro' }
+];

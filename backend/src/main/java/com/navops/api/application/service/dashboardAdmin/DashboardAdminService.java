@@ -1,0 +1,101 @@
+package com.navops.api.application.service.dashboardAdmin;
+
+import com.navops.api.application.dto.response.dashboardAdmin.PeopleStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.PortStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.ShipStatusCountResponse;
+import com.navops.api.application.dto.response.dashboardAdmin.UserSystemAccessCountResponse;
+import com.navops.api.application.dto.response.user.StatsUserResponse;
+import com.navops.api.domain.enums.PeopleStatusEnum;
+import com.navops.api.domain.enums.PortStatusEnum;
+import com.navops.api.domain.enums.ShipStatusEnum;
+import com.navops.api.repository.CrewMemberRepository;
+import com.navops.api.repository.PersonRepository;
+import com.navops.api.repository.PortRepository;
+import com.navops.api.repository.ShipRepository;
+import com.navops.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class DashboardAdminService {
+
+    private final CrewMemberRepository crewMemberRepository;
+    private final PersonRepository personRepository;
+    private final PortRepository portRepository;
+    private final ShipRepository shipRepository;
+    private final UserRepository userRepository;
+
+    public StatsUserResponse getAdminDashboardStats() {
+
+        try {
+            log.info("Calculando estadísticas para el dashboard de administrador");
+            long total = crewMemberRepository.countTotalUsers();
+            long active = crewMemberRepository.countActiveUsers();
+            //long available = crewMemberRepository.countAvailableCrew();
+
+            return new StatsUserResponse(total, active);
+
+        }catch (Exception e) {
+            log.error("Error al calcular estadísticas: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    public PeopleStatusCountResponse countUsersByStatus() {
+        log.info("Contando usuarios por estado");
+
+        long active = personRepository.countByStatus(PeopleStatusEnum.ACTIVE);
+        long inactive = personRepository.countByStatus(PeopleStatusEnum.INACTIVE);
+        long vacation = personRepository.countByStatus(PeopleStatusEnum.VACATION);
+        long medicalLeave = personRepository.countByStatus(PeopleStatusEnum.MEDICAL_LEAVE);
+        long suspended = personRepository.countByStatus(PeopleStatusEnum.SUSPENDED);
+        long total = active + inactive + vacation + medicalLeave + suspended;
+        long totalUsersWithSystemAccess = personRepository.countByUserIsNotNull();
+
+        return new PeopleStatusCountResponse(active, inactive, vacation, medicalLeave, suspended, total, totalUsersWithSystemAccess);
+    }
+
+    public PortStatusCountResponse countPortsByStatus() {
+        log.info("Contando puertos por estado");
+
+        long operational = portRepository.countByStatus(PortStatusEnum.OPERATIONAL);
+        long underMaintenance = portRepository.countByStatus(PortStatusEnum.UNDER_MAINTENANCE);
+        long closed = portRepository.countByStatus(PortStatusEnum.CLOSED);
+        long full = portRepository.countByStatus(PortStatusEnum.FULL);
+        long inactive = portRepository.countByStatus(PortStatusEnum.INACTIVE);
+        long total = operational + underMaintenance + closed + full + inactive;
+
+        return new PortStatusCountResponse(operational, underMaintenance, closed, full, inactive, total);
+    }
+
+    public ShipStatusCountResponse countShipsByStatus() {
+        log.info("Contando barcos por estado");
+
+        long operational = shipRepository.countByStatus(ShipStatusEnum.OPERATIONAL);
+        long maintenance = shipRepository.countByStatus(ShipStatusEnum.MAINTENANCE);
+        long repair = shipRepository.countByStatus(ShipStatusEnum.REPAIR);
+        long inTransit = shipRepository.countByStatus(ShipStatusEnum.IN_TRANSIT);
+        long outOfService = shipRepository.countByStatus(ShipStatusEnum.OUT_OF_SERVICE);
+        long inactive = shipRepository.countByStatus(ShipStatusEnum.INACTIVE);
+        long total = operational + maintenance + repair + inTransit + outOfService + inactive;
+
+        return new ShipStatusCountResponse(operational, maintenance, repair, inTransit, outOfService, inactive, total);
+    }
+
+    public UserSystemAccessCountResponse countUsersBySystemAccess() {
+        log.info("Contando usuarios del sistema por tipo de acceso");
+
+        long adminUsers = userRepository.countByRole_Name("ADMIN");
+        long chiefNavigationUsers = userRepository.countByRole_Name("CHIEF_NAVIGATION");
+        long chiefOperationUsers = userRepository.countByRole_Name("CHIEF_OPERATION");
+        long activeUsers = userRepository.countByIsActiveTrue();
+        long blockedUsers = userRepository.countBlockedUsers();
+        long inactiveUsers = userRepository.countByIsActiveFalse();
+        long total = adminUsers + chiefNavigationUsers + chiefOperationUsers;
+
+        return new UserSystemAccessCountResponse(adminUsers, chiefNavigationUsers, chiefOperationUsers, activeUsers, blockedUsers, inactiveUsers, total);
+    }
+}

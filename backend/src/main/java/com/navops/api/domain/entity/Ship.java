@@ -67,6 +67,9 @@ public class Ship {
     @Column(name = "cargo_capacity_tonnes", nullable = false, precision = 10, scale = 2)
     private BigDecimal cargoCapacityTonnes;
 
+    @Column(name = "max_capacity_liters", precision = 15, scale = 2)
+    private BigDecimal maxCapacityLiters;
+
     @Column(name = "crew_capacity", nullable = false)
     private Short crewCapacity;
 
