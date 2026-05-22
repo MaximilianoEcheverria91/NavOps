@@ -2,7 +2,7 @@ package com.navops.api.infrastructure.controller.filters;
 
 import com.navops.api.application.dto.request.user.PersonnelFilterRequest;
 import com.navops.api.application.dto.response.user.PersonnelFilterResponse;
-import com.navops.api.application.service.PersonnelFilterService;
+import com.navops.api.application.service.filter.PersonnelFilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

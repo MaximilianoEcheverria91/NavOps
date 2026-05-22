@@ -1,4 +1,4 @@
-package com.navops.api.application.service;
+package com.navops.api.application.service.filter;
 
 import com.navops.api.application.dto.request.user.PersonnelFilterRequest;
 import com.navops.api.application.dto.response.user.PersonnelFilterResponse;
