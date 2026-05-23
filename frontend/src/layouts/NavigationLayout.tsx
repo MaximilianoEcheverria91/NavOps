@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X, Navigation as NavigationIcon, Package } from 'lucide-react';
-import styles from './MainLayout.module.css';
+import { LayoutDashboard, Bell, Sun, Wifi, Moon, Menu, X, Navigation as NavigationIcon, Package, Ship } from 'lucide-react';
+import styles from './NavigationLayout.module.css';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../hooks/useTheme';
 
-export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const NavigationLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,60 +26,27 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           </div>
 
           <div className={styles.navLinks}>
-            {user?.role === 'ADMIN' && (
-              <>
-                <NavLink 
-                  to="/admin/dashboard" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <LayoutDashboard size={18}/> Dashboard
-                </NavLink>
-                <NavLink 
-                  to="/usuarios" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <Users size={18}/> Usuarios
-                </NavLink>
-                <NavLink 
-                  to="/barcos" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <Ship size={18}/> Barcos
-                </NavLink>
-                <NavLink 
-                  to="/puertos" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <Anchor size={18}/> Puertos
-                </NavLink>
-              </>
-            )}
-
-            {user?.role === 'CHIEF_NAVIGATION' && (
-              <>
-                <span className={`${styles.link}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-                  <LayoutDashboard size={18}/> Dashboard
-                </span>
-                <NavLink 
-                  to="/navigation/menu" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <NavigationIcon size={18} style={{ transform: 'rotate(45deg)' }}/> Navegación
-                </NavLink>
-                <NavLink 
-                  to="/viajes" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <Ship size={18}/> Viajes
-                </NavLink>
-                <NavLink 
-                  to="/carga" 
-                  className={({ isActive }) => isActive ? styles.activeLink : styles.link}
-                >
-                  <Package size={18}/> Carga
-                </NavLink>
-              </>
-            )}
+            <span className={`${styles.link}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+              <LayoutDashboard size={18}/> Dashboard
+            </span>
+            <NavLink 
+              to="/navigation/menu" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <NavigationIcon size={18} style={{ transform: 'rotate(45deg)' }}/> Navegación
+            </NavLink>
+            <NavLink 
+              to="/viajes" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <Ship size={18}/> Viajes
+            </NavLink>
+            <NavLink 
+              to="/carga" 
+              className={({ isActive }) => isActive ? styles.activeLink : styles.link}
+            >
+              <Package size={18}/> Carga
+            </NavLink>
           </div>
         </div>
 

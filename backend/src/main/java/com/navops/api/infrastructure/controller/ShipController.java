@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/admin/ships/")
+@RequestMapping("/api/v1/admin/ships")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Gestión de barcos", description = "Endpoints para la gestión de barcos")

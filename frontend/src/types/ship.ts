@@ -1,5 +1,5 @@
 
-export type ShipStatus = 'OPERATIONAL' | 'MAINTENANCE' | 'REPAIR' | 'OUT_OF_SERVICE';
+export type ShipStatus = 'OPERATIONAL' | 'MAINTENANCE' | 'REPAIR' | 'OUT_OF_SERVICE' | 'IN_TRANSIT';
 export type ShipType = 'CONTAINER_SHIP' | 'BULK_CARRIER' | 'TANKER' | 'RO_RO' | 'FISHING_VESSEL' |
                        'CRUISE_SHIP' | 'FERRY' | 'PASSENGER_SHIP' | 'SUPPLY_SHIP' | 'TUGBOAT' | 
                        'AIRCRAFT_CARRIER' | 'DESTROYER' | 'FRIGATE' | 'CORVETTE' | 'SUBMARINE' | 

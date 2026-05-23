@@ -9,31 +9,54 @@ import { CreateUser } from './pages/Users/CreateUser/CreateUser';
 import { EditUser } from './pages/Users/EditUser/EditUser';
 import { ListPorts } from './pages/ports/ListPorts/ListPorts';
 import { CreatePort } from './pages/ports/CreatePort/CreatePort';
-import {EditPort} from "./pages/ports/EditPort/EditPort.tsx";
-import {ListShips} from "./pages/ships/ListShips/ListShips.tsx";
-import {CreateShip} from "./pages/ships/CreateShip/CreateShip.tsx";
-import {UpdateShip} from "./pages/ships/UpdateShip/UpdateShip.tsx";
+import { EditPort } from "./pages/ports/EditPort/EditPort.tsx";
+import { ListShips } from "./pages/ships/ListShips/ListShips.tsx";
+import { CreateShip } from "./pages/ships/CreateShip/CreateShip.tsx";
+import { UpdateShip } from "./pages/ships/UpdateShip/UpdateShip.tsx";
+import { ProtectedRoute } from './components/ProtectedRoute';
+// 🛠️ LINEA 17 CORREGIDA: Ruta de importación limpia y relativa al directorio src
+import { NavigationMenu } from './pages/navigation/NavigationMenu/NavigationMenu.tsx'; 
+import { CreateVoyagePlan } from './pages/navigation/CreateVoyagePlan/CreateVoyagePlan';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Raíz del sitio */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<DashboardAdmin />} />
-        <Route path="/usuarios" element={<UsersList />} />
-        <Route path="/puertos" element={<ListPorts />} />
-        <Route path="/puertos/create" element={<CreatePort />} />
-        <Route path="/puertos/edit/:id" element={<EditPort />} />
-        <Route path="/barcos" element={<ListShips />} />
-        <Route path="/barcos/:id" element={<ListShips />} />
+        
+        {/* ========================================================
+            RUTAS EXCLUSIVAS: ADMINISTRADOR (ADMIN)
+           ======================================================== */}
+        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><DashboardAdmin /></ProtectedRoute>} />
+        <Route path="/usuarios" element={<ProtectedRoute allowedRoles={['ADMIN']}><UsersList /></ProtectedRoute>} />
+        <Route path="/puertos" element={<ProtectedRoute allowedRoles={['ADMIN']}><ListPorts /></ProtectedRoute>} />
+        <Route path="/puertos/create" element={<ProtectedRoute allowedRoles={['ADMIN']}><CreatePort /></ProtectedRoute>} />
+        <Route path="/puertos/edit/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><EditPort /></ProtectedRoute>} />
+        <Route path="/barcos" element={<ProtectedRoute allowedRoles={['ADMIN']}><ListShips /></ProtectedRoute>} />
+        <Route path="/barcos/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><ListShips /></ProtectedRoute>} />
+        <Route path="/users/create" element={<ProtectedRoute allowedRoles={['ADMIN']}><CreateUser /></ProtectedRoute>} />
+        <Route path="/users/edit/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><EditUser /></ProtectedRoute>} />
+        <Route path="/barcos/nuevo" element={<ProtectedRoute allowedRoles={['ADMIN']}><CreateShip /></ProtectedRoute>} />
+        <Route path="/barcos/edit/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><UpdateShip /></ProtectedRoute>} />
+
+        {/* ========================================================
+            RUTAS EXCLUSIVAS: JEFE DE NAVEGACIÓN (CHIEF_NAVIGATION)
+           ======================================================== */}
+        {/* Pantalla principal de las 3 cards (Plan, Viajes Activos, Historial) */}
+        <Route path="/navigation/menu" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><NavigationMenu /></ProtectedRoute>} />
+        
+        {/* Asistente de 4 pasos */}
+        <Route path="/navigation/create-plan" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><CreateVoyagePlan /></ProtectedRoute>} />
+
+        {/* Rutas Públicas de Recuperación */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/users/create" element={<CreateUser />} />
-        <Route path="/users/edit/:id" element={<EditUser />} />
-        <Route path="/barcos/nuevo" element={<CreateShip />} />
-        <Route path="/barcos/edit/:id" element={<UpdateShip />} />
+
+        {/* Fallback de seguridad: cualquier ruta inválida te rebota al login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

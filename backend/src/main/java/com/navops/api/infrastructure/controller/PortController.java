@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/admin/ports/")
+@RequestMapping("/api/v1/admin/ports")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Gestión de puertos", description = "Endpoints para la gestión de puertos")

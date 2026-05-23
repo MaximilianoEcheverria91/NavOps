@@ -1,0 +1,303 @@
+.wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main, #04101E);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.navbar {
+  height: 70px; 
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border-color-nav, #38bdf8);
+  background-color: var(--barckground-color-nav, #051930);
+  padding: 0 1.5rem;
+  position: relative; 
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #ffffff;
+}
+
+.logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.menuContainer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 2rem;
+}
+
+.statusBadgeMobile {
+  display: none;
+}
+
+.navLinks {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.link, .activeLink {
+  background: none;
+  border: none;
+  color: var(--color-icon-notifict, #38bdf8);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.activeLink {
+  background-color: #A5F3FC;
+  color: #051930;
+}
+
+.link:hover {
+  background-color: rgba(56, 189, 248, 0.08);
+  color: #38bdf8;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: #38bdf8;
+}
+
+.themeToggle {
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.statusBadgeDesktopTablet {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #22c55e;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.bellContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 12px;
+  padding: 0.5rem;
+  color: #38bdf8;
+  cursor: pointer;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.9rem; 
+  border-radius: 12px; 
+  cursor: pointer;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  transition: all 0.2s ease;
+}
+
+.userSvg {
+  color: #38bdf8;
+}
+
+.userInfoText {
+  text-align: left;
+}
+
+.userName {
+  font-size: 0.85rem;
+  font-weight: 300;
+  margin: 0;
+  color: #ffffff;
+}
+
+.userRole {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.menuButton {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  cursor: pointer;
+  padding: 0.2rem;
+  z-index: 60;
+}
+
+/* TABLET STYLES (Target roughly ~792px) */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 1rem;
+    background-color: #051930;
+    flex-wrap: wrap;
+    height: 70px; 
+    min-height: 70px;
+    justify-content: space-between;
+    align-content: center;
+  }
+
+  .userInfoText {
+    display: none;
+  }
+
+  .userProfile {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .themeToggle {
+    display: none;
+  }
+  
+  .menuButton {
+    display: flex;
+  }
+
+  .menuContainer {
+    display: none;
+    position: static;
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+    background-color: #051930;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    border-bottom: 2px solid #38bdf8;
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    box-sizing: border-box;
+    order: 3;
+  }
+
+  .menuContainer.open {
+    display: flex;
+  }
+
+  .navLinks {
+    flex-direction: column;
+    width: fit-content;
+    gap: 1.5rem;
+  }
+
+  .link, .activeLink {
+    width: 100%;
+    padding: 0.8rem 2rem;
+    justify-content: flex-start;
+    border-radius: 20px;
+  }
+
+  .logo {
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+}
+
+}
+
+/* MOBILE STYLES (Target 418px) */
+@media (max-width: 550px) {
+  .navbar {
+    padding: 0 0.5rem;
+  }
+  
+  .actions {
+    gap: 0.6rem;
+  }
+
+  .statusBadgeDesktopTablet {
+    display: none;
+  }
+
+  .logoText {
+    font-size: 1.25rem;
+  }
+
+  .logo {
+    width: 120px;
+    height: 90px;
+   object-fit: contain;
+  }
+
+  .bellContainer {
+    padding: 0.4rem;
+  }
+
+  .userSvg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .menuContainer {
+    padding: 1.5rem 1.5rem;
+    align-items: flex-start;
+    width: calc(100% + 1rem);
+    margin-left: -0.5rem;
+  }
+
+  .statusBadgeMobile {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #22c55e;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    background-color: rgba(34, 197, 94, 0.1);
+    margin-bottom: 2rem;
+  }
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 3rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+  }
+}
