@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -277,6 +278,34 @@ public class ShipService {
                 .orElse(null);
 
         return toDetailResponse(ship, engine, fuelCapacity, lastMaintDate);
+    }
+
+    @Transactional
+    public void deactivateShip(UUID id) {
+        log.info("Desactivando barco con ID: {}", id);
+
+        Ship ship = shipRepository.findById(id)
+                .orElseThrow(() -> new ShipNotFoundException("No se encontró el barco con el ID proporcionado."));
+
+        ship.setStatus(ShipStatusEnum.INACTIVE);
+        ship.setActive(false);
+        ship.setDeletedAt(OffsetDateTime.now());
+
+        log.info("Barco con ID {} desactivado exitosamente.", id);
+    }
+
+    @Transactional
+    public void reactivateShip(UUID id) {
+        log.info("Reactivando barco con ID: {}", id);
+
+        Ship ship = shipRepository.findById(id)
+                .orElseThrow(() -> new ShipNotFoundException("No se encontró el barco con el ID proporcionado."));
+
+        ship.setStatus(ShipStatusEnum.OPERATIONAL);
+        ship.setActive(true);
+        ship.setDeletedAt(null);
+
+        log.info("Barco con ID {} reactivado exitosamente.", id);
     }
 
     private ShipDetailResponse toDetailResponse(Ship ship, Engine engine, BigDecimal fuelCapacity, LocalDate lastMaintDate) {

@@ -3,7 +3,8 @@ export const SHIP_STATUSES = [
   { value: 'REPAIR', label: 'Reparación' },
   { value: 'MAINTENANCE', label: 'En Mantenimiento' },
   { value: 'OUT_OF_SERVICE', label: 'Fuera de servicio' },
-  { value: 'IN_PROGRESS', label: 'En Curso' }
+  { value: 'IN_PROGRESS', label: 'En Curso' },
+  { value: 'INACTIVE', label: 'Inactivo' }
 ];
 
 export const SHIP_TYPES = [

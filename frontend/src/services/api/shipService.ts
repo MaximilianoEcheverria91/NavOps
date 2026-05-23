@@ -33,4 +33,10 @@ export const getFilteredShips = async (filters: ShipFilterRequest): Promise<Pagi
   return response.data;
 };
 
+export const deactivateShip = async (id: string): Promise<void> => {
+  await apiClient.patch(`/admin/ships/${id}/deactivate`);
+};
 
+export const reactivateShip = async (id: string): Promise<void> => {
+  await apiClient.patch(`/admin/ships/${id}/reactivate`);
+};

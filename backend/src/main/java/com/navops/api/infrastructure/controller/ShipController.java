@@ -108,4 +108,45 @@ public class ShipController {
         log.info("Petición recibida para detalle de barco id: {}", id);
         return ResponseEntity.ok(shipService.getById(id));
     }
+
+    @Operation(summary = "Desactivar barco (baja lógica)",
+            description = "Cambia el estado del barco a INACTIVE, isActive a false y registra la fecha de baja. " +
+                    "El barco no se elimina físicamente para mantener el historial.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Barco desactivado exitosamente"),
+                    @ApiResponse(responseCode = "404", description = "Barco no encontrado",
+                            content = @Content(schema = @Schema(implementation = Map.class)))
+            })
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Map<String, String>> deactivateShip(@PathVariable("id") UUID id) {
+        log.info("Petición recibida para desactivar barco ID: {}", id);
+        try {
+            shipService.deactivateShip(id);
+            return ResponseEntity.ok(Map.of("message", "Barco desactivado exitosamente."));
+        } catch (ShipNotFoundException e) {
+            log.error("Barco no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Reactivar barco",
+            description = "Restablece el estado del barco a OPERATIONAL, isActive a true y limpia la fecha de baja. Revierte la baja lógica.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Barco reactivado exitosamente"),
+                    @ApiResponse(responseCode = "404", description = "Barco no encontrado",
+                            content = @Content(schema = @Schema(implementation = Map.class)))
+            })
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<Map<String, String>> reactivateShip(@PathVariable("id") UUID id) {
+        log.info("Petición recibida para reactivar barco ID: {}", id);
+        try {
+            shipService.reactivateShip(id);
+            return ResponseEntity.ok(Map.of("message", "Barco reactivado exitosamente."));
+        } catch (ShipNotFoundException e) {
+            log.error("Barco no encontrado:", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }

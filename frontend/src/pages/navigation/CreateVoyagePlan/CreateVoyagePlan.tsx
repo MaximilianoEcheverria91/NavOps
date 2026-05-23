@@ -4,6 +4,7 @@ import { NavigationLayout } from '../../../layouts/NavigationLayout';
 import { Sailboat, Map, Users, Package, Check, X } from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
+import { SelectCrew } from './SelectCrew/SelectCrew';
 
 type VoyagePlanState = {
   shipId: string | null;
@@ -73,17 +74,8 @@ export const CreateVoyagePlan: React.FC = () => {
     setActiveModal(null);
   };
 
-  const handleToggleCrew = (id: string) => {
-    setPlanState(prev => {
-      const isSelected = prev.crewIds.includes(id);
-      return {
-        ...prev,
-        crewIds: isSelected ? prev.crewIds.filter(c => c !== id) : [...prev.crewIds, id]
-      };
-    });
-  };
-
-  const handleConfirmCrew = () => {
+  const handleSelectCrew = (crewIds: string[]) => {
+    setPlanState(prev => ({ ...prev, crewIds }));
     setActiveModal(null);
   };
 
@@ -104,6 +96,12 @@ export const CreateVoyagePlan: React.FC = () => {
         <SelectShip 
           onSelectShip={handleSelectShip} 
           onCancel={() => setActiveModal(null)} 
+        />
+      ) : activeModal === 'crew' ? (
+        <SelectCrew
+          onSelectCrew={handleSelectCrew}
+          onCancel={() => setActiveModal(null)}
+          initialSelectedIds={planState.crewIds}
         />
       ) : (
         <div className={styles.container}>
@@ -296,20 +294,6 @@ export const CreateVoyagePlan: React.FC = () => {
                   </div>
                 )}
 
-                {activeModal === 'crew' && (
-                  <div className={styles.listContainer}>
-                    {MOCK_CREW.map(crew => (
-                      <div 
-                        key={crew.id} 
-                        className={`${styles.listItem} ${planState.crewIds.includes(crew.id) ? styles.listItemSelected : ''}`}
-                        onClick={() => handleToggleCrew(crew.id)}
-                      >
-                        {crew.name}
-                      </div>
-                    ))}
-                    <button className={styles.primaryModalBtn} onClick={handleConfirmCrew}>Confirmar Tripulación</button>
-                  </div>
-                )}
 
                 {activeModal === 'cargo' && (
                   <div className={styles.cargoMock}>

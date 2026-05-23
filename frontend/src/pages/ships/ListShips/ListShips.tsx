@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../../../layouts/MainLayout';
 import { SearchInput } from '../../../components/ui/SearchInput/SearchInput';
-import { Filter, Anchor, Edit2, Trash2, X } from 'lucide-react';
+import { Filter, Anchor, Edit2, Trash2, X, RotateCcw } from 'lucide-react';
 import { ShipDetailModal } from '../ShipDetailModal/ShipDetailModal';
+import { DeleteShipModal } from '../../../components/ui/DeleteShipModal/DeleteShipModal';
+import { ReactivateShipModal } from '../../../components/ui/ReactivateShipModal/ReactivateShipModal';
 import type { ShipStatus, ShipType } from '../../../types/ship';
 import { useShipFilters } from '../../../hooks/useShipFilters';
 import { ShipFilterSidebar } from '../../../components/ui/ShipFilterSidebar/ShipFilterSidebar';
@@ -16,6 +18,7 @@ const STATUS_LABELS: Record<ShipStatus | string, string> = {
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
   IN_PROGRESS: 'En Curso',
+  INACTIVE: 'Inactivo'
 };
 
 export const ListShips: React.FC = () => {
@@ -23,6 +26,8 @@ export const ListShips: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [shipToDelete, setShipToDelete] = useState<{ id: string, name: string, registration: string, mainImageUrl?: string | null } | null>(null);
+  const [shipToReactivate, setShipToReactivate] = useState<{ id: string, name: string, registration: string, mainImageUrl?: string | null } | null>(null);
 
   const {
     filters,
@@ -225,15 +230,33 @@ export const ListShips: React.FC = () => {
                           >
                             Ver detalle
                           </button>
-                          <button className={styles.editBtn} 
-                            title="Editar"
-                            onClick={()=> navigate(`/barcos/edit/${ship.id}`)}
+                          
+                          {ship.status === 'INACTIVE' ? (
+                            <button 
+                              className={styles.editBtn} 
+                              title="Dar de alta"
+                              style={{ borderColor: '#10b981', color: '#10b981' }}
+                              onClick={() => setShipToReactivate({ id: ship.id, name: ship.name, registration: ship.registration, mainImageUrl: ship.mainImageUrl })}
                             >
-                            <Edit2 size={16} />
-                          </button>
-                          <button className={styles.deleteBtn} title="Eliminar">
-                            <Trash2 size={16} />
-                          </button>
+                              <RotateCcw size={16} />
+                            </button>
+                          ) : (
+                            <>
+                              <button className={styles.editBtn} 
+                                title="Editar"
+                                onClick={()=> navigate(`/barcos/edit/${ship.id}`)}
+                                >
+                                <Edit2 size={16} />
+                              </button>
+                              <button 
+                                className={styles.deleteBtn} 
+                                title="Dar de baja"
+                                onClick={() => setShipToDelete({ id: ship.id, name: ship.name, registration: ship.registration, mainImageUrl: ship.mainImageUrl })}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -268,6 +291,36 @@ export const ListShips: React.FC = () => {
         </div>
 
         {id && <ShipDetailModal shipId={id} onClose={() => navigate('/barcos')} />}
+        
+        {shipToDelete && (
+          <DeleteShipModal
+            shipId={shipToDelete.id}
+            shipName={shipToDelete.name}
+            registration={shipToDelete.registration}
+            mainImageUrl={shipToDelete.mainImageUrl}
+            onCancel={() => setShipToDelete(null)}
+            onSuccess={() => {
+              setShipToDelete(null);
+              // Force reload filters by reapplying
+              applyFilters();
+            }}
+          />
+        )}
+
+        {shipToReactivate && (
+          <ReactivateShipModal
+            shipId={shipToReactivate.id}
+            shipName={shipToReactivate.name}
+            registration={shipToReactivate.registration}
+            mainImageUrl={shipToReactivate.mainImageUrl}
+            onCancel={() => setShipToReactivate(null)}
+            onSuccess={() => {
+              setShipToReactivate(null);
+              // Force reload filters by reapplying
+              applyFilters();
+            }}
+          />
+        )}
 
         <footer className="text-center mt-12 text-xs text-slate-500 pb-6">
           Sistema de Gestión Marítima V.1

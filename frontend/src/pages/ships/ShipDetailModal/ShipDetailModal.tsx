@@ -3,6 +3,8 @@ import React from 'react';
 import { X, Anchor } from 'lucide-react';
 import { useShipDetail } from '../../../hooks/useShipDetail';
 import type { ShipStatus, ShipType } from '../../../types/ship';
+import { DeleteShipModal } from '../../../components/ui/DeleteShipModal/DeleteShipModal';
+import { ReactivateShipModal } from '../../../components/ui/ReactivateShipModal/ReactivateShipModal';
 import styles from './ShipDetailModal.module.css';
 
 interface ShipDetailModalProps {
@@ -15,6 +17,8 @@ const STATUS_LABELS: Record<ShipStatus, string> = {
   MAINTENANCE: 'Mantenimiento',
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
+  IN_PROGRESS: 'En Curso',
+  INACTIVE: 'Inactivo'
 };
 
 const SHIP_TYPE_LABEL: Record<ShipType, string>={
@@ -54,6 +58,8 @@ const val = (v: string | number | null | undefined): string =>
 
 export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClose }) => {
   const { data: ship, loading, error } = useShipDetail(shipId);
+  const [showDelete, setShowDelete] = React.useState(false);
+  const [showReactivate, setShowReactivate] = React.useState(false);
 
   const handleModalClick = (e: React.MouseEvent) => e.stopPropagation();
 
@@ -227,10 +233,51 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                   </div>
                 </div>
               </div>
+
+              <div className={styles.footerActions}>
+                {ship.status === 'INACTIVE' ? (
+                  <button className={styles.btnReactivate} onClick={() => setShowReactivate(true)}>
+                    Dar de alta
+                  </button>
+                ) : (
+                  <button className={styles.btnDelete} onClick={() => setShowDelete(true)}>
+                    Dar de baja
+                  </button>
+                )}
+              </div>
             </>
           ) : null}
         </div>
       </div>
+
+      {showDelete && ship && (
+        <DeleteShipModal
+          shipId={ship.id}
+          shipName={ship.name}
+          registration={ship.registration}
+          mainImageUrl={ship.mainImageUrl}
+          onCancel={() => setShowDelete(false)}
+          onSuccess={() => {
+            setShowDelete(false);
+            onClose(); // Cerrar detalle para que refresque la lista (si lo refresca manualmente o se re-monta)
+            // idealmente deberíamos refrescar el modal o la lista
+          }}
+        />
+      )}
+
+      {showReactivate && ship && (
+        <ReactivateShipModal
+          shipId={ship.id}
+          shipName={ship.name}
+          registration={ship.registration}
+          mainImageUrl={ship.mainImageUrl}
+          onCancel={() => setShowReactivate(false)}
+          onSuccess={() => {
+            setShowReactivate(false);
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 };
