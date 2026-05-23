@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/admin/")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Ship Filters", description = "Endpoints para filtros avanzados de barcos")

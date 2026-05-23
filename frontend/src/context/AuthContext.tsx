@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, } from 'react';
 
 type User = {
   name: string;
@@ -11,27 +11,25 @@ interface AuthContextType {
   logout: () => void;
 }
 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
+  return context;
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  // 🔥 Hidratación inicial (clave offline-first)
-  useEffect(() => {
+  // 🚀 Inicialización síncrona inmediata: lee el localStorage al vuelo
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('navops_user');
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   const logout = () => {
     localStorage.removeItem('navops_user');
     localStorage.removeItem('auth_token');
-
     setUser(null);
-
-    // ⚠️ mejor que window.location
     window.location.pathname = '/login';
   };
 
@@ -42,8 +40,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider');
-  return context;
-};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

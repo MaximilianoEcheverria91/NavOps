@@ -1,0 +1,422 @@
+/* frontend/src/pages/ships/ListShips/ListShips.module.css */
+.actionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.saveBtn {
+  background: #38bdf8;
+  border: 1px solid #38bdf8;
+  color: #051930;
+  border-radius: 8px;
+  padding: 6px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* Botón Guardar Deshabilitado (Validación visual) */
+.saveBtnDisabled {
+  background: #1e293b !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.6;
+}
+
+/* Sincronización para Modo Claro por si acaso */
+:global(.light) .saveBtnDisabled {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+}
+
+.addButton {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  border-radius: 15px;
+  padding: 8px 20px;
+  color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.addButton:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.filtersContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.filterDropdown {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid #3a617c;
+  border-radius: 6px;
+  padding: 8px 16px;
+  min-width: 200px;
+}
+
+.filterIcon {
+  color: #9EB0C7;
+  margin-right: 8px;
+}
+
+.selectInput {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 100%;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.selectInput option {
+  background: #082842;
+  color: #ffffff;
+}
+
+.shipsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.error { color: #ef4444; }
+
+@media (max-width: 1200px) { .shipsGrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px)  { .shipsGrid { grid-template-columns: 1fr; } }
+
+.shipCard {
+  background: var(--background-color-card, #1e293b);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardSelected {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.cardSelectedOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 3px solid #10b981;
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shipImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(4px);
+}
+
+.statusBadge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50%;
+}
+
+.statusOPERATIONAL { color: #10b981; background-color: rgba(16, 185, 129, 0.15); }
+.statusMAINTENANCE { color: #f59e0b; background-color: rgba(245, 158, 11, 0.15); }
+.statusREPAIR { color: #f97316; background-color: rgba(249, 115, 22, 0.15); }
+.statusOUT_OF_SERVICE { color: #ef4444; background-color: rgba(239, 68, 68, 0.15); }
+.statusIN_PROGRESS { color: #0ea5e9; background-color: rgba(14, 165, 233, 0.15); }
+
+.cardContent {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.shipNameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--text-secondary, #fff);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.detailLabel {
+  color: #94a3b8;
+  width: 110px;
+  font-weight: 500;
+}
+
+.detailValue {
+  color: #e2e8f0;
+}
+
+.cardSelectedCheck {
+  position: absolute;
+  bottom: 90px;
+  right: 20px;
+  color: #12c98c;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.cardActions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.viewDetailBtn {
+  flex: 1;
+  padding: 2px;
+  background: transparent;
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewDetailBtn:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.selectBtn {
+  flex: 1;
+  padding: 10px;
+  background: #38bdf8;
+  border: 1px solid #38bdf8;
+  color: #051930;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selectBtn:hover {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #fff;
+}
+
+/* Back Button */
+.backBtn {
+  background: transparent;
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 36px;
+}
+
+.backBtn:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+/* Layout and Chip Filters */
+.activeFiltersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: transparent;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-filter2, #94a3b8);
+}
+
+.filterChip span {
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+.chipRemoveBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+.chipRemoveBtn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.clearFiltersBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.clearFiltersBtn:hover {
+  color: #fff;
+}
+
+/* Coordinación del layout Flex para que el sidebar se abra al costado */
+.mainLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.gridContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.portsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loadMoreBtn {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  border-radius: 20px;
+  padding: 10px 32px;
+  color: #0ea5e9;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.loadMoreBtn:hover {
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.loadMoreBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1200px) {
+  .portsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .portsGrid { grid-template-columns: 1fr; }
+  .mainLayout { flex-direction: column-reverse; }
+}
+
+/* Modo Claro */
+:global(.light) .title { color: #0f172a; }
+:global(.light) .shipCard { background-color: #ffffff; border-color: rgba(14, 165, 233, 0.3); }
+:global(.light) .detailLabel { color: #64748b; }
+:global(.light) .detailValue { color: #334155; }
+:global(.light) .shipNameRow { color: #0f172a; }
+:global(.light) .selectBtn { color: #ffffff; }
+:global(.light) .backBtn { color: #0ea5e9; border-color: #0ea5e9; }
+:global(.light) .backBtn:hover { background-color: rgba(14, 165, 233, 0.1); }
+

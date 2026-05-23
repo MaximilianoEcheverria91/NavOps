@@ -227,8 +227,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 >
                   <option value="">Ej: Todos</option>
                   <option value="true">Si</option>
-                  <option value="true">No</option>
-                  <option value="false">Todos</option>
+                  <option value="false">No</option>
                 </select>
               </div>
 

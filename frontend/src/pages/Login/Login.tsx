@@ -67,7 +67,13 @@ export const Login: React.FC = () => {
     // 🔥 estado global
     setUser(userData);
 
-    navigate('/dashboard', { replace: true });
+    if (data.role === 'ADMIN') {
+      navigate('/admin/dashboard', { replace: true });
+    } else if (data.role === 'CHIEF_NAVIGATION') {
+      navigate('/navigation/menu', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
 
   } catch (err: any) {
     const message =

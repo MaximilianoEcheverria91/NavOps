@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/images")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @Tag(name = "Imágenes", description = "EndPoint para la carga genérica de imágenes a Cloudinary")
 public class ImageController {

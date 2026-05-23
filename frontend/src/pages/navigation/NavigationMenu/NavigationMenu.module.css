@@ -1,0 +1,125 @@
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px); /* Ajustado a la altura del navbar */
+}
+
+.header {
+  margin-bottom: 48px;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-secondary, #ffffff);
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #38bdf8; /* Color cyan del diseño original */
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-bottom: auto; /* Empuja el footer hacia abajo */
+}
+
+.card {
+  background-color: transparent;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 12px;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  min-height: 240px;
+}
+
+.card:hover, .cardActive {
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  transform: translateY(-4px);
+}
+
+.checkIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.iconWrapper {
+  color: #38bdf8;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #64748b; /* Color sutil como en la imagen */
+  margin: 0;
+}
+
+.footer {
+  text-align: center;
+  color: #64748b;
+  font-size: 1rem;
+  padding: 32px 0;
+  margin-top: 64px;
+}
+
+/* Modo claro (Light Mode) */
+:global(.light) .title {
+  color: #0f172a;
+}
+
+:global(.light) .subtitle {
+  color: #0ea5e9;
+}
+
+:global(.light) .card {
+  border-color: rgba(14, 165, 233, 0.3);
+  background-color: #ffffff;
+}
+
+:global(.light) .card:hover, :global(.light) .cardActive {
+  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.15);
+}
+
+:global(.light) .iconWrapper {
+  color: #38bdf8;
+}
+
+:global(.light) .cardTitle {
+  color: #475569;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 1.75rem;
+  }
+}

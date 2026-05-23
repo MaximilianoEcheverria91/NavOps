@@ -26,7 +26,7 @@ import com.navops.api.application.dto.response.user.PersonnelDetailedResponse;
 import com.navops.api.application.dto.response.user.PersonnelEditResponse;
 
 @RestController
-@RequestMapping("/api/v1/admin/")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Personnel Management", description = "Endpoints para la gestión de personal, tripulación y usuarios")

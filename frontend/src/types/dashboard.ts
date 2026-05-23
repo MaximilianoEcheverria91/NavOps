@@ -16,3 +16,22 @@ export interface PortStatusCountResponse{
   inactive: number;
   total: number;
 }
+
+export interface ShipStatusCountResponse{
+  operational: number;
+  maintenance: number;
+  repair: number;
+  inTransit: number;
+  outOfService: number;
+  total: number;
+}
+
+export interface UserSystemAccesStatusCountResponse{
+  adminUsers: number;
+  chiefNavigationUsers: number;
+  chiefOperationUsers: number;
+  activeUsers: number;
+  blockedUsers: number;
+  inactiveUsers: number;
+  total: number;
+}
