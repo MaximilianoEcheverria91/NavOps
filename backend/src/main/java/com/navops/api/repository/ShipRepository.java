@@ -16,4 +16,5 @@ public interface ShipRepository extends JpaRepository<Ship, UUID> {
     boolean existsByImoNumberAndIdNotAndDeletedAtIsNull(String imoNumber, UUID id);
     boolean existsByRegistrationAndIdNotAndDeletedAtIsNull(String registration, UUID id);
     long countByStatus(ShipStatusEnum status);
+    List<Ship> findAllByIsActiveTrueAndDeletedAtIsNull();
 }
