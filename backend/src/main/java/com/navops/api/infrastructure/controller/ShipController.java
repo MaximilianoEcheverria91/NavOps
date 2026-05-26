@@ -2,6 +2,7 @@ package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.ship.ShipCreateRequest;
 import com.navops.api.application.dto.request.ship.ShipUpdateRequest;
+import com.navops.api.application.dto.response.ship.ShipActiveResponse;
 import com.navops.api.application.dto.response.ship.ShipDetailResponse;
 import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
 import com.navops.api.application.service.ShipService;
@@ -100,6 +101,13 @@ public class ShipController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error interno: " + e.getMessage()));
         }
+    }
+
+    @Operation(summary = "Listar barcos activos", description = "Retorna un listado de barcos que están activos (isActive = true).")
+    @GetMapping("/active")
+    public ResponseEntity<List<ShipActiveResponse>> getActiveShips() {
+        log.info("Petición recibida para listar barcos activos");
+        return ResponseEntity.ok(shipService.getActiveShips());
     }
 
     @Operation(summary = "Detalle de barco", description = "Retorna el detalle completo de un barco por ID.")

@@ -2,6 +2,7 @@ package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.ship.ShipCreateRequest;
 import com.navops.api.application.dto.request.ship.ShipUpdateRequest;
+import com.navops.api.application.dto.response.ship.ShipActiveResponse;
 import com.navops.api.application.dto.response.ship.ShipDetailResponse;
 import com.navops.api.application.dto.response.ship.ShipSummaryResponse;
 import com.navops.api.domain.entity.Country;
@@ -251,6 +252,24 @@ public class ShipService {
 
         log.info("Barco con ID {} actualizado exitosamente.", id);
         return toDetailResponse(ship, engine, fuelCapacity, lastMaintDate);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShipActiveResponse> getActiveShips() {
+        log.info("Recuperando barcos activos");
+        return shipRepository.findAllByIsActiveTrueAndDeletedAtIsNull()
+                .stream()
+                .map(ship -> new ShipActiveResponse(
+                        ship.getId(),
+                        ship.getName(),
+                        ship.getShipType().name(),
+                        ship.getRegistration(),
+                        ship.getStatus().name(),
+                        ship.getCrewCapacity(),
+                        ship.getMainImageUrl(),
+                        ship.isActive()
+                ))
+                .toList();
     }
 
     @Transactional(readOnly = true)
