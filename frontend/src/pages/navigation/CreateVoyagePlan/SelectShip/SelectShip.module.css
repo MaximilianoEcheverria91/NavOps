@@ -6,6 +6,20 @@
   margin-left: auto;
 }
 
+.selectBtnDisabled:hover {
+  background: #1e293b !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #64748b !important;
+}
+
+.selectBtnDisabled {
+  background: #1e293b !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
 .saveBtn {
   background: #38bdf8;
   border: 1px solid #38bdf8;
@@ -228,7 +242,7 @@
 }
 
 .detailValue {
-  color: #e2e8f0;
+  color: var(--text-secondary);
 }
 
 .cardSelectedCheck {
@@ -419,4 +433,9 @@
 :global(.light) .selectBtn { color: #ffffff; }
 :global(.light) .backBtn { color: #0ea5e9; border-color: #0ea5e9; }
 :global(.light) .backBtn:hover { background-color: rgba(14, 165, 233, 0.1); }
+:global(.light) .selectBtnDisabled {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+}
 

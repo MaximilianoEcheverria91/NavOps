@@ -1,7 +1,7 @@
 /* Contenedor principal de la tarjeta de barco seleccionada */
 .shipSelectedCard {
   background: var(--background-color-card, #1e293b);
-  border: 2px solid #10b981; /* Borde verde del Figma */
+  border: 3px solid #10b981; /* Borde verde del Figma */
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -69,7 +69,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 1.1rem;
   font-weight: 500;
 }
@@ -92,7 +92,7 @@
 }
 
 .detailValue {
-  color: #e2e8f0;
+  color: var(--text-secondary);
 }
 
 .successCheckWrapper {
