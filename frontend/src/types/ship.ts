@@ -17,6 +17,18 @@ export interface ShipSummaryResponse {
   status: ShipStatus;
 }
 
+export interface ShipActiveSelect {
+  id: string;
+  name: string;
+  shipType : ShipType
+  registration: string;
+  status: ShipStatus;
+  crewCapacity: number;
+  mainImageUrl: string | null;
+  isActive: boolean;
+  
+}
+
 export interface ShipDetailResponse extends ShipSummaryResponse {
   shipType: ShipType;
   buildYear: number;
@@ -100,4 +112,6 @@ export interface ShipFilterRequest {
   sortBy?: string;
   sortDirection?: string;
 }
+
+
 

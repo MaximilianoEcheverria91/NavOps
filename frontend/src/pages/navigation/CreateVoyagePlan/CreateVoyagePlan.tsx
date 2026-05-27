@@ -95,7 +95,8 @@ export const CreateVoyagePlan: React.FC = () => {
       {activeModal === 'ship' ? (
         <SelectShip 
           onSelectShip={handleSelectShip} 
-          onCancel={() => setActiveModal(null)} 
+          onCancel={() => setActiveModal(null)}
+          selectedShipId={planState.shipId}
         />
       ) : activeModal === 'crew' ? (
         <SelectCrew
@@ -164,16 +165,20 @@ export const CreateVoyagePlan: React.FC = () => {
                 <div className={styles.detailsList}>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Tipo de Barco:</span>
-                    <span className={styles.detailValue}>{planState.shipData.registration || 'Carga'}</span>
+                    <span className={styles.detailValue}>
+                      {planState.shipData.shipType === 'CONTAINER_SHIP' ? 'Portacontenedor' : planState.shipData.shipType || 'General'}
+                    </span>
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Modelo:</span>
-                    <span className={styles.detailValue}>{planState.shipData.name}</span>
+                    <span className={styles.detailValue}>
+                      {planState.shipData.registration}
+                    </span>
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Capacidad:</span>
                     <span className={styles.detailValue}>
-                      {planState.shipData.imoNumber ? planState.shipData.imoNumber.toLocaleString() : 'N/A'} Toneladas
+                      {planState.shipData.crewCapacity != null ? `${planState.shipData.crewCapacity} Tripulantes` : 'N/A'}
                     </span>
                   </div>
                 </div>
