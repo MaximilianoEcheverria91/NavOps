@@ -430,7 +430,7 @@ public class PersonnelService {
         String crewMemberStatus = null;
 
         if (person.getCrewMember() != null) {
-            position = person.getCrewMember().getCategory();
+            position = person.getCrewMember().getNavigationRole().name();
             fileNumber = person.getCrewMember().getFileNumber();
             maritimeBookNumber = person.getCrewMember().getMaritimeBookNumber();
             if (person.getCrewMember().getHireDate() != null) {

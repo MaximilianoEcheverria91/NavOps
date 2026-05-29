@@ -11,7 +11,8 @@ export const PORT_TYPES = [
   { value: 'LOGISTIC', label: 'Logístico' },
   { value: 'TOURISTIC', label: 'Turístico' },
   { value: 'INDUSTRIAL', label: 'Industrial' },
-  { value: 'FISHING', label: 'Pesquero' }
+  { value: 'FISHING', label: 'Pesquero' },
+  { value: 'MILITARY', label: 'Militar'}
 ];
 
 export const DOCK_TYPES = [

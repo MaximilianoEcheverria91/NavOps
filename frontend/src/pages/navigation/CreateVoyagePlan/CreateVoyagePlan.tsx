@@ -218,20 +218,72 @@ export const CreateVoyagePlan: React.FC = () => {
           </div>
 
           {/* Card 3: Tripulante */}
-          <div 
-            className={`${styles.card} ${planState.crewIds.length > 0 ? styles.cardCompleted : styles.cardPending}`}
-            onClick={() => setActiveModal('crew')}
-          >
-            {planState.crewIds.length > 0 && (
-              <div className={styles.checkIcon}>
-                <Check size={24} color="#10b981" strokeWidth={3} />
+         {planState.crewIds.length > 0 ? (
+            /* 🚀 VISTA CON TRIPULACIÓN ASIGNADA - AVATAR STACK DESIGN */
+            <div 
+              className={styles.shipSelectedCard} 
+              onClick={() => setActiveModal('crew')}
+              title="Haga clic para modificar la tripulación"
+            >
+              {/* Encabezado con Icono y Estado Regulado */}
+              <div className={styles.crewCardHeaderMock}>
+                <div className={styles.crewIconContainer}>
+                  <Users size={24} />
+                </div>
+                <span className={styles.statusBadgeSuccess}>Validada</span>
               </div>
-            )}
-            <div className={styles.iconWrapper}>
-              <Users strokeWidth={1.5} size={72} />
+
+              <div className={styles.cardContent} style={{ paddingTop: '8px' }}>
+                <div className={styles.shipNameRow} style={{ marginBottom: '8px' }}>
+                  Tripulación Oficial
+                </div>
+
+                <p className={styles.crewSummaryText}>
+                  Roles críticos y dotación reglamentaria asignados con éxito.
+                </p>
+
+                {/* 👥 AVATAR STACK: Simulación estética de los miembros seleccionados */}
+                <div className={styles.avatarStackContainer}>
+                  <div className={styles.avatarStack}>
+                    <div className={styles.stackAvatarItem}>👨‍✈️</div>
+                    <div className={styles.stackAvatarItem} style={{ backgroundColor: '#0284c7' }}>👮</div>
+                    <div className={styles.stackAvatarItem} style={{ backgroundColor: '#10b981' }}>🛠️</div>
+                    <div className={styles.stackAvatarItem} style={{ backgroundColor: '#f59e0b' }}>⚓</div>
+                    {planState.crewIds.length > 4 && (
+                      <div className={styles.stackAvatarMore}>
+                        +{planState.crewIds.length - 4}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.detailsList} style={{ marginTop: 'auto' }}>
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Total Personal:</span>
+                    <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>
+                      {planState.crewIds.length} Miembros
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tilde verde flotante */}
+                <div className={styles.successCheckWrapper}>
+                  <Check size={20} strokeWidth={3} />
+                </div>
+              </div>
             </div>
-            <h3 className={styles.cardTitle}>Agregar tripulantes</h3>
-          </div>
+          ) : (
+            /* 📥 VISTA PENDIENTE ORIGINAL */
+            <div 
+              className={`${styles.card} ${styles.cardPending}`}
+              onClick={() => setActiveModal('crew')}
+            >
+              <div className={styles.iconWrapper}>
+                <Users strokeWidth={1.5} size={72} />
+              </div>
+              <h3 className={styles.cardTitle}>Agregar tripulantes</h3>
+            </div>
+          )}
 
           {/* Card 4: Carga */}
           <div 

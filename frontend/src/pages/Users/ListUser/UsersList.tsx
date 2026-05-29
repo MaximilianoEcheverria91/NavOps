@@ -248,7 +248,10 @@ export const UsersList: React.FC = () => {
             ) : (
               <>
                 <div className={styles.usersGrid}>
-                  {filteredUsers.map((user) => (
+                  {filteredUsers.map((user) => {
+                    const positionLabel = POSITIONS.find(p => p.value === user.position || p.value === user.position?.toUpperCase())?.label || user.position;
+                    
+                    return (
                     <div key={user.id} className={styles.userCard}>
                       
                       <div className={styles.cardHeader}>
@@ -273,7 +276,7 @@ export const UsersList: React.FC = () => {
                         
                         <div className={styles.userInfo}>
                           <h3 className={styles.userName}>{user.name} {user.surname}</h3>
-                          <p className={styles.userRole}>{user.position}</p>
+                          <p className={styles.userRole}>{positionLabel}</p>
                           
                           <div className={styles.userDetail}>
                             <FileText size={12} className={styles.detailIcon} />
@@ -288,8 +291,10 @@ export const UsersList: React.FC = () => {
                       </div>
                       
                       <div className={styles.skillsContainer}>
-                          <span className={styles.skillBadge}>Rol: {user.systemRole}</span>
-                          <span className={styles.skillBadge}>Libreta: {user.maritimeBookNumber}</span>
+                        {user.systemRole && (
+                          <span className={styles.skillBadge}>Rol: {SYSTEM_ROLES.find(r => r.value === user.systemRole)?.label || user.systemRole}</span>
+                        )}
+                        <span className={styles.skillBadge}>Libreta: {user.maritimeBookNumber}</span>
                       </div>
                       
                       <div className={styles.cardActions}>
@@ -310,7 +315,8 @@ export const UsersList: React.FC = () => {
                       </div>
                       
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* LOAD MORE */}

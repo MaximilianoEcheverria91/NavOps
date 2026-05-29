@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SearchInput } from '../../../../components/ui/SearchInput/SearchInput';
-import { User, Check, X, Users, AlertCircle, Filter } from 'lucide-react';
+import { User, Check, X, Users, AlertCircle, Filter, Clock } from 'lucide-react';
 import { usePersonnelFilters } from '../../../../hooks/usePersonnelFilters';
 import { FilterSidebar } from '../../../../components/ui/FilterSidebar/FilterSidebar';
 import { POSITIONS, PERSONAL_STATUSES, WORK_STATUSES, ACCESS_STATUSES, SYSTEM_ROLES } from '../../../../types/userEnums';
@@ -34,7 +34,7 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
     errorMsg,
     loadMore,
     pagination
-  } = usePersonnelFilters(); // Por defecto traerá a los operativos (AVAILABLE) si el default es así
+  } = usePersonnelFilters();
 
   // Filtrado local rápido
   const filteredUsers = data.filter((user) => {
@@ -53,7 +53,12 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
     );
   };
 
-  // Objetos de tripulantes seleccionados
+  // Remover directamente desde la lista lateral usando la cruz
+  const handleRemoveFromList = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Evita cualquier disparo extraño de eventos
+    setSelectedCrewIds(prev => prev.filter(cId => cId !== id));
+  };
+
   const getActiveFilters = () => {
     const chips: { key: string, label: string, value: any, displayValue: string }[] = [];
     
@@ -133,25 +138,53 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
       newFilters.roles = newFilters.roles?.filter(x => x !== chip.value) || [];
     }
     
-    // Set pagination to page 0 when removing filter
     newFilters.page = 0;
     applyFilters(newFilters);
   };
 
-  const activeFiltersChips = getActiveFilters();
-
   const selectedCrew = data.filter(u => selectedCrewIds.includes(u.id));
 
-  // Validación de roles críticos
-  const hasCaptain = selectedCrew.some(u => u.position === 'CAPTAIN');
-  const hasFirstOfficer = selectedCrew.some(u => u.position === 'FIRST_OFFICER');
-  const hasChiefEngineer = selectedCrew.some(u => u.position === 'CHIEF_ENGINEER');
+  const activeFiltersChips = getActiveFilters();
+  
+  // 🚀 ESTRATEGIA DEFINITIVA: Recuperamos las posiciones mapeadas de forma directa
+  // Filtramos los usuarios visibles que están seleccionados
+  const currentVisibleSelected = data.filter(u => selectedCrewIds.includes(u.id));
+
+  // 🛡️ VALIDACIÓN BLINDADA: Evaluamos las posiciones ignorando mayúsculas/minúsculas y asegurando que si el ID existe, el rol cuente.
+  const hasCaptain = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'CAPTAIN') || 
+                     currentVisibleSelected.some(u => u.position?.toUpperCase() === 'CAPTAIN');
+                     
+  const hasFirstOfficer = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'FIRST_OFFICER') || 
+                          currentVisibleSelected.some(u => u.position?.toUpperCase() === 'FIRST_OFFICER');
+                          
+  const hasChiefEngineer = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'CHIEF_ENGINEER') || 
+                           currentVisibleSelected.some(u => u.position?.toUpperCase() === 'CHIEF_ENGINEER');
+                           
+  const hasSecondOfficer = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'SECOND_OFFICER') || 
+                           currentVisibleSelected.some(u => u.position?.toUpperCase() === 'SECOND_OFFICER');
+                           
+  const hasThirdOfficer = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'THIRD_OFFICER') || 
+                          currentVisibleSelected.some(u => u.position?.toUpperCase() === 'THIRD_OFFICER');
+                          
+  const hasBoatswain = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'BOATSWAIN') || 
+                       currentVisibleSelected.some(u => u.position?.toUpperCase() === 'BOATSWAIN');
+                       
+  const hasHelmsman = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'HELMSMAN') || 
+                      currentVisibleSelected.some(u => u.position?.toUpperCase() === 'HELMSMAN');
+                      
+  const hasEngOfficers = data.some(u => selectedCrewIds.includes(u.id) && u.position?.toUpperCase() === 'ENGINEERING_OFFICERS') || 
+                         currentVisibleSelected.some(u => u.position?.toUpperCase() === 'ENGINEERING_OFFICERS');
 
   const missingCriticalRoles = [
     !hasCaptain && 'Capitán',
     !hasFirstOfficer && 'Primer Oficial',
-    !hasChiefEngineer && 'Jefe de Máquinas'
-  ].filter(Boolean);
+    !hasSecondOfficer && 'Segundo Oficial',
+    !hasThirdOfficer && 'Tercer Oficial',
+    !hasBoatswain && 'Contramaestre',
+    !hasHelmsman && 'Timonel',
+    !hasChiefEngineer && 'Jefe de Máquinas',
+    !hasEngOfficers && 'Oficiales de Máquina'
+  ].filter(Boolean) as string[];
 
   const isSaveEnabled = missingCriticalRoles.length === 0;
 
@@ -164,22 +197,16 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
   return (
     <div className={styles.container}>
       
-      {/* HEADER ROW */}
+      {/* HEADER ROW - Limpio de doble guardado */}
       <div className={styles.headerRow}>
         <div>
           <h1 className={styles.title}>Nueva Tripulación</h1>
           <p className={styles.subtitle}>Asigna personal para el viaje. Los roles críticos son obligatorios.</p>
         </div>
         <div className={styles.actionHeader}>
+          {/* 🚀 Dejamos solo Volver / Cancelar arriba de manera elegante */}
           <button className={styles.backBtn} onClick={onCancel}>
-            Volver
-          </button>
-          <button 
-            className={`${styles.saveBtn} ${!isSaveEnabled ? styles.saveBtnDisabled : ''}`}
-            disabled={!isSaveEnabled}
-            onClick={handleSaveAndClose}
-          >
-            Guardar Selección
+            Cancelar y Volver
           </button>
         </div>
       </div>
@@ -188,13 +215,12 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
         
         {/* LEFT COLUMN */}
         <div className={styles.leftColumn}>
-          
           <div className={styles.filtersContainer}>
             <div className={styles.searchWrapper}>
-              <SearchInput 
-                value={searchTerm}
-                onChange={setSearchTerm}
-                placeholder="Buscar por nombre, legajo o rol..."
+              <SearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Buscar por nombre, legajo o posición..."
               />
             </div>
             <button 
@@ -222,16 +248,12 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
                   </button>
                 </div>
               ))}
-              <button 
-                className={styles.clearFiltersBtn}
-                onClick={resetFilters}
-              >
+              <button className={styles.clearFiltersBtn} onClick={resetFilters}>
                 Limpiar
               </button>
             </div>
           )}
 
-          {/* Wrapper relativo para anclar el Sidebar sobre la grilla */}
           <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
             {isFetching && data.length === 0 ? (
               <div className={styles.loading}>Cargando tripulantes...</div>
@@ -243,63 +265,60 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
               <>
                 <div className={styles.grid}>
                   {filteredUsers.map((user) => {
-                  const isSelected = selectedCrewIds.includes(user.id);
-                  const positionLabel = POSITIONS.find(p => p.value === user.position)?.label || user.position;
-                  
-                  return (
-                    <div 
-                      key={user.id} 
-                      className={`${styles.userCard} ${isSelected ? styles.userCardSelected : ''}`}
-                      onClick={() => toggleCrewSelection(user.id)}
-                    >
-                      <div className={styles.cardHeader}>
-                        <div className={styles.avatarWrapper}>
-                          {user.avatarUrl ? (
-                            <img src={user.avatarUrl} alt={user.name} className={styles.avatar} />
-                          ) : (
-                            <div className={styles.avatarPlaceholder}>
-                              <User size={32} />
-                            </div>
-                          )}
-                          {isSelected && (
-                            <div className={styles.selectedCheck}>
-                              <Check size={16} strokeWidth={3} />
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className={styles.userInfo}>
-                          <h3 className={styles.userName}>{user.name} {user.surname}</h3>
-                          <p className={styles.userRole}>{positionLabel}</p>
-                          <div className={styles.detailItem}>
-                            <User size={12} /> Legajo: <strong style={{ color: '#e2e8f0' }}>{user.fileNumber}</strong>
+                    const isSelected = selectedCrewIds.includes(user.id);
+                    const positionLabel = POSITIONS.find(p => p.value === user.position || p.value === user.position?.toUpperCase())?.label || user.position;
+                    
+                    return (
+                      <div 
+                        key={user.id} 
+                        className={`${styles.userCard} ${isSelected ? styles.userCardSelected : ''}`}
+                        onClick={() => toggleCrewSelection(user.id)}
+                      >
+                        <div className={styles.cardHeader}>
+                          <div className={styles.avatarWrapper}>
+                            {user.avatarUrl ? (
+                              <img src={user.avatarUrl} alt={user.name} className={styles.avatar} />
+                            ) : (
+                              <div className={styles.avatarPlaceholder}>
+                                <User size={32} />
+                              </div>
+                            )}
+                            {isSelected && (
+                              <div className={styles.selectedCheck}>
+                                <Check size={16} strokeWidth={3} />
+                              </div>
+                            )}
                           </div>
-                          <div className={styles.detailItem}>
-                            <Users size={12} /> {user.yearsOfService} años
+                          
+                          <div className={styles.userInfo}>
+                            <h3 className={styles.userName}>{user.name} {user.surname}</h3>
+                            <p className={styles.userRole}>{positionLabel}</p>
+                            <div className={styles.detailItem}>
+                              <User size={12} /> Legajo: <strong style={{ color: 'var(--text-secondary, #fff)', fontWeight: 500 }}>{user.fileNumber}</strong>
+                            </div>
+                            <div className={styles.detailItem}>
+                              <Clock size={12} className={styles.detailIcon} />
+                              <span>Antigüedad: <strong style={{ color: 'var(--text-secondary, #fff)', fontWeight: 500 }}> {user.yearsOfService} años</strong></span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className={styles.tagsContainer}>
-                        {/* Tags simulados por ahora, luego de api se mapearán reales */}
-                        {positionLabel === 'Capitán' && <span className={styles.tag}>Capitán de Altura</span>}
-                        {positionLabel === 'Jefe de máquinas' && <span className={styles.tag}>Ingeniero Naval</span>}
-                        <span className={styles.tag}>STCW</span>
-                        <span className={styles.tag}>+1</span>
-                      </div>
+                        <div className={styles.tagsContainer}>
+                          {user.systemRole && (
+                            <span className={styles.tag}>Rol: {SYSTEM_ROLES.find(r => r.value === user.systemRole)?.label || user.systemRole}</span>
+                          )}
+                          <span className={styles.tag}>Libreta: {user.maritimeBookNumber}</span>
+                        </div>
 
-                      <div className={styles.cardFooter}>
-                        <button className={styles.viewDetailsBtn} onClick={(e) => {
-                          e.stopPropagation(); // Evita marcarlo al querer ver detalles
-                          // Aquí podrías abrir un modal real si quisieras
-                        }}>
-                          Ver detalles completos →
-                        </button>
+                        <div className={styles.cardFooter}>
+                          <button className={styles.viewDetailsBtn} onClick={(e) => e.stopPropagation()}>
+                            Ver detalles completos →
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
                 {pagination.page + 1 < pagination.totalPages && (
                   <div className={styles.loadMoreContainer}>
@@ -325,40 +344,47 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
+        {/* RIGHT PANEL - Con Alerta Dinámica de Color */}
         <div className={styles.rightPanel}>
           <h2 className={styles.panelTitle}>
             <Users size={20} color="#38bdf8" /> Resumen de Tripulación
           </h2>
           <p className={styles.panelSubtitle}>Validación de roles y personal</p>
 
-          <div className={styles.warningBox}>
+          {/* 🚀 Inyección de clase dinámica basada en si los roles están listos o no */}
+          <div className={`${styles.warningBox} ${isSaveEnabled ? styles.warningBoxSuccess : ''}`}>
             <div className={styles.warningBoxHeader}>
-              <AlertCircle size={18} /> Roles críticos requeridos
+              {isSaveEnabled ? <Check size={18} /> : <AlertCircle size={18} />} 
+              {isSaveEnabled ? 'Cumplimiento Exitoso' : 'Roles críticos requeridos'}
             </div>
             
             {missingCriticalRoles.length > 0 ? (
               <>
                 <p className={styles.warningBoxText}>
-                  Faltan: {missingCriticalRoles.join(', ')}
+                  Faltan asignar los siguientes roles operativos:
                 </p>
                 <div className={styles.criticalRolesList}>
-                  {/* Los que faltan se ven resaltados */}
                   {!hasCaptain && <span className={styles.criticalRoleTag}>Capitán <X size={12}/></span>}
-                  {!hasFirstOfficer && <span className={styles.criticalRoleTag}>Primer Oficial <X size={12}/></span>}
-                  {!hasChiefEngineer && <span className={styles.criticalRoleTag}>Jefe de Máquinas <X size={12}/></span>}
+                  {!hasFirstOfficer && <span className={styles.criticalRoleTag}>1° Oficial <X size={12}/></span>}
+                  {!hasSecondOfficer && <span className={styles.criticalRoleTag}>2° Oficial <X size={12}/></span>}
+                  {!hasThirdOfficer && <span className={styles.criticalRoleTag}>3° Oficial <X size={12}/></span>}
+                  {!hasBoatswain && <span className={styles.criticalRoleTag}>Contramaestre <X size={12}/></span>}
+                  {!hasHelmsman && <span className={styles.criticalRoleTag}>Timonel <X size={12}/></span>}
+                  {!hasChiefEngineer && <span className={styles.criticalRoleTag}>Jefe Máq. <X size={12}/></span>}
+                  {!hasEngOfficers && <span className={styles.criticalRoleTag}>Of. Máquina <X size={12}/></span>}
                 </div>
               </>
             ) : (
-              <p className={styles.warningBoxText} style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Check size={16} /> Todos los roles críticos asignados.
+              <p className={styles.warningBoxTextSuccess}>
+                ¡Excelente! Flota de tripulación completa y validada de forma reglamentaria para zarpar.
               </p>
             )}
           </div>
 
           <div className={styles.assignedSectionHeader}>
             <h3 className={styles.assignedTitle}>Tripulación Asignada</h3>
-            <span className={styles.assignedCount}>{selectedCrew.length} miembros</span>
+            {/* 🚀 Cambiado para que use selectedCrewIds.length y nunca te marque cero al volver a entrar */}
+            <span className={styles.assignedCount}>{selectedCrewIds.length} miembros</span>
           </div>
 
           <div className={styles.assignedList}>
@@ -372,7 +398,7 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
               </div>
             ) : (
               selectedCrew.map(user => {
-                const posLabel = POSITIONS.find(p => p.value === user.position)?.label || user.position;
+                const posLabel = POSITIONS.find(p => p.value === user.position || p.value === user.position?.toUpperCase())?.label || user.position;
                 return (
                   <div key={user.id} className={styles.assignedItem}>
                     {user.avatarUrl ? (
@@ -386,6 +412,14 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
                       <h4 className={styles.assignedItemName}>{user.name} {user.surname}</h4>
                       <span className={styles.assignedItemRole}>{posLabel}</span>
                     </div>
+                    {/* 🚀 AGREGAMOS LA CRUZ DE ELIMINACIÓN RÁPIDA DIRECTA */}
+                    <button 
+                      className={styles.removeCrewBtn} 
+                      onClick={(e) => handleRemoveFromList(user.id, e)}
+                      title="Quitar de la lista"
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
                 )
               })
@@ -404,9 +438,7 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
           </div>
 
         </div>
-
       </div>
-
     </div>
   );
 };

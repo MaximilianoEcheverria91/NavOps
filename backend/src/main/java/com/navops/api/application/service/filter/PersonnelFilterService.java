@@ -109,7 +109,7 @@ public class PersonnelFilterService {
 
         CrewMember crew = person.getCrewMember();
         if (crew != null) {
-            position = crew.getCategory();
+            position = crew.getNavigationRole() != null ? crew.getNavigationRole().name() : null;
             fileNumber = crew.getFileNumber();
             maritimeBookNumber = crew.getMaritimeBookNumber();
             if (crew.getHireDate() != null) {
