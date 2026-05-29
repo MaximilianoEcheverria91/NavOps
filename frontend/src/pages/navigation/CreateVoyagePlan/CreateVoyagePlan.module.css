@@ -1,3 +1,79 @@
+.crewCardHeaderMock {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0 16px;
+}
+
+.crewIconContainer {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusBadgeSuccess {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.crewSummaryText {
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+/* Contenedor del Avatar Stack */
+.avatarStackContainer {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.avatarStack {
+  display: flex;
+  flex-direction: row-reverse; /* Permite que el tilde de desborde se monte correctamente */
+  justify-content: flex-end;
+}
+
+.stackAvatarItem, .stackAvatarMore {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #1e293b; /* Evita que se mezclen los colores de fondo */
+  background-color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-left: -8px; /* Controla el nivel de superposición horizontal */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.stackAvatarMore {
+  background-color: #334155;
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Aseguramos simetría con el círculo verde de abajo a la derecha */
+:global(.light) .stackAvatarItem {
+  border-color: #ffffff;
+}
+
+
 /* Contenedor principal de la tarjeta de barco seleccionada */
 .shipSelectedCard {
   background: var(--background-color-card, #1e293b);

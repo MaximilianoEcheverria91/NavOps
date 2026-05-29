@@ -6,7 +6,10 @@ public enum TypePortEnum {
     INDUSTRIAL("Type of Industrial port."),
     LOGISTIC("Type of Logistics port."),
     TOURISTIC("type of passenger port"),
-    FISHING("type of fishing port");
+    FISHING("type of fishing port"),
+    MILITARY ("Type of military port");
+
+
 
     private final String description;
 

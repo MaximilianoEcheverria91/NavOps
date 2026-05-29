@@ -336,10 +336,11 @@ export const EditPort: React.FC = () => {
                 value={form.portType} 
                 onChange={(e) => handleChange('portType', e.target.value)}>
                 <option value="">Ej: Industrial</option>
+                <option value="MILITARY">Militar</option>
                 <option value="COMMERCIAL">Comercial</option>
                 <option value="INDUSTRIAL">Industrial</option>
                 <option value="LOGISTIC">Logistica</option>
-                <option value="PASSENGER">Pasajero</option>
+                <option value="TOURISTIC">Turistico</option>
                 <option value="FISHING">Pesca</option>
               </select>
             </div>

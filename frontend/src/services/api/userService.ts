@@ -20,8 +20,6 @@ export const getAllUsers = async (): Promise<UserResponse[]> => {
 
 export const createUser = async (payload: any) => {
   const response = await apiClient.post('/admin/create-user', payload, {
-    // Al usar FormData, el navegador debe generar el boundary nativamente de multipart.
-    // Para que el encabezado global de 'application/json' no interfiera, le restamos precedencia:
     transformRequest: [(data, headers) => {
       delete headers['Content-Type'];
       return data;

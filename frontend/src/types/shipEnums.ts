@@ -35,5 +35,6 @@ export const SHIP_TYPES = [
   { value: 'SPEEDBOAT', label: 'Lancha' },
   { value: 'PASSENGER_SHIP', label: 'Buque de Pasajero' },
   { value: 'BARGE', label: 'Barcaza' },
-  { value: 'OTHER', label: 'Otro' }
+  { value: 'OTHER', label: 'Otro' },
+  { value: 'ADMIN', label: 'Administrador'}
 ];

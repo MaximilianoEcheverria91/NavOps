@@ -57,6 +57,10 @@
   --color-button-clear: #38bdf8;
   --color-button-clear2: #ffffff;
 
+  --warnirBoxText: #cbd5e1;
+  --criticalRolesList: #fdba74;
+  --assingItemCrew: rgba(255, 255, 255, 0.05);
+
 }
 
 [data-theme='light'] {
@@ -104,6 +108,10 @@
   --color-text-filter2:#08284285;
   --color-button-clear: #082842;
   --color-button-clear2: #00000098;
+
+  --warnirBoxText: #62768f;
+  --criticalRolesList: #ff8400;
+  --assingItemCrew: rgba(71, 253, 117, 0.205);
 }
 
 * {
