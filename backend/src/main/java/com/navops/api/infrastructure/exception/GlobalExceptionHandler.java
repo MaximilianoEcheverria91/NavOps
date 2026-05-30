@@ -128,6 +128,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(CargoValidationException.class)
+    public ResponseEntity<ErrorResponseDto> handleCargoValidation(CargoValidationException ex) {
+        log.error("Error de validación en carga: {}", ex.getMessage());
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
         log.error("Error inesperado en el servidor: ", ex);

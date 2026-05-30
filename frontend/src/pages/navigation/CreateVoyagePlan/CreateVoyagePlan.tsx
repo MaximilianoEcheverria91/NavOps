@@ -5,6 +5,7 @@ import { Sailboat, Map, Users, Package, Check, X } from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
 import { SelectCrew } from './SelectCrew/SelectCrew';
+import { ManageCargo } from './SelectCargo/ManageCargo/ManageCargo';
 
 type VoyagePlanState = {
   shipId: string | null;
@@ -79,8 +80,8 @@ export const CreateVoyagePlan: React.FC = () => {
     setActiveModal(null);
   };
 
-  const handleSetCargo = () => {
-    setPlanState(prev => ({ ...prev, cargoDetails: { type: 'General', weight: 5000 } }));
+  const handleSetCargo = (cargoList: any[]) => {
+    setPlanState(prev => ({ ...prev, cargoDetails: cargoList.length > 0 ? cargoList : null }));
     setActiveModal(null);
   };
 
@@ -103,6 +104,14 @@ export const CreateVoyagePlan: React.FC = () => {
           onSelectCrew={handleSelectCrew}
           onCancel={() => setActiveModal(null)}
           initialSelectedIds={planState.crewIds}
+        />
+      ) : activeModal === 'cargo' ? (
+        <ManageCargo
+          planId="V012"
+          shipCapacityTonnes={planState.shipData?.cargoCapacityTonnes || 5000}
+          initialCargoList={planState.cargoDetails || []}
+          onSaveSelection={handleSetCargo}
+          onCancel={() => setActiveModal(null)}
         />
       ) : (
         <div className={styles.container}>
@@ -286,20 +295,84 @@ export const CreateVoyagePlan: React.FC = () => {
           )}
 
           {/* Card 4: Carga */}
-          <div 
-            className={`${styles.card} ${planState.cargoDetails ? styles.cardCompleted : styles.cardPending}`}
-            onClick={() => setActiveModal('cargo')}
-          >
-            {planState.cargoDetails && (
-              <div className={styles.checkIcon}>
-                <Check size={24} color="#10b981" strokeWidth={3} />
+          {/* Card 4: Carga */}
+          {planState.cargoDetails && planState.cargoDetails.length > 0 ? (
+            /* 🚀 VISTA CON CARGA ASIGNADA - MANIFIESTO DINÁMICO */
+            <div 
+              className={styles.shipSelectedCard} 
+              onClick={() => setActiveModal('cargo')}
+              title="Haga clic para modificar los productos cargados"
+            >
+              {/* Contenedor de la Imagen Corporativa (Igual que la del Barco) */}
+              <div className={styles.imageContainer}>
+                {/* Usamos la imagen espectacular de contenedores de tu mockup 'imagen_18.png' */}
+                <img 
+                  src="/assets/images/cargo-containers.jpg" /* O la ruta local que uses */
+                  alt="Manifiesto de Carga" 
+                  className={styles.shipImage} 
+                />
+                
+                {/* 🛡️ Alerta Crítica de Materiales Peligrosos (Regulación Marítima IMO) */}
+                {planState.cargoDetails.some((c: any) => c.hazardousMaterial) ? (
+                  <span className={styles.statusBadgeHazard}>⚠️ Carga IMO</span>
+                ) : (
+                  <span className={styles.statusBadgeSuccess} style={{ position: 'absolute', top: '12px', right: '12px' }}>
+                    Segura
+                  </span>
+                )}
               </div>
-            )}
-            <div className={styles.iconWrapper}>
-              <Package strokeWidth={1.5} size={72} />
+
+              <div className={styles.cardContent}>
+                <div className={styles.shipNameRow}>
+                  <Package size={20} /> Manifiesto de Carga
+                </div>
+
+                {/* Resumen dinámico del Top de productos cargados */}
+                <p className={styles.crewSummaryText}>
+                  {planState.cargoDetails.map((c: any) => c.productName).slice(0, 2).join(', ')}
+                  {planState.cargoDetails.length > 2 ? ` y ${planState.cargoDetails.length - 2} productos más.` : '.'}
+                </p>
+
+                {/* 📊 CÁLCULOS LOGÍSTICOS EN CALIENTE */}
+                <div className={styles.detailsList} style={{ marginTop: 'auto' }}>
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Peso Total:</span>
+                    <span className={styles.detailValue}>
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.weightTonnes || 0), 0)} Tons
+                    </span>
+                  </div>
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Volumen Estiba:</span>
+                    <span className={styles.detailValue}>
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.volumeM3 || 0), 0)} m³
+                    </span>
+                  </div>
+                  <div className={styles.detailRow}>
+                    <span className={styles.detailLabel}>Total Bultos:</span>
+                    <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.quantity || 0), 0)} u.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tilde verde de completado abajo a la derecha */}
+                <div className={styles.successCheckWrapper}>
+                  <Check size={20} strokeWidth={3} />
+                </div>
+              </div>
             </div>
-            <h3 className={styles.cardTitle}>Agregar carga</h3>
-          </div>
+          ) : (
+            /* 📥 VISTA PENDIENTE ORIGINAL */
+            <div 
+              className={`${styles.card} ${styles.cardPending}`}
+              onClick={() => setActiveModal('cargo')}
+            >
+              <div className={styles.iconWrapper}>
+                <Package strokeWidth={1.5} size={72} />
+              </div>
+              <h3 className={styles.cardTitle}>Agregar carga</h3>
+            </div>
+          )}
         </div>
 
         {/* Botón de Confirmación */}
@@ -352,12 +425,7 @@ export const CreateVoyagePlan: React.FC = () => {
                 )}
 
 
-                {activeModal === 'cargo' && (
-                  <div className={styles.cargoMock}>
-                    <p>Simular asignación de 5000 Tons de Carga General.</p>
-                    <button className={styles.primaryModalBtn} onClick={handleSetCargo}>Asignar Carga</button>
-                  </div>
-                )}
+
               </div>
             </div>
           </div>
