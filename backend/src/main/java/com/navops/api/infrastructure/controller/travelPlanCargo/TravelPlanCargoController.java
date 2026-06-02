@@ -41,7 +41,7 @@ public class TravelPlanCargoController {
     })
     @GetMapping("/{planId}/cargo")
     public ResponseEntity<List<TravelPlanCargoResponseDTO>> getCargosByPlanId(@PathVariable UUID planId) {
-        log.info("GET /api/travel-plans/{}/cargo - Solicitando cargas activas", planId);
+        log.info("GET /api/navigation/travel-plans/{}/cargo - Solicitando cargas activas", planId);
         List<TravelPlanCargoResponseDTO> response = cargoService.getCargosByPlanId(planId);
         return ResponseEntity.ok(response);
     }

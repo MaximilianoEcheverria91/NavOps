@@ -30,6 +30,7 @@ export const CARGO_CATEGORIES = [
   { value: 'PHARMACEUTICAL', label: 'Farmacéutico y Salud' },
   { value: 'HOME_AND_FURNITURE', label: 'Hogar y muebles' },
   { value: 'CLOTHING_FOOTWEAR_AND_ACCESSORIES', label: 'Ropa, calazado y accesorios' },
+  { value: 'OTHER', label: 'Otro'}
 ];
 
 export const CARGO_TYPES = [
@@ -37,14 +38,18 @@ export const CARGO_TYPES = [
   { value: 'CONTAINER', label: 'Contenedor' },
   { value: 'PALLET', label: 'Pallet' },
   { value: 'DRUM', label: 'Tambor / Barril' },
-  { value: 'BINER', label: 'Biner'} 
+  { value: 'BINER', label: 'Biner'},
+  { value: 'OTHER', label: 'Otro'}
 ];
 
 export const CONTAINER_TYPES = [
-  { value: 'DRY_VAN', label: 'Carga General' },
+  { value: 'DRY_VAN', label: 'Cerrado' },
   { value: 'REEFER', label: 'Refrigerado' },
   { value: 'OPEN_TOP', label: 'Sin Techo' },
-  { value: 'TANK', label: 'Cisterna' }
+  { value: 'HIGH_CUBE', label: 'Cubo alto HC'},
+  { value: 'FLAT_RACK', label: 'Plano'},
+  { value: 'TANK', label: 'Cisterna' },
+  { value: 'OTHER', label: 'Otro'}
 ];
 
 export const CARGO_STATUS = [

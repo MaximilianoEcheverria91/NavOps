@@ -5,6 +5,7 @@ import { CARGO_CATEGORIES, CARGO_TYPES } from '../../../../../types/cargoType';
 import type { CargoRequest } from '../../../../../types/cargoType';
 import { cargoService } from '../../../../../services/api/cargoService';
 import { RegisterCargoModal } from '../RegisterCargo/RegisterCargoModal';
+import { CargoFilterDropdown, } from '../../../../../components/ui/filtersSelectCargo/CargoFilterDropdown';
 
 interface ManageCargoProps {
   planId?: string;
@@ -26,7 +27,38 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
+  const [localFilters, setLocalFilters] = useState({
+    planId: planId === 'V012' ? null : planId,
+    productCategory: '' as string | null,
+    cargoType: '' as string | null,
+    containerType: '' as string | null,
+    page: 0,
+    size: 10,
+    sortBy: 'id',
+    sortDirection: 'ASC'
+  });
+
+  const handleApplyFilters = (newFilters: any) => {
+    setLocalFilters(newFilters);
+    setIsFilterOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setLocalFilters({
+      planId: planId === 'V012' ? null : planId,
+      productCategory: '',
+      cargoType: '',
+      containerType: '',
+      page: 0,
+      size: 10,
+      sortBy: 'id',
+      sortDirection: 'ASC'
+    });
+     setIsFilterOpen(false);
+  };
+
 
  // 🚀 CONTROL SENIOR: Solo va a la API si no tenemos datos temporales cargados previamente
   useEffect(() => {
@@ -58,13 +90,11 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     let tonnes = 0;
     let containers = 0;
     let pallets = 0;
-    let products = 0;
     let drums = 0;
     let biners = 0;
 
     cargoList.forEach(item => {
       tonnes += item.weightTonnes || 0;
-      products += item.quantity || 0;
       if (item.cargoType === 'CONTAINER') containers += item.quantity || 0;
       if (item.cargoType === 'PALLET') pallets += item.quantity || 0;
       if (item.cargoType === 'DRUM') drums += item.quantity || 0;
@@ -75,7 +105,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
       totalTonnes: tonnes,
       totalContainers: containers,
       totalPallets: pallets,
-      totalProducts: products,
+      totalProducts: cargoList.length,
       totalDrums: drums,
       totalBiners: biners
     };
@@ -120,9 +150,34 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     }
   };
 
-  const filteredList = cargoList.filter(item =>
-    item.productName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredList = useMemo(() => {
+    return cargoList.filter(item => {
+      const matchSearch = item.productName.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const filterCategories = typeof localFilters.productCategory === 'string'
+        ? localFilters.productCategory.split(',').filter(Boolean)
+        : Array.isArray(localFilters.productCategory) ? localFilters.productCategory : [];
+
+      const matchCategory = filterCategories.length === 0 || 
+        filterCategories.includes(item.productCategory);
+
+     const filterCargoTypes = typeof localFilters.cargoType === 'string'
+        ? localFilters.cargoType.split(',').filter(Boolean)
+        : Array.isArray(localFilters.cargoType) ? localFilters.cargoType : [];
+
+      const matchCargoType = filterCargoTypes.length === 0 || 
+        filterCargoTypes.includes(item.cargoType);
+
+      const filterContainerTypes = typeof localFilters.containerType === 'string'
+        ? localFilters.containerType.split(',').filter(Boolean)
+        : Array.isArray(localFilters.containerType) ? localFilters.containerType : [];
+
+      const matchContainerType = filterContainerTypes.length === 0 || 
+        filterContainerTypes.includes((item as any).containerType);
+      
+      return matchSearch && matchCategory && matchCargoType && matchContainerType;
+    });
+  }, [cargoList, searchTerm, localFilters]);
 
   const getCategoryLabel = (value: string) => {
     return CARGO_CATEGORIES.find(c => c.value === value)?.label || value;
@@ -130,7 +185,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
 
   const getTypeLabel = (value: string) => {
     return CARGO_TYPES.find(c => c.value === value)?.label || value;
-  };
+  };  
 
   return (
     <div className={styles.container}>
@@ -216,9 +271,36 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className={styles.filterBtn}>
-          <Filter size={18} /> Categorias <ChevronDown size={16} />
-        </button>
+        <div style={{ position: 'relative', 
+          display: 'flex',
+          alignItems: 'stretch',
+          flexShrink: 0 }}>
+          <button 
+            className={styles.filterBtn}
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            style={{ 
+              flexShrink: 0, 
+              minWidth: '150px', 
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <Filter size={18} /> Categorias <ChevronDown size={16} />
+          </button>
+          
+          {isFilterOpen && (
+            <CargoFilterDropdown 
+              filters={localFilters}
+              onFilterChange={setLocalFilters}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              onClose={() => setIsFilterOpen(false)}
+            />
+          )}
+        </div>
       </div>
 
       {cargoList.length === 0 ? (

@@ -1,3 +1,16 @@
+.lockedStepBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #64748b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
 /* Badge exclusivo para cargas IMO / Material Peligroso */
 .statusBadgeHazard {
   position: absolute;

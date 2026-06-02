@@ -187,12 +187,22 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: transparent;
-  border: 1px solid #1e293b;
-  color: #cbd5e1;
+  background: var(--background-color-card, #1e293b);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #94a3b8;
   padding: 0 16px;
   border-radius: 8px;
   cursor: pointer;
+  height: 100%;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.filterBtn:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: #38bdf8;
 }
 
 .cardsGrid {
