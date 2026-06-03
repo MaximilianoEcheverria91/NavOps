@@ -1,3 +1,55 @@
+.lockedStepBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #64748b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* Badge exclusivo para cargas IMO / Material Peligroso */
+.statusBadgeHazard {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #f87171;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  backdrop-filter: blur(4px);
+  animation: pulseHazard 2s infinite;
+}
+
+@keyframes pulseHazard {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* Forzar simetría en textos de descripción interna */
+.crewSummaryText {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
 .crewCardHeaderMock {
   width: 100%;
   height: 60px;

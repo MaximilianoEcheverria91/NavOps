@@ -1,0 +1,86 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.356); /* Fondo oscuro semi-traslúcido */
+  backdrop-filter: blur(8px); /* 🚀 Desenfoque de fondo premium */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Asegura estar sobre cualquier elemento o modal previo */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background-color: #082842; /* Tu color oscuro corporativo idéntico a la imagen */
+  border: 2px solid rgba(239, 68, 68, 0.3); /* Borde sutil rojo */
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modalBody {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.iconContainer {
+  margin-bottom: 16px;
+}
+
+.warningIcon {
+  font-size: 72px;
+  color: #ef4444;
+  display: inline-block;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #f8fafc;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.modalHighlight {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ef4444;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+.modalButton {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid #ef4444;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalButton:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

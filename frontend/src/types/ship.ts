@@ -24,6 +24,7 @@ export interface ShipActiveSelect {
   registration: string;
   status: ShipStatus;
   crewCapacity: number;
+  cargoCapacityTonnes: number;
   mainImageUrl: string | null;
   isActive: boolean;
   

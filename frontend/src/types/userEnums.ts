@@ -40,6 +40,6 @@ export const ACCESS_STATUSES = [
 
 export const SYSTEM_ROLES = [
   { value: 'CHIEF_NAVIGATION', label: 'Jefe de Navegación' },
-  { value: 'CHIEF_OPERATIONS', label: 'Jefe de Operaciones' },
-  { value: 'ADMINISTRATOR', label: 'Administrador' }
+  { value: 'CHIEF_OPERATION', label: 'Jefe de Operaciones' },
+  { value: 'ADMIN', label: 'Administrador' }
 ];
