@@ -7,10 +7,11 @@ import { SelectShip } from './SelectShip/SelectShip';
 import { SelectCrew } from './SelectCrew/SelectCrew';
 import { ManageCargo } from './SelectCargo/ManageCargo/ManageCargo';
 import imagenCarga from '../../../assets/carga.jpg';
+import type { ShipActiveSelect } from '../../../types/ship';
 
 type VoyagePlanState = {
   shipId: string | null;
-  shipData: any | null;
+  shipData: ShipActiveSelect | null;
   destinationId: string | null;
   crewIds: string[];
   cargoDetails: any | null;
@@ -61,7 +62,7 @@ export const CreateVoyagePlan: React.FC = () => {
   const progressPercentage = (completedSteps / 4) * 100;
   const isComplete = completedSteps === 4;
 
-  const handleSelectShip = (id: string, shipData: any) => {
+  const handleSelectShip = (id: string, shipData: ShipActiveSelect) => {
     setPlanState(prev => ({ 
       ...prev, 
       shipId: id, 
@@ -91,6 +92,8 @@ export const CreateVoyagePlan: React.FC = () => {
     }
   };
 
+  console.log("Datos del barco seleccionado actualmente:", planState.shipData?.cargoCapacityTonnes);
+
   return (
     <NavigationLayout>
       {activeModal === 'ship' ? (
@@ -108,6 +111,8 @@ export const CreateVoyagePlan: React.FC = () => {
       ) : activeModal === 'cargo' ? (
         <ManageCargo
           planId="V012"
+          /* 🚀 LOGÍSTICA DINÁMICA: Ahora lee directamente el valor real del backend. 
+             Dejamos un fallback de 5000 por si entrás a la carga sin elegir un barco previamente */
           shipCapacityTonnes={planState.shipData?.cargoCapacityTonnes || 5000}
           initialCargoList={planState.cargoDetails || []}
           onSaveSelection={handleSetCargo}
@@ -327,7 +332,7 @@ export const CreateVoyagePlan: React.FC = () => {
                     </span>
                   </div>
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Volumen Estiba:</span>
+                    <span className={styles.detailLabel}>Volumen:</span>
                     <span className={styles.detailValue}>
                       {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.volumeM3 || 0), 0)} m³
                     </span>

@@ -1,0 +1,141 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.lightOverlay {
+  background-color: rgba(241, 245, 249, 0.8);
+}
+
+.modalContent {
+  background-color: #041222; /* El azul profundo de tu captura */
+  border: 1px solid #1e3a8a;
+  border-radius: 16px;
+  max-width: 620px;
+  width: 92%;
+  padding: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  font-family: system-ui, -apple-system, sans-serif;
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
+}
+
+.lightContent {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+}
+
+.modalTitle {
+  font-size: 26px;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.innerContainer {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lightInner {
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  color: #94a3b8;
+  width: 220px;
+  font-size: 15px;
+}
+
+.lightContent .label {
+  color: #64748b;
+}
+
+.value {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.descriptionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.descriptionText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 16px;
+}
+
+.lightContent .descriptionText {
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.divider {
+  height: 1px;
+  margin: 4px 0;
+}
+
+.closeButton {
+  margin-top: 20px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid #1e3a8a;
+  color: #38bdf8;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.lightContent .closeButton {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
+.lightContent .closeButton:hover {
+  background-color: #e2e8f0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.97); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

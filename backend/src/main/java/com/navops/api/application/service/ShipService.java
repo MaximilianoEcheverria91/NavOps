@@ -267,7 +267,8 @@ public class ShipService {
                         ship.getStatus().name(),
                         ship.getCrewCapacity(),
                         ship.getMainImageUrl(),
-                        ship.isActive()
+                        ship.isActive(),
+                        ship.getCargoCapacityTonnes()
                 ))
                 .toList();
     }

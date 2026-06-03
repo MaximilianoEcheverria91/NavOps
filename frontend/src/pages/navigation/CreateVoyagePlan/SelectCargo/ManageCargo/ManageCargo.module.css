@@ -1,3 +1,11 @@
+.overloadModalContent {
+  background-color: #0b1523; /* Fondo noche cerrado */
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -14,22 +22,21 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
-  border-bottom: 1px solid #1e293b;
-  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color_3);
+  padding-bottom: 6px;
 }
 
 .titleContainer h2 {
   font-size: 24px;
   font-weight: 600;
   margin: 0;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .titleContainer p {
-  color: #38bdf8;
+  color: var(--color-subtitle3);
   margin: 4px 0 0 0;
   font-size: 14px;
-  border-bottom: 1px solid #38bdf8;
   padding-bottom: 4px;
   display: inline-block;
 }
@@ -101,7 +108,7 @@
 
 .progressBar {
   height: 8px;
-  background-color: #1e293b;
+  background-color: transparent;
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid #334155;
@@ -109,7 +116,7 @@
 
 .progressFill {
   height: 100%;
-  background-color: #0284c7;
+  background-color: #2198d3;
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -123,7 +130,7 @@
 
 .metricCard {
   background-color: transparent;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border-color_3);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -138,12 +145,12 @@
   width: 48px;
   height: 48px;
   background-color: transparent;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .metricInfo p {
   margin: 0;
-  font-size: 11px;
+  font-size: 13px;
   color: #94a3b8;
 }
 
@@ -151,7 +158,7 @@
   margin: 4px 0 0 0;
   font-size: 24px;
   font-weight: 400;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .toolbar {
@@ -165,7 +172,7 @@
   display: flex;
   align-items: center;
   background-color: transparent;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border-color_3);
   border-radius: 8px;
   padding: 0 12px;
 }
@@ -174,7 +181,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: #f1f5f9;
+  color: var(--text-primary);
   padding: 10px 8px;
   outline: none;
 }
@@ -187,8 +194,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--background-color-card, #1e293b);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: transparent;
+  border: 1px solid var(--border-color_3);
   color: #94a3b8;
   padding: 0 16px;
   border-radius: 8px;
@@ -202,7 +209,7 @@
 
 .filterBtn:hover {
   background: rgba(56, 189, 248, 0.1);
-  border-color: #38bdf8;
+  
 }
 
 .cardsGrid {
@@ -253,7 +260,7 @@
   margin: 0;
   font-size: 15px;
   font-weight: 500;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .cardTitle p {
@@ -285,14 +292,14 @@
 .statItem span {
   display: block;
   font-size: 12px;
-  color: #64748b;
+  color: var(--item_title);
   margin-bottom: 4px;
 }
 
 .statItem strong {
   display: block;
   font-size: 14px;
-  color: #e2e8f0;
+  color: var(--item_stan);
   font-weight: 500;
 }
 
@@ -334,7 +341,7 @@
 
 .iconBtn:hover {
   border-color: #64748b;
-  color: #f1f5f9;
+  color: #4d6074;
 }
 
 .iconBtn.delete {
@@ -364,7 +371,7 @@
 }
 
 .emptyState h3 {
-  color: #e2e8f0;
+  color: var(--text-primary);
   margin-bottom: 8px;
   font-size: 24px;
   font-weight: 500;

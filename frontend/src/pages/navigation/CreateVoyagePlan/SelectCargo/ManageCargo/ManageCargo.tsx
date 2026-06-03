@@ -6,6 +6,9 @@ import type { CargoRequest } from '../../../../../types/cargoType';
 import { cargoService } from '../../../../../services/api/cargoService';
 import { RegisterCargoModal } from '../RegisterCargo/RegisterCargoModal';
 import { CargoFilterDropdown, } from '../../../../../components/ui/filtersSelectCargo/CargoFilterDropdown';
+import { AlertModal } from '../../../../../components/ui/AlertModal/AlertModal';
+import { CargoDetailModal } from '../../../../../components/ui/CargoDetailModal/CargoDetalModal';
+import { ConfirmModal } from '../../../../../components/ui/ConfirmModal/ConfirmModal';
 
 interface ManageCargoProps {
   planId?: string;
@@ -28,6 +31,10 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isOverloadAlertOpen, setIsOverloadAlertOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedCargo, setSelectedCargo] = useState<CargoRequest | null>(null);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
   
   const [localFilters, setLocalFilters] = useState({
     planId: planId === 'V012' ? null : planId,
@@ -125,6 +132,11 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     setEditingIndex(null);
   };
 
+  const handleViewDetail = (cargo: CargoRequest) => {
+    setSelectedCargo(cargo);
+    setIsDetailOpen(true);
+  };
+
   const handleEdit = (index: number) => {
     setEditingIndex(index);
     setIsModalOpen(true);
@@ -134,10 +146,16 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     setCargoList(cargoList.filter((_, i) => i !== index));
   };
 
+
   const handleSaveAll = async () => {
+    // 🚀 CONTROL CRÍTICO DE PESO MÁXIMO (VGM)
+    if (totalTonnes > shipCapacityTonnes) {
+      setIsOverloadAlertOpen(true); // Abre el cartel de la imagen
+      return; // 🛑 Frena la ejecución, no guarda ni cierra
+    }
+
     try {
       setIsSaving(true);
-      // Solo invocamos si hay un planId real, si es mock evitamos el error
       if (planId !== 'V012') {
         await cargoService.saveCargoList(planId, cargoList);
       }
@@ -185,7 +203,36 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
 
   const getTypeLabel = (value: string) => {
     return CARGO_TYPES.find(c => c.value === value)?.label || value;
-  };  
+  }; 
+  
+  // 🚀 INTERCEPTOR SENIOR: Captura la flecha de la PC / Botón Atrás del Navegador
+  useEffect(() => {
+    const handleBackButton = (e: PopStateEvent) => {
+      // Si hay elementos cargados, bloqueamos el comportamiento por defecto
+      if (cargoList.length > 0) {
+        window.history.pushState(null, '', window.location.pathname); // Bloquea el historial
+        setIsLeaveAlertOpen(true); // Dispara el cartel de confirmación
+      } else {
+        onCancel(); // Si está vacío, se va directo a las 4 cards sin molestar
+      }
+    };
+
+    // Empujamos un estado falso al historial para poder capturar el primer click de atrás
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, [cargoList, onCancel]);
+
+  const handleBackNavigation = () => {
+    if (cargoList.length > 0) {
+      setIsLeaveAlertOpen(true); // Abre el modal de advertencia
+    } else {
+      onCancel(); // Vuelve directo a las 4 cards (ejecuta el setActiveModal(null) del padre)
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -210,15 +257,31 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
 
       <div className={styles.progressSection}>
         <div className={styles.progressHeader}>
-          <span>Peso Máximo</span>
-          <span className={styles.progressValue}>
+
+          <span 
+            style={{ 
+              color: totalTonnes > shipCapacityTonnes ? '#ef4444' : 'inherit',
+              fontWeight: totalTonnes > shipCapacityTonnes ? '600' : 'normal'
+            }}
+          >
+            {totalTonnes > shipCapacityTonnes 
+              ? '⚠️ Límite Excedido (Sobrecarga)' 
+              : `Peso Máximo ${shipCapacityTonnes === 5000 && planId === 'V012' ? '(Sin barco asignado - Estimación)' : ''}`
+            }
+          </span>
+          
+          <span 
+            className={styles.progressValue}
+            style={{ color: totalTonnes > shipCapacityTonnes ? '#ef4444' : 'inherit' }}
+          >
             {totalTonnes.toLocaleString()} / {shipCapacityTonnes.toLocaleString()} Tn
           </span>
         </div>
         <div className={styles.progressBar}>
           <div
             className={styles.progressFill}
-            style={{ width: `${progressPercentage}%` }}
+            style={{ width: `${progressPercentage}%` ,
+                      backgroundColor: totalTonnes > shipCapacityTonnes ? '#ef4444' : '#0284c7'}}
           />
         </div>
       </div>
@@ -347,7 +410,11 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
               </div>
 
               <div className={styles.cardActions}>
-                <button className={styles.btnDetails}>Ver detalle</button>
+                <button 
+                  className={styles.btnDetails} 
+                  onClick={() => handleViewDetail(item)}>
+                    Ver detalle
+                </button>
                 <div className={styles.iconActions}>
                   <button className={styles.iconBtn} onClick={() => handleEdit(index)}>
                     <Edit2 size={16} />
@@ -369,6 +436,34 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
           initialData={editingIndex !== null ? cargoList[editingIndex] : undefined}
         />
       )}
+
+      {/* 🚨 MODAL DE ADVERTENCIA VGM - SOBRECARGA */}
+      <AlertModal
+        isOpen={isOverloadAlertOpen}
+        title={`VGM NO CONFORME. Tenés una sobrecarga de ${(totalTonnes - shipCapacityTonnes).toLocaleString()} Tn. Supera el límite máximo bruto:`}
+        highlightText={`${shipCapacityTonnes.toLocaleString()} toneladas`}
+        buttonText="Aceptar"
+        onClose={() => setIsOverloadAlertOpen(false)}
+      />
+
+      <CargoDetailModal
+        isOpen={isDetailOpen}
+        cargo={selectedCargo}
+        onClose={() => { setIsDetailOpen(false); setSelectedCargo(null); }}
+        isLightTheme={false} // Cambialo a true si tu sistema conmuta a modo claro
+      />
+
+      <ConfirmModal
+        isOpen={isLeaveAlertOpen}
+        title="¿Desea salir de la gestión de carga?"
+        description="Si sales ahora, perderás los productos cargados en el sistema que no hayan sido guardados de forma definitiva."
+        onConfirm={() => {
+          setIsLeaveAlertOpen(false);
+          onCancel(); // Forzamos la salida y volvemos a las 4 cards
+        }}
+        onCancel={() => setIsLeaveAlertOpen(false)} // Cerramos el cartel y se queda editando
+      />
+      
     </div>
   );
 };

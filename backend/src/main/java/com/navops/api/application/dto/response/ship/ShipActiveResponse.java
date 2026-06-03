@@ -1,6 +1,7 @@
 package com.navops.api.application.dto.response.ship;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Schema(description = "DTO para listado de barcos activos")
@@ -12,5 +13,6 @@ public record ShipActiveResponse(
     @Schema(description = "Estado operativo", example = "OPERATIONAL") String status,
     @Schema(description = "Capacidad de tripulantes", example = "30") Short crewCapacity,
     @Schema(description = "URL de la imagen principal") String mainImageUrl,
-    @Schema(description = "Indica si el barco está activo", example = "true") boolean isActive
+    @Schema(description = "Indica si el barco está activo", example = "true") boolean isActive,
+    @Schema(description = "Capacidad de carga en toneladas", example = "5000.00") BigDecimal cargoCapacityTonnes
 ) {}

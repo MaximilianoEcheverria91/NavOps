@@ -175,7 +175,7 @@ export const RegisterCargoModal: React.FC<Props> = ({ onClose, onSave, initialDa
 
           <div className={styles.grid}>
             <div className={styles.inputGroup}>
-              <label>Cantidad de Contenedores</label>
+              <label>Cantidad de carga</label>
               <input
                 type="number"
                 name="quantity"

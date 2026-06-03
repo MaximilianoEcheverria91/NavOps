@@ -142,32 +142,32 @@
 
 /* Light mode overrides */
 :global([data-theme='light']) .dropdownContainer {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color-card, #031525);
+  border-color: rgba(14, 164, 233, 0.466);
+  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.15);
 }
 
 :global([data-theme='light']) .sectionHeader {
-  background-color: #f1f5f9;
+  background-color: rgba(14, 165, 233, 0.15);
   color: #0f172a;
 }
 
 :global([data-theme='light']) .sectionHeader:hover {
-  background-color: #e2e8f0;
+  background-color: rgba(0, 174, 255, 0.336);
 }
 
 :global([data-theme='light']) .section {
-  border-color: #e2e8f0;
+  border-color: rgba(14, 165, 233, 0.2);
 }
 
 :global([data-theme='light']) .sidebarFooter {
-  background-color: #f8fafc;
+  background-color: var(var(--sidebar-footer));
   border-color: #e2e8f0;
 }
 
 :global([data-theme='light']) .customCheckbox {
-  background-color: #ffffff;
-  border-color: #cbd5e1;
+  background-color: rgba(0, 174, 255, 0.466);
+  border-color: #ffffff;
 }
 
 :global([data-theme='light']) .checkboxLabel {
@@ -175,10 +175,11 @@
 }
 
 :global([data-theme='light']) .clearBtn {
-  color: #475569;
-  border-color: #cbd5e1;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(14, 165, 233, 0.5);
 }
 
 :global([data-theme='light']) .clearBtn:hover {
-  background-color: #f1f5f9;
+  background-color: rgba(14, 164, 233, 0.301);
 }
