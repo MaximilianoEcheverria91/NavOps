@@ -5,21 +5,28 @@ import { usePersonnelFilters } from '../../../../hooks/usePersonnelFilters';
 import { FilterSidebar } from '../../../../components/ui/FilterSidebar/FilterSidebar';
 import { POSITIONS, PERSONAL_STATUSES, WORK_STATUSES, ACCESS_STATUSES, SYSTEM_ROLES } from '../../../../types/userEnums';
 import styles from './SelectCrew.module.css';
+import { AlertModal } from '../../../../components/ui/AlertModal/AlertModal';
+import { UserDetailModal } from '../../../Users/DetailUser/UserDetailModal';
 
 interface SelectCrewProps {
   onSelectCrew: (crewIds: string[]) => void;
   onCancel: () => void;
+  crewCapacity?: number;
   initialSelectedIds?: string[];
 }
 
 export const SelectCrew: React.FC<SelectCrewProps> = ({ 
   onSelectCrew, 
   onCancel,
+  crewCapacity = 100,
   initialSelectedIds = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedCrewIds, setSelectedCrewIds] = useState<string[]>(initialSelectedIds);
+  const isCrewLimitExceeded = selectedCrewIds.length > crewCapacity;
+  const [isOverloadAlertOpen, setIsOverloadAlertOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const {
     filters,
@@ -189,6 +196,12 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
   const isSaveEnabled = missingCriticalRoles.length === 0;
 
   const handleSaveAndClose = () => {
+    // 🛑 CONTROL DE EXCESO DE PERSONAL
+    if (selectedCrewIds.length > crewCapacity) {
+      setIsOverloadAlertOpen(true);
+      return;
+    }
+
     if (isSaveEnabled) {
       onSelectCrew(selectedCrewIds);
     }
@@ -311,13 +324,33 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
                         </div>
 
                         <div className={styles.cardFooter}>
-                          <button className={styles.viewDetailsBtn} onClick={(e) => e.stopPropagation()}>
+                          <button className={styles.viewDetailsBtn} 
+                            onClick={(e) => {
+                              e.stopPropagation(); // Evita que se seleccione/deseleccione el usuario de la tripulación
+                              setSelectedUserId(user.id);
+                            }}>
                             Ver detalles completos →
                           </button>
                         </div>
                       </div>
                     );
                   })}
+
+                  {selectedUserId && (
+                    <UserDetailModal 
+                      userId={selectedUserId} 
+                      onClose={() => setSelectedUserId(null)} 
+                    />
+                  )}
+
+                  {selectedUserId && (
+                    <UserDetailModal 
+                      userId={selectedUserId} 
+                      onClose={() => setSelectedUserId(null)} 
+                      showActions={false} // 🚀 ¡Magia! Acá le apagamos los botones de editar y borrar
+                    />
+                  )}
+                  
                 </div>
 
                 {pagination.page + 1 < pagination.totalPages && (
@@ -380,12 +413,40 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
               </p>
             )}
           </div>
-
-          <div className={styles.assignedSectionHeader}>
-            <h3 className={styles.assignedTitle}>Tripulación Asignada</h3>
-            {/* 🚀 Cambiado para que use selectedCrewIds.length y nunca te marque cero al volver a entrar */}
-            <span className={styles.assignedCount}>{selectedCrewIds.length} miembros</span>
+            
+            <div className={styles.assignedSectionHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 className={styles.assignedTitle} style={{ margin: 0 }}>Tripulación Asignada</h3>
+            
+            {/* 🚀 BADGE DINÁMICO IDÉNTICO A Badge.png CON REACCIÓN DE COLOR */}
+            <div 
+              style={{
+                backgroundColor: isCrewLimitExceeded ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 211, 238, 0.1)',
+                borderColor: isCrewLimitExceeded ? '#ef4444' : '#22d3ee',
+                color: isCrewLimitExceeded ? '#ef4444' : '#22d3ee',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderRadius: '9999px',
+                padding: '4px 14px',
+                fontSize: '11px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {isCrewLimitExceeded && <span>⚠️</span>}
+              {selectedCrewIds.length}/{crewCapacity} miembros
+            </div>
           </div>
+
+          <AlertModal
+            isOpen={isOverloadAlertOpen}
+            title={`CAPACIDAD EXCEDIDA. Tenés una sobrecarga de ${(selectedCrewIds.length - crewCapacity)} personas. Supera el límite de camarotes del barco:`}
+            highlightText={`${crewCapacity} tripulantes máximos`}
+            buttonText="Aceptar"
+            onClose={() => setIsOverloadAlertOpen(false)}
+          />
 
           <div className={styles.assignedList}>
             {selectedCrew.length === 0 ? (

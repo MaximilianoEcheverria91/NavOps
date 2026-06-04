@@ -7,9 +7,14 @@ import { useNavigate } from 'react-router-dom';
 interface UserDetailModalProps {
   userId: string;
   onClose: () => void;
+  showActions?: boolean;
 }
 
-export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClose }) => {
+export const UserDetailModal: React.FC<UserDetailModalProps> = ({ 
+  userId, 
+  onClose,
+  showActions = true // 🚀 Por defecto es true para tus pantallas de Admin
+}) => {
   const navigate = useNavigate();
   const { data: user, loading, error } = useUserDetail(userId);
 
@@ -234,7 +239,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ userId, onClos
         </div>
 
         {/* FOOTER ACTIONS - Igual al renderizado del layout modal */}
-        {!loading && !error && (
+        {!loading && !error && showActions && ( // 🚀 Si showActions es false, este bloque desaparece por completo
           <div className={styles.footerActions}>
             <button className={styles.editActionBtn} title="Editar Usuario" onClick={() => navigate(`/users/edit/${userId}`)}>
               <Edit2 size={16} />

@@ -107,6 +107,7 @@ export const CreateVoyagePlan: React.FC = () => {
           onSelectCrew={handleSelectCrew}
           onCancel={() => setActiveModal(null)}
           initialSelectedIds={planState.crewIds}
+          crewCapacity={planState.shipData?.crewCapacity || 100}
         />
       ) : activeModal === 'cargo' ? (
         <ManageCargo
