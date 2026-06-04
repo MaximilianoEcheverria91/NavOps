@@ -7,6 +7,7 @@ import { POSITIONS, PERSONAL_STATUSES, WORK_STATUSES, ACCESS_STATUSES, SYSTEM_RO
 import styles from './SelectCrew.module.css';
 import { AlertModal } from '../../../../components/ui/AlertModal/AlertModal';
 import { UserDetailModal } from '../../../Users/DetailUser/UserDetailModal';
+import { ConfirmModal } from '../../../../components/ui/ConfirmModal/ConfirmModal';
 
 interface SelectCrewProps {
   onSelectCrew: (crewIds: string[]) => void;
@@ -27,6 +28,7 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
   const isCrewLimitExceeded = selectedCrewIds.length > crewCapacity;
   const [isOverloadAlertOpen, setIsOverloadAlertOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
 
   const {
     filters,
@@ -207,6 +209,26 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
     }
   };
 
+  React.useEffect(() => {
+    const handleBackButton = (e: PopStateEvent) => {
+      // Si el operario ya asignó tripulantes, bloqueamos la salida directa
+      if (selectedCrewIds.length > 0) {
+        window.history.pushState(null, '', window.location.pathname); // Clava la URL actual
+        setIsLeaveAlertOpen(true); // Levanta el modal de advertencia
+      } else {
+        onCancel(); // Si no tocó nada, vuelve a las 4 cards sin molestar
+      }
+    };
+
+    // Empujamos un estado inicial ficticio para poder capturar el evento popstate
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, [selectedCrewIds, onCancel]);
+
   return (
     <div className={styles.container}>
       
@@ -218,7 +240,15 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
         </div>
         <div className={styles.actionHeader}>
           {/* 🚀 Dejamos solo Volver / Cancelar arriba de manera elegante */}
-          <button className={styles.backBtn} onClick={onCancel}>
+          <button 
+            className={styles.backBtn} 
+            onClick={() => {
+              if (selectedCrewIds.length > 0) {
+                setIsLeaveAlertOpen(true);
+              } else {
+                onCancel();
+              }
+            }}>
             Cancelar y Volver
           </button>
         </div>
@@ -335,21 +365,6 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
                       </div>
                     );
                   })}
-
-                  {selectedUserId && (
-                    <UserDetailModal 
-                      userId={selectedUserId} 
-                      onClose={() => setSelectedUserId(null)} 
-                    />
-                  )}
-
-                  {selectedUserId && (
-                    <UserDetailModal 
-                      userId={selectedUserId} 
-                      onClose={() => setSelectedUserId(null)} 
-                      showActions={false} // 🚀 ¡Magia! Acá le apagamos los botones de editar y borrar
-                    />
-                  )}
                   
                 </div>
 
@@ -500,6 +515,26 @@ export const SelectCrew: React.FC<SelectCrewProps> = ({
 
         </div>
       </div>
+
+      {selectedUserId && (
+        <UserDetailModal 
+          userId={selectedUserId} 
+          onClose={() => setSelectedUserId(null)} 
+          showActions={false} 
+  
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={isLeaveAlertOpen}
+        title="¿Desea salir de la gestión de tripulación?"
+        description="Si sales ahora, perderás el listado de personal que asignaste para este plan de viaje y deberás cargarlos de nuevo."
+        onConfirm={() => {
+          setIsLeaveAlertOpen(false);
+          onCancel(); // Forzamos el retorno nativo a las 4 cards sin romper la URL
+        }}
+        onCancel={() => setIsLeaveAlertOpen(false)} // Desactiva el cartel y retoma el flujo
+      />
     </div>
   );
 };

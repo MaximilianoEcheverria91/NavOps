@@ -6,6 +6,8 @@ import { getAllActiveShips } from '../../../../services/api/shipService';
 import styles from './SelectShip.module.css';
 import { SHIP_STATUSES, SHIP_TYPES } from '../../../../types/shipEnums';
 import { ShipFilterSidebar } from '../../../../components/ui/ShipFilterSidebar/ShipFilterSidebar';
+import { ShipDetailModal } from '../../../ships/ShipDetailModal/ShipDetailModal';
+import { ConfirmModal } from '../../../../components/ui/ConfirmModal/ConfirmModal';
 
 const STATUS_LABELS: Record<ShipStatus | string, string> = {
   OPERATIONAL: 'Operativo',
@@ -25,6 +27,9 @@ interface SelectShipProps {
 export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, selectedShipId: initialShipId}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedShipId, setSelectedShipId] = useState<string | null>(initialShipId || null);
+  const [isShipDetailOpen, setIsShipDetailOpen] = useState<boolean>(false);
+  const [focusedShipId, setFocusedShipId] = useState<string | null>(null);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState<boolean>(false);
 
   const [data, setData] = useState<ShipActiveSelect[]>([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -72,27 +77,27 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
     fetchShips();
   }, []);
 
-  // 🛡️ CONTROL DE HISTORIAL: Evita que la flecha "Atrás" destruya el asistente de las 4 cards
+  // 🛡️ CONTROL DE HISTORIAL SENIOR: Evita que la flecha "Atrás" destruya el asistente
   useEffect(() => {
-    // 1. Insertamos un estado ficticio en el historial del navegador apenas se monta la pantalla
     window.history.pushState(null, '', window.location.href);
 
     const handlePopState = (event: PopStateEvent) => {
-      // 2. Si el usuario presiona la flecha "Atrás", cancelamos la salida de la URL...
       event.preventDefault();
 
-      // 3. ...y ejecutamos el callback nativo que cierra la pantalla y vuelve a las 4 cards sanas y salvas
-      onCancel();
+      // 🚀 Si el usuario cambió o desmarcó el barco original, advertimos antes de salir
+      if (selectedShipId !== initialShipId) {
+        window.history.pushState(null, '', window.location.href); // Bloquea la navegación
+        setIsLeaveAlertOpen(true); // Abre el modal
+      } else {
+        onCancel(); // Vuelve directo a las 4 cards limpio
+      }
     };
 
-    // Escuchamos el botón atrás del navegador
     window.addEventListener('popstate', handlePopState);
-
-    // Limpieza al desmontar el componente (Clean-up)
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [onCancel]);
+  }, [selectedShipId, initialShipId, onCancel]);
 
   const filteredShips = data.filter((ship) => {
     // 1. Filtro por búsqueda (searchTerm)
@@ -173,7 +178,14 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
           <p className="text-slate-400 mt-1 text-sm">Bienvenido al sistema de gestión y Navegación</p>
         </header>
         <div className={styles.actionHeader}>
-          <button className={styles.backBtn} onClick={onCancel}>
+          <button className={styles.backBtn} 
+            onClick={() => {
+                if (selectedShipId !== initialShipId) {
+                  setIsLeaveAlertOpen(true);
+                } else {
+                  onCancel();
+                }
+              }}>
             Volver
           </button>
           <button 
@@ -296,9 +308,16 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
                         )}
 
                         <div className={styles.cardActions}>
-                          <button className={styles.viewDetailBtn}>
+                          <button className={styles.viewDetailBtn}
+                            onClick={(e) => {
+                              e.stopPropagation(); // 🛑 Evita que se dispare el click de selección de tarjeta
+                              setFocusedShipId(ship.id); // 🚀 Guardamos el ID del barco clickeado
+                              setIsShipDetailOpen(true);
+                            }}>
                             Ver detalle
                           </button>
+
+                          
                           <button
                               className={`${styles.selectBtn} ${ship.status !== 'OPERATIONAL' ? styles.selectBtnDisabled : ''}`}
                               onClick={() => ship.status === 'OPERATIONAL' && handleSelect(ship)}
@@ -315,8 +334,8 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
               </div>
             </>
           )}
+          
         </div>
-
         {isSidebarOpen && (
           <ShipFilterSidebar
             filters={filters as any}
@@ -329,6 +348,28 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
           />
         )}
       </div>
+
+      {isShipDetailOpen && focusedShipId && (
+        <ShipDetailModal
+          shipId={focusedShipId}
+          onClose={() => {
+            setIsShipDetailOpen(false);
+            setFocusedShipId(null); // Reseteamos el puntero al cerrar
+          }}
+          showActions={false} // 🛡️ ¡Acá aplicamos tu magia! Oculta botones de alta/baja
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={isLeaveAlertOpen}
+        title="¿Desea salir de la selección de barco?"
+        description="Si sales ahora, se descartarán los cambios de selección que hayas realizado en la flota para este viaje operativo."
+        onConfirm={() => {
+          setIsLeaveAlertOpen(false);
+          onCancel(); // Ejecuta el callback del padre y te regresa directo a las 4 cards sin romper el wizard
+        }}
+        onCancel={() => setIsLeaveAlertOpen(false)} // Cierra el cartel y te deja en la grilla
+      />
     </div>
   );
 };
