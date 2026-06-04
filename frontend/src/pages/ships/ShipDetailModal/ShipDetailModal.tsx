@@ -10,6 +10,7 @@ import styles from './ShipDetailModal.module.css';
 interface ShipDetailModalProps {
   shipId: string;
   onClose: () => void;
+  showActions?: boolean;
 }
 
 const STATUS_LABELS: Record<ShipStatus, string> = {
@@ -17,7 +18,7 @@ const STATUS_LABELS: Record<ShipStatus, string> = {
   MAINTENANCE: 'Mantenimiento',
   REPAIR: 'Reparación',
   OUT_OF_SERVICE: 'Fuera de servicio',
-  IN_PROGRESS: 'En Curso',
+  IN_TRANSIT: 'En Curso',
   INACTIVE: 'Inactivo'
 };
 
@@ -56,7 +57,11 @@ const SHIP_TYPE_LABEL: Record<ShipType, string>={
 const val = (v: string | number | null | undefined): string =>
   v !== null && v !== undefined ? String(v) : '—';
 
-export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClose }) => {
+export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ 
+  shipId, 
+  onClose,
+  showActions = true // 🚀 Valor por defecto
+}) => {
   const { data: ship, loading, error } = useShipDetail(shipId);
   const [showDelete, setShowDelete] = React.useState(false);
   const [showReactivate, setShowReactivate] = React.useState(false);
@@ -234,17 +239,19 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ shipId, onClos
                 </div>
               </div>
 
-              <div className={styles.footerActions}>
-                {ship.status === 'INACTIVE' ? (
-                  <button className={styles.btnReactivate} onClick={() => setShowReactivate(true)}>
-                    Dar de alta
-                  </button>
-                ) : (
-                  <button className={styles.btnDelete} onClick={() => setShowDelete(true)}>
-                    Dar de baja
-                  </button>
-                )}
-              </div>
+              {showActions && (
+                <div className={styles.footerActions}>
+                  {ship.status === 'INACTIVE' ? (
+                    <button className={styles.btnReactivate} onClick={() => setShowReactivate(true)}>
+                      Dar de alta
+                    </button>
+                  ) : (
+                    <button className={styles.btnDelete} onClick={() => setShowDelete(true)}>
+                      Dar de baja
+                    </button>
+                  )}
+                </div>
+              )}
             </>
           ) : null}
         </div>
