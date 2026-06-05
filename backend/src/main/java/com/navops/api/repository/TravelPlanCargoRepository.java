@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface TravelPlanCargoRepository extends JpaRepository<TravelPlanCargo, UUID> {
 
-    List<TravelPlanCargo> findByPlanIdAndDeletedAtIsNull(UUID planId);
+    List<TravelPlanCargo> findByTravelPlanIdAndDeletedAtIsNull(UUID planId);
 }

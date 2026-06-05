@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCreateVoyagePlan } from '../../../hooks/useCreateVoyagePlan';
+import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal'; // 🚀 IMPORTADO DESDE TU RUTA
 import { NavigationLayout } from '../../../layouts/NavigationLayout';
-import { Sailboat, Map, Users, Package, Check, X } from 'lucide-react';
+import { Sailboat, Map, Users, Package, Check, X, ArrowLeft} from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
 import { SelectCrew } from './SelectCrew/SelectCrew';
@@ -20,25 +23,6 @@ type VoyagePlanState = {
   routeData?: any;
 };
 
-// Mock Data
-const MOCK_SHIPS = [
-  { id: '1', name: 'ARA Almirante Brown' },
-  { id: '2', name: 'ARA Libertad' },
-  { id: '3', name: 'ARA Patagonia' }
-];
-
-const MOCK_DESTINATIONS = [
-  { id: '1', name: 'Base Naval Puerto Belgrano' },
-  { id: '2', name: 'Base Naval Ushuaia' },
-  { id: '3', name: 'Base Naval Mar del Plata' }
-];
-
-const MOCK_CREW = [
-  { id: '1', name: 'Juan Pérez - Capitán' },
-  { id: '2', name: 'Carlos Gómez - Navegante' },
-  { id: '3', name: 'Ana Silva - Ing. Máquinas' }
-];
-
 export const CreateVoyagePlan: React.FC = () => {
   const navigate = useNavigate();
   
@@ -52,6 +36,9 @@ export const CreateVoyagePlan: React.FC = () => {
   });
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false); // 🚀 ESTADO PARA CONTROLAR EL MODAL DE SALIDA
+  const { saveVoyagePlan, loading } = useCreateVoyagePlan();
 
   // Calculates progress
   const completedSteps = [
@@ -64,11 +51,41 @@ export const CreateVoyagePlan: React.FC = () => {
   const progressPercentage = (completedSteps / 4) * 100;
   const isComplete = completedSteps === 4;
 
+  // 🚀 INTERCEPTOR: Captura el botón "Atrás" del Navegador
+  useEffect(() => {
+    const handleBackButton = (e: PopStateEvent) => {
+      if (completedSteps > 0) {
+        // Bloqueamos la navegación hacia atrás reinsertando el estado actual en el historial
+        window.history.pushState(null, '', window.location.pathname);
+        setIsLeaveAlertOpen(true); // Abrimos tu ConfirmModal
+      } else {
+        navigate('/navigation/menu'); // Si está todo en cero, se va sin molestar
+      }
+    };
+
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, [completedSteps, navigate]);
+
+  // 🚀 MANEJADOR: Controla el click del botón "Cancelar" físico de la UI
+  const handleCancelClick = () => {
+    if (completedSteps > 0) {
+      setIsLeaveAlertOpen(true);
+    } else {
+      navigate('/navigation/menu');
+    }
+  };
+
   const handleSelectShip = (id: string, shipData: ShipActiveSelect) => {
     setPlanState(prev => ({ 
       ...prev, 
       shipId: id, 
-      shipData: shipData 
+      shipData: shipData,
+      currentStep: prev.currentStep === 2 ? 3 : prev.currentStep
     }));
     setActiveModal(null);
   };
@@ -82,13 +99,16 @@ export const CreateVoyagePlan: React.FC = () => {
     setPlanState(prev => ({ 
       ...prev, 
       destinationId: routeData.destination.id,
-      routeData: routeData 
+      routeData: routeData,
+      currentStep: prev.currentStep === 1 ? 2 : prev.currentStep
     }));
     setActiveModal(null);
   };
 
   const handleSelectCrew = (crewIds: string[]) => {
-    setPlanState(prev => ({ ...prev, crewIds }));
+    setPlanState(prev => ({ ...prev, crewIds,
+      currentStep: prev.currentStep === 3 ? 4 : prev.currentStep
+     }));
     setActiveModal(null);
   };
 
@@ -97,13 +117,16 @@ export const CreateVoyagePlan: React.FC = () => {
     setActiveModal(null);
   };
 
-  const handlePreview = () => {
-    if (isComplete) {
-      navigate('/navigation/plan-summary');
+  const handlePreview = async () => {
+    if (isComplete && !loading) {
+      try {
+        await saveVoyagePlan(planState);
+        setShowSuccessModal(true);
+      } catch (error) {
+        // El hook ya maneja el error internamente
+      }
     }
   };
-
-  console.log("Datos del barco seleccionado actualmente:", planState.shipData?.cargoCapacityTonnes);
 
   return (
     <NavigationLayout>
@@ -129,8 +152,6 @@ export const CreateVoyagePlan: React.FC = () => {
       ) : activeModal === 'cargo' ? (
         <ManageCargo
           planId="V012"
-          /* 🚀 LOGÍSTICA DINÁMICA: Ahora lee directamente el valor real del backend. 
-             Dejamos un fallback de 5000 por si entrás a la carga sin elegir un barco previamente */
           shipCapacityTonnes={planState.shipData?.cargoCapacityTonnes || 5000}
           initialCargoList={planState.cargoDetails || []}
           onSaveSelection={handleSetCargo}
@@ -140,8 +161,14 @@ export const CreateVoyagePlan: React.FC = () => {
         <div className={styles.container}>
           <header className={styles.header}>
             <h1 className={styles.title}>Nuevo plan de Travesía</h1>
-            <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
+            <button className={styles.cancelButton}
+              type="button"
+              onClick={handleCancelClick}
+            >
+              <ArrowLeft size={16} /> Volver al Menú
+            </button>
           </header>
+          <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
 
         {/* Barra de Progreso */}
         <div className={styles.progressSection}>
@@ -162,31 +189,15 @@ export const CreateVoyagePlan: React.FC = () => {
           </div>
         </div>
 
-        {/* 🎯 Grilla de 4 Cards en orden Lógico de lectura en Z (Sin bloqueo de clicks) */}
+        {/* 🎯 Grilla de 4 Cards */}
         <div className={styles.grid}>
-          
-    
-          {/* 📍 PASO 1: SELECCIONAR DESTINO (Arriba Izquierda) - VERSIÓN PREMIUM NAVOPS */}
+          {/* Paso 1: Ruta */}
           {planState.routeData ? (
-            <div 
-              className={styles.shipSelectedCard} 
-              onClick={() => setActiveModal('destination')}
-              title="Haga clic para modificar el itinerario o la ruta"
-            >
-              {/* Contenedor Izquierdo: Visualizador de Ruta */}
+            <div className={styles.shipSelectedCard} onClick={() => setActiveModal('destination')}>
               <div className={styles.imageContainer}>
-                {planState.shipData?.mainImageUrl ? (
-                  // Si querés una estética de mapa genérica o la foto del puerto de destino
-                  <div className={styles.noImagePlaceholder} style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
-                    <Map size={48} color="#0284c7" />
-                  </div>
-                ) : (
-                  <div className={styles.noImagePlaceholder}>
-                    <Map size={48} />
-                  </div>
-                )}
-                
-                {/* Badge dinámico de paradas en base a los datos reales de la ruta */}
+                <div className={styles.noImagePlaceholder} style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
+                  <Map size={48} color="#0284c7" />
+                </div>
                 {planState.routeData.stops && planState.routeData.stops.length > 0 ? (
                   <span className={styles.statusBadge} style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: '#f59e0b', color: '#f59e0b' }}>
                     ⚠️ {planState.routeData.stops.length} {planState.routeData.stops.length === 1 ? 'Parada' : 'Paradas'}
@@ -197,37 +208,26 @@ export const CreateVoyagePlan: React.FC = () => {
                   </span>
                 )}
               </div>
-
-              {/* Contenedor Derecho: Información de Itinerario con Alta Jerarquía Visual */}
               <div className={styles.cardContent}>
                 <div className={styles.shipNameRow} style={{ color: '#22d3ee', gap: '6px' }}>
                   <Map size={18} /> Itinerario de Navegación
                 </div>
-
                 <div className={styles.crewSummaryText} style={{ fontSize: '13px', fontWeight: 500, color: '#f8fafc', marginBottom: '8px' }}>
                   {planState.routeData.origin.name} <span style={{ color: '#94a3b8' }}>➝</span> {planState.routeData.destination.name}
                 </div>
-
-                {/* Lista de Detalles Operativos e Itinerario */}
                 <div className={styles.detailsList} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  
-                  {/* Fila: Salida */}
                   <div className={styles.detailRow} style={{ borderLeft: '2px solid #10b981', paddingLeft: '8px' }}>
                     <span className={styles.detailLabel} style={{ fontSize: '11px' }}>Zarpada:</span>
                     <span className={styles.detailValue} style={{ fontSize: '12px' }}>
                       {planState.routeData.departureDate} a las {planState.routeData.departureTime} hs
                     </span>
                   </div>
-
-                  {/* Fila: Arribo */}
                   <div className={styles.detailRow} style={{ borderLeft: '2px solid #0284c7', paddingLeft: '8px' }}>
                     <span className={styles.detailLabel} style={{ fontSize: '11px' }}>Arribo Estimado:</span>
                     <span className={styles.detailValue} style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 500 }}>
                       {planState.routeData.arrivalDate} ({planState.routeData.arrivalTime} hs)
                     </span>
                   </div>
-
-                  {/* Fila Métricas Rápidas */}
                   <div style={{ display: 'flex', gap: '16px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(51, 65, 85, 0.4)' }}>
                     <div>
                       <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Distancia</div>
@@ -238,54 +238,32 @@ export const CreateVoyagePlan: React.FC = () => {
                       <div style={{ fontSize: '13px', color: '#38bdf8', fontWeight: 600 }}>{planState.routeData.totalDays || Math.ceil(planState.routeData.etaHours / 24)} Días</div>
                     </div>
                   </div>
-
                 </div>
-
-                {/* Check Verde de Validación de Sección */}
                 <div className={styles.successCheckWrapper}>
                   <Check size={20} strokeWidth={3} />
                 </div>
               </div>
             </div>
           ) : (
-            <div 
-              className={`${styles.card} ${styles.cardPending}`}
-              onClick={() => setActiveModal('destination')}
-            >
-              <div className={styles.iconWrapper}>
-                <Map strokeWidth={1.5} size={72} />
-              </div>
+            <div className={`${styles.card} ${styles.cardPending}`} onClick={() => setActiveModal('destination')}>
+              <div className={styles.iconWrapper}><Map strokeWidth={1.5} size={72} /></div>
               <h3 className={styles.cardTitle}>Paso 1: Seleccionar Destino</h3>
             </div>
           )}
 
-          {/* 🚢 PASO 2: SELECCIONAR BARCO (Arriba Derecha) */}
+          {/* Paso 2: Barco */}
           {planState.shipData ? (
-            <div 
-              className={styles.shipSelectedCard} 
-              onClick={() => setActiveModal('ship')}
-              title="Haga clic para cambiar de barco"
-            >
+            <div className={styles.shipSelectedCard} onClick={() => setActiveModal('ship')}>
               <div className={styles.imageContainer}>
                 {planState.shipData.mainImageUrl ? (
-                  <img 
-                    src={planState.shipData.mainImageUrl} 
-                    alt={planState.shipData.name} 
-                    className={styles.shipImage} 
-                  />
+                  <img src={planState.shipData.mainImageUrl} alt={planState.shipData.name} className={styles.shipImage} />
                 ) : (
-                  <div className={styles.noImagePlaceholder}>
-                    <Sailboat size={48} />
-                  </div>
+                  <div className={styles.noImagePlaceholder}><Sailboat size={48} /></div>
                 )}
                 <span className={styles.statusBadge}>Operativo</span>
               </div>
-
               <div className={styles.cardContent}>
-                <div className={styles.shipNameRow}>
-                  <Sailboat size={20} /> {planState.shipData.name}
-                </div>
-
+                <div className={styles.shipNameRow}><Sailboat size={20} /> {planState.shipData.name}</div>
                 <div className={styles.detailsList}>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Tipo de Barco:</span>
@@ -295,9 +273,7 @@ export const CreateVoyagePlan: React.FC = () => {
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Modelo:</span>
-                    <span className={styles.detailValue}>
-                      {planState.shipData.registration}
-                    </span>
+                    <span className={styles.detailValue}>{planState.shipData.registration}</span>
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Capacidad:</span>
@@ -306,47 +282,26 @@ export const CreateVoyagePlan: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
-                <div className={styles.successCheckWrapper}>
-                  <Check size={20} strokeWidth={3} />
-                </div>
+                <div className={styles.successCheckWrapper}><Check size={20} strokeWidth={3} /></div>
               </div>
             </div>
           ) : (
-            <div 
-              className={`${styles.card} ${styles.cardPending}`}
-              onClick={() => setActiveModal('ship')}
-            >
-              <div className={styles.iconWrapper}>
-                <Sailboat strokeWidth={1.5} size={72} />
-              </div>
+            <div className={`${styles.card} ${styles.cardPending}`} onClick={() => setActiveModal('ship')}>
+              <div className={styles.iconWrapper}><Sailboat strokeWidth={1.5} size={72} /></div>
               <h3 className={styles.cardTitle}>Paso 2: Seleccionar Barco</h3>
             </div>
           )}
 
-          {/* 👥 PASO 3: SELECCIONAR TRIPULACIÓN (Abajo Izquierda) */}
+          {/* Paso 3: Tripulación */}
           {planState.crewIds.length > 0 ? (
-            <div 
-              className={styles.shipSelectedCard} 
-              onClick={() => setActiveModal('crew')}
-              title="Haga clic para modificar la tripulación"
-            >
+            <div className={styles.shipSelectedCard} onClick={() => setActiveModal('crew')}>
               <div className={styles.crewCardHeaderMock}>
-                <div className={styles.crewIconContainer}>
-                  <Users size={24} />
-                </div>
+                <div className={styles.crewIconContainer}><Users size={24} /></div>
                 <span className={styles.statusBadgeSuccess}>Validada</span>
               </div>
-
               <div className={styles.cardContent} style={{ paddingTop: '8px' }}>
-                <div className={styles.shipNameRow} style={{ marginBottom: '8px' }}>
-                  Tripulación Oficial
-                </div>
-
-                <p className={styles.crewSummaryText}>
-                  Roles críticos y dotación reglamentaria asignados con éxito.
-                </p>
-
+                <div className={styles.shipNameRow} style={{ marginBottom: '8px' }}>Letra Oficial</div>
+                <p className={styles.crewSummaryText}>Roles críticos y dotación reglamentaria asignados.</p>
                 <div className={styles.avatarStackContainer}>
                   <div className={styles.avatarStack}>
                     <div className={styles.stackAvatarItem}>👨‍✈️</div>
@@ -354,72 +309,43 @@ export const CreateVoyagePlan: React.FC = () => {
                     <div className={styles.stackAvatarItem} style={{ backgroundColor: '#10b981' }}>🛠️</div>
                     <div className={styles.stackAvatarItem} style={{ backgroundColor: '#f59e0b' }}>⚓</div>
                     {planState.crewIds.length > 4 && (
-                      <div className={styles.stackAvatarMore}>
-                        +{planState.crewIds.length - 4}
-                      </div>
+                      <div className={styles.stackAvatarMore}>+{planState.crewIds.length - 4}</div>
                     )}
                   </div>
                 </div>
-
                 <div className={styles.detailsList} style={{ marginTop: 'auto' }}>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Total Personal:</span>
-                    <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>
-                      {planState.crewIds.length} Miembros
-                    </span>
+                    <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>{planState.crewIds.length} Miembros</span>
                   </div>
                 </div>
-
-                <div className={styles.successCheckWrapper}>
-                  <Check size={20} strokeWidth={3} />
-                </div>
+                <div className={styles.successCheckWrapper}><Check size={20} strokeWidth={3} /></div>
               </div>
             </div>
           ) : (
-            <div 
-              className={`${styles.card} ${styles.cardPending}`}
-              onClick={() => setActiveModal('crew')}
-            >
-              <div className={styles.iconWrapper}>
-                <Users strokeWidth={1.5} size={72} />
-              </div>
+            <div className={`${styles.card} ${styles.cardPending}`} onClick={() => setActiveModal('crew')}>
+              <div className={styles.iconWrapper}><Users strokeWidth={1.5} size={72} /></div>
               <h3 className={styles.cardTitle}>Paso 3: Seleccionar Tripulación</h3>
             </div>
           )}
 
-          {/* 📦 PASO 4: GESTIONAR CARGA (Abajo Derecha) */}
+          {/* Paso 4: Carga */}
           {planState.cargoDetails && planState.cargoDetails.length > 0 ? (
-            <div 
-              className={styles.shipSelectedCard} 
-              onClick={() => setActiveModal('cargo')}
-              title="Haga clic para modificar los productos cargados"
-            >
+            <div className={styles.shipSelectedCard} onClick={() => setActiveModal('cargo')}>
               <div className={styles.imageContainer}>
-                <img 
-                  src={imagenCarga} 
-                  alt="Manifiesto de Carga" 
-                  className={styles.shipImage} 
-                />
-                
+                <img src={imagenCarga} alt="Manifiesto de Carga" className={styles.shipImage} />
                 {planState.cargoDetails.some((c: any) => c.hazardousMaterial) ? (
                   <span className={styles.statusBadgeHazard}>⚠️ Carga IMO</span>
                 ) : (
-                  <span className={styles.statusBadgeSuccess} style={{ position: 'absolute', top: '12px', right: '12px' }}>
-                    Segura
-                  </span>
+                  <span className={styles.statusBadgeSuccess} style={{ position: 'absolute', top: '12px', right: '12px' }}>Segura</span>
                 )}
               </div>
-
               <div className={styles.cardContent}>
-                <div className={styles.shipNameRow}>
-                  <Package size={20} /> Manifiesto de Carga
-                </div>
-
+                <div className={styles.shipNameRow}><Package size={20} /> Manifiesto de Carga</div>
                 <p className={styles.crewSummaryText}>
                   {planState.cargoDetails.map((c: any) => c.productName).slice(0, 2).join(', ')}
-                  {planState.cargoDetails.length > 2 ? ` y ${planState.cargoDetails.length - 2} productos más.` : '.'}
+                  {planState.cargoDetails.length > 2 ? ` y ${planState.cargoDetails.length - 2} más.` : '.'}
                 </p>
-
                 <div className={styles.detailsList} style={{ marginTop: 'auto' }}>
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Peso Total:</span>
@@ -434,46 +360,37 @@ export const CreateVoyagePlan: React.FC = () => {
                     </span>
                   </div>
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Contenedores:</span>
+                    <span className={styles.detailLabel}>Bultos/Cont.:</span>
                     <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>
                       {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.quantity || 0), 0)} u.
                     </span>
                   </div>
                 </div>
-
-                <div className={styles.successCheckWrapper}>
-                  <Check size={20} strokeWidth={3} />
-                </div>
+                <div className={styles.successCheckWrapper}><Check size={20} strokeWidth={3} /></div>
               </div>
             </div>
           ) : (
-            <div 
-              className={`${styles.card} ${styles.cardPending}`}
-              onClick={() => setActiveModal('cargo')}
-            >
-              <div className={styles.iconWrapper}>
-                <Package strokeWidth={1.5} size={72} />
-              </div>
+            <div className={`${styles.card} ${styles.cardPending}`} onClick={() => setActiveModal('cargo')}>
+              <div className={styles.iconWrapper}><Package strokeWidth={1.5} size={72} /></div>
               <h3 className={styles.cardTitle}>Paso 4: Gestionar Carga</h3>
             </div>
           )}
         </div>
 
-        {/* Botón de Confirmación */}
-        <div className={styles.actionContainer}>
+        {/* 🚀 BOTONERA INFERIOR CON ACCIÓN DE CANCELAR REESTILIZADA */}
+        <div className={styles.actionContainer} style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          
           <button 
             className={`${styles.previewButton} ${isComplete ? styles.previewButtonActive : ''}`}
-            disabled={!isComplete}
+            disabled={!isComplete || loading}
             onClick={handlePreview}
           >
-            Vista Previa / Confirmar Plan
+            {loading ? <span className={styles.spinner}></span> : 'Vista Previa / Confirmar Plan'}
           </button>
         </div>
 
         {/* Footer */}
-        <footer className={styles.footer}>
-          Sistema de Gestión Marítima V.1
-        </footer>
+        <footer className={styles.footer}>Sistema de Gestión Marítima V.1</footer>
 
         {/* Modals Mock */}
         {activeModal && (
@@ -485,16 +402,35 @@ export const CreateVoyagePlan: React.FC = () => {
                   {activeModal === 'crew' && 'Seleccionar Tripulación'}
                   {activeModal === 'cargo' && 'Detalles de Carga'}
                 </h3>
-                <button className={styles.closeBtn} onClick={() => setActiveModal(null)}>
-                  <X size={20} />
-                </button>
+                <button className={styles.closeBtn} onClick={() => setActiveModal(null)}><X size={20} /></button>
               </div>
-              
-              <div className={styles.modalBody}>
-              </div>
+              <div className={styles.modalBody}></div>
             </div>
           </div>
         )}
+
+        {/* Modal de Éxito */}
+        {showSuccessModal && (
+          <FeedbackModal 
+            message="¡Plan de Travesía guardado con éxito!" 
+            onClose={() => {
+              setShowSuccessModal(false);
+              navigate('/navigation/menu'); // 👈 REDIRECCIÓN CORRECTA
+            }} 
+          />
+        )}
+
+        {/* 🚀 TU CONFIRM MODAL COMPONENETIZADO INTEGRADO */}
+        <ConfirmModal
+          isOpen={isLeaveAlertOpen}
+          title="¿Desea cancelar el Plan de Travesía?"
+          description="Si sales ahora, perderás todos los cambios y selecciones asignadas en este asistente de navegación."
+          onConfirm={() => {
+            setIsLeaveAlertOpen(false);
+            navigate('/navigation/menu'); // 👈 TE ENVÍA DE UNA AL MENÚ DE NAVEGACIÓN
+          }}
+          onCancel={() => setIsLeaveAlertOpen(false)} // 👈 CIERRA EL CARTEL Y SE QUEDA
+        />
       </div>
       )}
     </NavigationLayout>

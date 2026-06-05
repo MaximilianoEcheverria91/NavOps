@@ -28,7 +28,7 @@ public class TravelPlanCargoFilterSpecification {
 
             query.distinct(true);
 
-            predicates.add(criteriaBuilder.equal(root.get("planId"), planId));
+            predicates.add(criteriaBuilder.equal(root.get("travelPlan").get("id"), planId));
             predicates.add(criteriaBuilder.isNull(root.get("deletedAt")));
 
             if (productCategory != null && !productCategory.isBlank()) {

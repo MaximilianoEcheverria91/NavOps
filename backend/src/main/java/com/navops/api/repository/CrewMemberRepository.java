@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface CrewMemberRepository extends JpaRepository<CrewMember, UUID> {
+
+    Optional<CrewMember> findByIdAndDeletedAtIsNull(UUID id);
 
     // Consulta nativa para obtener el valor de la secuencia
     @Query(value = "SELECT nextval('personnel_file_seq')", nativeQuery = true)
