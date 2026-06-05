@@ -68,6 +68,7 @@
   --fondo-panel: transparent;
   --intpu-group: transparent;
   --reset-btn: rgba(255,255,255,0.05);
+  --kid-card: rgba(15, 23, 42, 0.4);
 }
 
 [data-theme='light'] {
@@ -127,6 +128,7 @@
   --fondo-panel: #ffff;
   --intpu-group: #f0f6fa;
   --reset-btn: rgba(117, 114, 114, 0.123);
+  --kid-card: #f0f6fa;
 }
 
 * {

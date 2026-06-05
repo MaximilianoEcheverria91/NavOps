@@ -1,8 +1,10 @@
 package com.navops.api.repository;
 
 import com.navops.api.domain.entity.TravelPlan;
+import com.navops.api.domain.enums.TravelPlanStatusEnum;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
+public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, JpaSpecificationExecutor<TravelPlan> {
 
     @EntityGraph(attributePaths = {
             "ship", "originPort", "destinationPort",
@@ -22,6 +24,12 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID> {
     Optional<TravelPlan> findByIdAndDeletedAtIsNull(UUID id);
 
     List<TravelPlan> findByShipIdAndDeletedAtIsNull(UUID shipId);
+
+    Long countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum status);
+
+    @EntityGraph(attributePaths = {"ship", "originPort", "destinationPort", "stops"})
+    @Query("SELECT tp FROM TravelPlan tp WHERE tp.status NOT IN (:excludedStatuses) AND tp.deletedAt IS NULL")
+    List<TravelPlan> findActiveTravelPlans(@Param("excludedStatuses") List<TravelPlanStatusEnum> excludedStatuses);
 
     @Query("SELECT COUNT(tp) > 0 FROM TravelPlan tp " +
            "WHERE tp.ship.id = :shipId " +

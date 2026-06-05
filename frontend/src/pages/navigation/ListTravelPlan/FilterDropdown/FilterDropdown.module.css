@@ -1,0 +1,371 @@
+.dropdownContainer {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 380px;
+  background-color: var(--bg-card, #1e293b);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.dropdownHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  color: #f8fafc;
+}
+
+.dropdownBody {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  color: #38bdf8;
+  background-color: rgba(255, 255, 255, 0.02);
+  transition: background-color 0.2s;
+}
+
+.sectionHeader:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sectionHeader h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px 20px 20px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  accent-color: #0ea5e9;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 1px solid #475569;
+  border-radius: 4px;
+}
+
+.datesContainer {
+  padding: 12px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dateBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateLabel {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.dateInputs {
+  display: flex;
+  gap: 12px;
+}
+
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputLabel {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.inputGroup input {
+  background-color: transparent;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 6px;
+  color: #f8fafc;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  outline: none;
+  color-scheme: dark;
+}
+
+.inputGroup input:focus {
+  border-color: #38bdf8;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  padding: 12px 20px 20px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.radioLabel input[type="radio"] {
+  accent-color: #0ea5e9;
+}
+
+.dropdownFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  background-color: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.applyBtn,
+.clearBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.clearBtn {
+    background-color: transparent;
+  color: var(--text-secondary, #94a3b8);
+  border: 1px solid rgba(14, 165, 233, 0.5);
+
+}
+
+.clearBtn:hover {
+  color: #f8fafc;
+}
+
+.applyBtn {
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.applyBtn:hover {
+  background-color: #0284c7;
+}
+
+/* Scrollbar Styles */
+.dropdownBody::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdownBody::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+.dropdownBody::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+.dropdownBody::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ========================================================
+   🚀 BLINDAJE PREMIUM PARA MODO CLARO (VÍA DATA-THEME Y GLOBAL)
+   ======================================================== */
+
+/* Contenedor Principal del Panel Dropdown */
+:global([data-theme="light"]) .dropdownContainer,
+:global(.light) .dropdownContainer {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Cabecera y Pie del Desplegable */
+:global([data-theme="light"]) .dropdownHeader,
+:global(.light) .dropdownHeader,
+:global([data-theme="light"]) .dropdownFooter,
+:global(.light) .dropdownFooter {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Título de la Cabecera */
+:global([data-theme="light"]) .dropdownHeader h3,
+:global(.light) .dropdownHeader h3 {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+/* Botón de Cerrar (X) */
+:global([data-theme="light"]) .closeBtn,
+:global(.light) .closeBtn {
+  color: #64748b !important;
+}
+
+:global([data-theme="light"]) .closeBtn:hover,
+:global(.light) .closeBtn:hover {
+  color: #0f172a !important;
+}
+
+/* Cabeceras de las Secciones del Acordeón (Estados, Fechas, etc.) */
+:global([data-theme="light"]) .sectionHeader,
+:global(.light) .sectionHeader {
+  color: #0284c7 !important; /* Azul NavOps nítido */
+  background-color: rgba(14, 165, 233, 0.1)!important;
+}
+
+:global([data-theme="light"]) .sectionHeader:hover,
+:global(.light) .sectionHeader:hover {
+  background-color: #f1f5f9 !important;
+}
+
+:global([data-theme="light"]) .sectionHeader h4,
+:global(.light) .sectionHeader h4 {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+:global([data-theme="light"]) .section {
+  border-bottom-color: #e2e8f0 !important;
+}
+
+/* Etiquetas de Checkboxes y Radios */
+:global([data-theme="light"]) .checkboxLabel,
+:global(.light) .checkboxLabel,
+:global([data-theme="light"]) .radioLabel,
+:global(.light) .radioLabel {
+  color: #334155 !important; /* Gris oscuro de alta legibilidad */
+  font-weight: 500 !important;
+}
+
+/* Bloque y Títulos de Fecha */
+:global([data-theme="light"]) .dateLabel,
+:global(.light) .dateLabel {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+:global([data-theme="light"]) .inputLabel,
+:global(.light) .inputLabel {
+  color: #64748b !important; /* Texto "Desde" o "Hasta" visible */
+  font-weight: 500 !important;
+}
+
+/*Inputs de Fecha (Date) */
+:global([data-theme="light"]) .inputGroup input,
+:global(.light) .inputGroup input {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color-scheme: light !important; /* Forzar iconos de calendario nativos en modo claro */
+}
+
+:global([data-theme="light"]) .inputGroup input:focus,
+:global(.light) .inputGroup input:focus {
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1) !important;
+}
+
+/* Botón Limpiar Inferior */
+:global([data-theme="light"]) .clearBtn,
+:global(.light) .clearBtn {
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+:global([data-theme="light"]) .clearBtn:hover,
+:global(.light) .clearBtn:hover {
+  color: #ef4444 !important; /* Rojo sutil en hover al querer limpiar */
+}
+
+/* Botón Aplicar Filtros (Mantiene su esencia pero con sombra adaptada) */
+:global([data-theme="light"]) .applyBtn,
+:global(.light) .applyBtn {
+  background-color: #0ea5e9 !important;
+  color: #ffffff !important;
+}
+
+:global([data-theme="light"]) .applyBtn:hover,
+:global(.light) .applyBtn:hover {
+  background-color: #0284c7 !important;
+}
+
+/* Personalización del Scrollbar Interno para Modo Claro */
+:global([data-theme="light"]) .dropdownBody::-webkit-scrollbar-track,
+:global(.light) .dropdownBody::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+
+:global([data-theme="light"]) .dropdownBody::-webkit-scrollbar-thumb,
+:global(.light) .dropdownBody::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+:global([data-theme="light"]) .dropdownBody::-webkit-scrollbar-thumb:hover,
+:global(.light) .dropdownBody::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}

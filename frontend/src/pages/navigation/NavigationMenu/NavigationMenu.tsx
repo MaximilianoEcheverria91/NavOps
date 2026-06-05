@@ -20,9 +20,9 @@ export const NavigationMenu: React.FC = () => {
     },
     {
       id: 2,
-      title: 'Viajes activos',
+      title: 'Lista de Viajes', // 🚢 Cambiado para que coincida con la US
       icon: <Sailboat strokeWidth={1.5} size={64} />,
-      link: '/navigation/active-trips',
+      link: '/navigation/travel-plans', // 🔗 Esta es la ruta que renderiza tu nuevo componente
       showCheck: false
     },
     {
