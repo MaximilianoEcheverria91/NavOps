@@ -135,7 +135,9 @@ public class PortService {
                         port.getProvince().getName(),
                         port.getCity().getName(),
                         port.getStatus().name(),
-                        port.getIsActive()
+                        port.getIsActive(),
+                        port.getLatitude(),
+                        port.getLongitude()
                 ))
                 .toList();
         

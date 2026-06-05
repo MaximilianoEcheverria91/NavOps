@@ -85,7 +85,9 @@ public class PortFilterService {
                 port.getProvince() != null ? port.getProvince().getName() : null,
                 port.getCity() != null ? port.getCity().getName() : null,
                 port.getStatus() != null ? port.getStatus().name() : null,
-                port.getIsActive()
+                port.getIsActive(),
+                port.getLatitude(),
+                port.getLongitude()
         );
     }
 }

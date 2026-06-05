@@ -6,9 +6,10 @@ import { usePortDetail } from '../../../hooks/usePortDetail';
 interface PortDetailModalProps {
   portId: string;
   onClose: () => void;
+  showActions?: boolean;
 }
 
-export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClose }) => {
+export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClose, showActions = true }) => {
   const { data: port, loading, error } = usePortDetail(portId);
   const [imageError, setImageError] = useState(false);
 
@@ -173,7 +174,7 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
         </div>
 
         {/* FOOTER ACTIONS */}
-        {!loading && !error && port && (
+        {!loading && !error && port && showActions && (
           <div className={styles.footerActions}>
             <button className={styles.editActionBtn} title="Editar Puerto">
               <Edit2 size={16} />

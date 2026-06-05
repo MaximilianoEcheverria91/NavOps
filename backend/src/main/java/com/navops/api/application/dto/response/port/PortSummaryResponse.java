@@ -30,5 +30,11 @@ public record PortSummaryResponse(
     String status,
     
     @Schema(description = "Indica si el puerto está activo o ha sido dado de baja lógicamente")
-    Boolean isActive
+    Boolean isActive,
+
+    @Schema(description = "La latitud del la ubicación del puerto", example = "-5412309")
+    double latitude,
+
+    @Schema(description = "La longitud de la ubicación del puerto", example = "-45123564")
+    double longitude
 ) {}

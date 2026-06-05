@@ -65,7 +65,9 @@
   --color-filter-cargo: #0ea5e980;
   --item_stan: #bec9d8;
   --item_title: #6d92caa2;
-
+  --fondo-panel: transparent;
+  --intpu-group: transparent;
+  --reset-btn: rgba(255,255,255,0.05);
 }
 
 [data-theme='light'] {
@@ -122,6 +124,9 @@
   --color-filter-cargo: rgba(14, 165, 233, 0.15);
   --item_stan: #001027e5;
   --item_title: #82a0c9;
+  --fondo-panel: #ffff;
+  --intpu-group: #f0f6fa;
+  --reset-btn: rgba(117, 114, 114, 0.123);
 }
 
 * {

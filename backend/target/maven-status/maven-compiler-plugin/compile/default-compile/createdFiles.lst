@@ -61,7 +61,6 @@ com/navops/api/infrastructure/controller/AuthController.class
 com/navops/api/application/dto/response/dashboardAdmin/UserSystemAccessCountResponse.class
 com/navops/api/application/dto/request/port/PortCreateRequest.class
 com/navops/api/application/service/ShipService.class
-com/navops/api/infrastructure/controller/travelPlanCargo/TravelPlanCargoController.class
 com/navops/api/application/service/AuthService.class
 com/navops/api/infrastructure/exception/GlobalExceptionHandler.class
 com/navops/api/repository/filters/ShipFilterRepository.class
