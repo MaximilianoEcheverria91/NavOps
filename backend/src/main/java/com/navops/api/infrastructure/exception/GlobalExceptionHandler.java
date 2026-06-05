@@ -283,5 +283,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadRequest(BadRequestException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Bad Request",
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceNotFound(ResourceNotFoundException ex) {
+        ErrorResponseDto response = new ErrorResponseDto(
+                "Not Found",
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
 
 }

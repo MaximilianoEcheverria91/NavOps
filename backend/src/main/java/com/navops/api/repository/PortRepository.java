@@ -7,11 +7,14 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PortRepository extends JpaRepository<Port, UUID> {
     
+    Optional<Port> findByIdAndDeletedAtIsNull(UUID id);
+
     boolean existsByCode(String code);
 
     boolean existsByCodeAndIdNot(String code, UUID id);

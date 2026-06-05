@@ -175,7 +175,7 @@ export const RegisterCargoModal: React.FC<Props> = ({ onClose, onSave, initialDa
 
           <div className={styles.grid}>
             <div className={styles.inputGroup}>
-              <label>Cantidad de carga</label>
+              <label>Cantidad por carga</label>
               <input
                 type="number"
                 name="quantity"
@@ -187,7 +187,7 @@ export const RegisterCargoModal: React.FC<Props> = ({ onClose, onSave, initialDa
             </div>
 
             <div className={styles.inputGroup}>
-              <label>Volumen (m³)</label>
+              <label>Volumen unitario (m³) </label>
               <input
                 type="number"
                 name="volumeM3"
@@ -199,7 +199,7 @@ export const RegisterCargoModal: React.FC<Props> = ({ onClose, onSave, initialDa
             </div>
 
             <div className={styles.inputGroup}>
-              <label>Peso (Toneladas)</label>
+              <label>Peso unitario (Toneladas)</label>
               <input
                 type="number"
                 name="weightTonnes"

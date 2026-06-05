@@ -11,6 +11,42 @@
   font-weight: 500;
 }
 
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 🎯 EL HOVER: Se ilumina el fondo y el borde de forma suave al pasar el mouse */
+.cancelButton:hover {
+  background-color: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px); /* Un sutil efecto de elevación premium */
+}
+
+/* Opcional: un pequeño efecto cuando lo clickeas */
+.cancelButton:active {
+  transform: translateY(0);
+}
+
+.cardDisabled {
+  opacity: 0.35;
+  cursor: not-allowed !important;
+  border: 1px dashed #334155 !important;
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  box-shadow: none !important;
+  pointer-events: none; /* Deshabilita clicks a nivel del DOM */
+}
+
 /* Badge exclusivo para cargas IMO / Material Peligroso */
 .statusBadgeHazard {
   position: absolute;
@@ -253,10 +289,13 @@
   flex-direction: column;
   min-height: calc(100vh - 80px);
 }
-
 .header {
-  margin-bottom: 24px;
-  margin-top: 20px;
+  display: flex; /* 💡 Activa Flexbox */
+  justify-content: space-between; /* 💡 Clave: Empuja el botón al extremo derecho */
+  align-items: center; /* 💡 Clave: Alinea verticalmente el botón con el centro del título */
+  width: 100%;
+  margin-bottom: 1px;
+  margin-top: 1px;
 }
 
 .title {
@@ -269,7 +308,7 @@
 .subtitle {
   font-size: 1rem;
   color: #38bdf8;
-  margin: 0;
+  margin-bottom: 8px;
 }
 
 /* Sección Progreso */
@@ -579,4 +618,18 @@
   .grid {
     grid-template-columns: 1fr;
   }
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

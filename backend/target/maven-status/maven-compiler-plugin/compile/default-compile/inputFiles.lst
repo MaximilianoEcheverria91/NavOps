@@ -9,6 +9,9 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipCreateRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipFilterRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/ship/ShipUpdateRequest.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/travelPlan/CargoItemRequestDTO.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/travelPlan/StopRequestDTO.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/travelPlan/TravelPlanRequestDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/travelPlanCargo/TravelPlanCargoFilterRequest.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/travelPlanCargo/TravelPlanCargoRequestDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/request/user/PersonnelFilterRequest.java
@@ -34,6 +37,8 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipFilterResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/StopResponseDTO.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/TravelPlanResponseDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlanCargo/TravelPlanCargoFilterResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlanCargo/TravelPlanCargoResponseDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/user/PersonnelDetailedResponse.java
@@ -56,6 +61,8 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/filter/PortFilterService.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/filter/ShipFilterService.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/filter/TravelPlanCargoFilterService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/travelPlan/TravelPlanService.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/travelPlan/TravelPlanServiceImpl.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/travelPlanCargo/TravelPlanCargoService.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/service/travelPlanCargo/TravelPlanCargoServiceImpl.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/config/CloudinaryConfig.java
@@ -74,7 +81,10 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Role.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Ship.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/ShipTank.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/Stop.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/TravelPlan.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/TravelPlanCargo.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/TravelPlanCrew.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/entity/User.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/AccessStatusEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/CrewMemberStatusEnum.java
@@ -88,6 +98,7 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/ShipStatusEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/ShipTypeEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/SystemRoleFilterEnum.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/TravelPlanStatusEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/TypePortEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/travelPlanCargo/CargoStatusEnum.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/domain/enums/travelPlanCargo/CargoTypeEnum.java
@@ -106,11 +117,13 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ProvinceController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/RoleController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/ShipController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/TravelPlanController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/dashboadAdmin/DashboardAdminController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/PersonnelFilterController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/PortFilterController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/ShipFilterController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/TravelPlanCargoFilterController.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/BadRequestException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/CargoValidationException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/EmailNotFoundException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ExpiredResetCodeException.java
@@ -126,6 +139,7 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortAlreadyExistsException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/PortNotFoundException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ResourceNotFoundException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ShipAlreadyExistsException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ShipNotFoundException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/UserNotFoundException.java
@@ -142,7 +156,10 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/RoleRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ShipRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/ShipTankRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/StopRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/TravelPlanCargoRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/TravelPlanCrewRepository.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/TravelPlanRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/UserRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/filters/PersonFilterRepository.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/repository/filters/PortFilterRepository.java

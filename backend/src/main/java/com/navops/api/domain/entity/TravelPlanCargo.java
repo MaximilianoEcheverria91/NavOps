@@ -26,8 +26,9 @@ public class TravelPlanCargo {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "plan_id", nullable = false)
-    private UUID planId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", nullable = false)
+    private TravelPlan travelPlan;
 
     @Column(name = "product_name", nullable = false, length = 150)
     private String productName;
@@ -56,7 +57,7 @@ public class TravelPlanCargo {
     private String owningCompany;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "container_type", nullable = false, length = 80)
+    @Column(name = "container_type", length = 80)
     private ContainerTypeEnum containerType;
 
     @Column(name = "hazardous_material", nullable = false)

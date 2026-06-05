@@ -101,11 +101,14 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     let biners = 0;
 
     cargoList.forEach(item => {
-      tonnes += item.weightTonnes || 0;
-      if (item.cargoType === 'CONTAINER') containers += item.quantity || 0;
-      if (item.cargoType === 'PALLET') pallets += item.quantity || 0;
-      if (item.cargoType === 'DRUM') drums += item.quantity || 0;
-      if (item.cargoType === 'BINER') biners += item.quantity || 0;
+     const qty = item.quantity || 0;
+      const unitWeight = item.weightTonnes || 0;
+      tonnes += (qty * unitWeight);
+
+      if (item.cargoType === 'CONTAINER') containers += qty;
+      if (item.cargoType === 'PALLET') pallets += qty;
+      if (item.cargoType === 'DRUM') drums += qty;
+      if (item.cargoType === 'BINER') biners += qty;
     });
 
     return {
@@ -233,6 +236,8 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
       onCancel(); // Vuelve directo a las 4 cards (ejecuta el setActiveModal(null) del padre)
     }
   };
+
+  
 
   return (
     <div className={styles.container}>
@@ -393,19 +398,22 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
               <div className={styles.cardStats}>
                 <div className={styles.statItem}>
                   <span>Cantidad</span>
-                  <strong>{item.quantity} {getTypeLabel(item.cargoType)}</strong>
-                </div>
-                <div className={styles.statItem}>
-                  <span>Peso</span>
-                  <strong>{item.weightTonnes} Tone</strong>
-                </div>
-                <div className={styles.statItem}>
-                  <span>Volumen</span>
-                  <strong>{item.volumeM3} M³</strong>
+                  <strong>{item.quantity} </strong> {/*{getTypeLabel(item.cargoType)}*/}
                 </div>
                 <div className={styles.statItem}>
                   <span>Tipo de carga</span>
                   <strong>{getTypeLabel(item.cargoType)}</strong>
+                </div>
+                
+                <div className={styles.statItem}>
+                  <span>Volumen total</span>
+                  <strong>{((item.quantity || 0) * (item.volumeM3 || 0)).toLocaleString()} M³</strong>
+                </div>
+                <div className={styles.statItem}>
+                  <span>Peso total</span>
+                  <strong style={{ color: '#38bdf8' }}>
+                    {((item.quantity || 0) * (item.weightTonnes || 0)).toLocaleString()} Tn
+                  </strong>
                 </div>
               </div>
 

@@ -59,7 +59,7 @@ public class TravelPlanCargoFilterService {
     private TravelPlanCargoResponseDTO mapToResponseDTO(TravelPlanCargo entity) {
         return new TravelPlanCargoResponseDTO(
                 entity.getId(),
-                entity.getPlanId(),
+                entity.getTravelPlan().getId(),
                 entity.getProductName(),
                 entity.getProductCategory().name(),
                 entity.getProductType(),
