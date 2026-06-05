@@ -1,0 +1,702 @@
+/* Estructura Base de la Página */
+.pageContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1px 24px;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.cancelButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 🎯 HOVER PREMIUM: Reacción de color y leve elevación horizontal */
+.cancelButton:hover {
+  background-color: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+.cancelButton:active {
+  transform: translateY(0);
+}
+
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #38bff87c;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-secondary, #ffffff);
+  margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+  font-size: 1rem;
+  color: #38bdf8;
+  margin: 0;
+ 
+}
+
+/* Sección de KPIs (Métricas Superiores) */
+.kpiContainer {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.kpiCard {
+  background-color: var(--kid-card);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 220px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.kpiCard:hover {
+  border-color: rgba(56, 189, 248, 0.6);
+  background-color: rgba(15, 23, 42, 0.6);
+}
+
+.kpiIconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.kpiInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpiLabel {
+  font-size: 0.85rem;
+  color: #006aff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpiValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.2;
+}
+
+/* Barra de Búsqueda y Filtros */
+.controlsBar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+  position: relative;
+}
+
+.searchFloating {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--background-color-card, #1e293b);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 44px;
+  transition: all 0.2s ease;
+}
+
+.searchFloating:focus-within {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #f8fafc);
+  font-size: 0.95rem;
+  padding: 0 12px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #64748b;
+}
+
+.filterBtnContainer {
+  position: relative;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: var(--background-color-card, #1e293b);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+/* Filtros Activos (Chips) */
+.activeFiltersBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
+.chip button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip button:hover {
+  color: #f8fafc;
+}
+
+.clearAllBtn {
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.clearAllBtn:hover {
+  text-decoration: underline;
+}
+
+/* Grilla de Tarjetas */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tarjeta Individual de Travesía */
+.card {
+  background-color: var(--background-color-card, #1e293b);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: #38bdf8;
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.2);
+}
+
+/* Imagen y Badge */
+.cardImageContainer {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fallbackIcon {
+  color: #38bdf8;
+  opacity: 0.5;
+}
+
+.statusBadge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  border: 1px solid;
+}
+
+.badgePlanned {
+  background-color: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
+  border-color: #0284c7;
+}
+
+.badgeEnRoute {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: #10b981;
+}
+
+.badgeDelayed {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border-color: #f59e0b;
+}
+
+.badgeDefault {
+  background-color: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border-color: #64748b;
+}
+
+/* Contenido de la Tarjeta */
+.cardContent {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shipNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-secondary, #f8fafc);
+}
+
+.routeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  padding-left: 8px;
+}
+
+.routeSection::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: rgba(148, 163, 184, 0.2);
+  z-index: 0;
+}
+
+.portRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.iconOrigin { color: #10b981; }
+.iconDestination { color: #0284c7; }
+
+.portInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.portLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.portName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.distanceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  padding-left: 1px;
+}
+
+.stopCount {
+  font-size: 0.75rem;
+  color: #f59e0b;
+  margin-left: auto;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.datesRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateArrow {
+  color: #475569;
+}
+
+/* Botonera de Acciones */
+.cardActions {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+.btnDetail, .btnEdit, .btnCancel {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btnDetail {
+  background-color: #0099ff41;
+  color: #01a0f0;
+  border: none;
+}
+
+.btnDetail:hover {
+  background-color: #00a2fa23;
+}
+
+.btnEdit {
+  background-color: transparent;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.btnEdit:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+  border-color: #38bdf8;
+}
+
+.btnCancel {
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.btnCancel:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Loading & Empty States */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(56, 189, 248, 0.2);
+  border-left-color: #38bdf8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  color: #94a3b8;
+  padding: 60px 20px;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 12px;
+  border: 1px dashed rgba(148, 163, 184, 0.2);
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.pageInfo {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.pageBtn {
+  background-color: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  color: #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background-color: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================================
+   🚀 COMPATIBILIDAD INMUNE PARA MODO CLARO (VÍA DATA-THEME)
+   ======================================================== */
+
+/* El selector se activa si el body o cualquier ancestro se vuelve light */
+:global([data-theme="light"]) .pageTitle,
+:global(.light) .pageTitle { 
+  color: #0f172a; 
+}
+
+:global([data-theme="light"]) .pageSubtitle,
+:global(.light) .pageSubtitle { 
+  color: #0284c7; 
+}
+
+/* KPIs Superiores */
+:global([data-theme="light"]) .kpiCard,
+:global(.light) .kpiCard { 
+  background-color: #ffffff; 
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+:global([data-theme="light"]) .kpiCard:hover,
+:global(.light) .kpiCard:hover {
+  border-color: #0ea5e9;
+  background-color: #f8fafc;
+}
+
+:global([data-theme="light"]) .kpiIconWrapper,
+:global(.light) .kpiIconWrapper {
+  background-color: #f0f9ff;
+}
+
+:global([data-theme="light"]) .kpiValue,
+:global(.light) .kpiValue { 
+  color: #0f172a; 
+}
+
+/* Controles de Búsqueda y Botón Filtro */
+:global([data-theme="light"]) .searchFloating,
+:global(.light) .searchFloating {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+}
+
+:global([data-theme="light"]) .searchInput,
+:global(.light) .searchInput { 
+  color: #0f172a; 
+}
+
+:global([data-theme="light"]) .searchInput::placeholder,
+:global(.light) .searchInput::placeholder {
+  color: #94a3b8;
+}
+
+:global([data-theme="light"]) .filterBtn,
+:global(.light) .filterBtn {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .filterBtn:hover,
+:global(.light) .filterBtn:hover {
+  background-color: #f0f9ff;
+  border-color: #0ea5e9;
+  color: #0ea5e9;
+}
+
+/* Etiquetas Activas (Chips) */
+:global([data-theme="light"]) .chip,
+:global(.light) .chip {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+  font-weight: 500;
+}
+
+:global([data-theme="light"]) .chip button,
+:global(.light) .chip button {
+  color: #64748b;
+}
+
+/* Tarjetas de Travesía Individuales */
+:global([data-theme="light"]) .card,
+:global(.light) .card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+}
+
+:global([data-theme="light"]) .card:hover,
+:global(.light) .card:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.15);
+}
+
+:global([data-theme="light"]) .shipNameRow,
+:global(.light) .shipNameRow { 
+  color: #0f172a; 
+}
+
+/* Línea de tiempo y Puertos de la Tarjeta */
+:global([data-theme="light"]) .routeSection::before,
+:global(.light) .routeSection::before {
+  background: #cbd5e1; 
+}
+
+:global([data-theme="light"]) .portLabel,
+:global(.light) .portLabel {
+  color: #64748b; 
+}
+
+:global([data-theme="light"]) .portName,
+:global(.light) .portName { 
+  color: #1e293b; 
+}
+
+:global([data-theme="light"]) .distanceRow,
+:global(.light) .distanceRow {
+  color: #475569; 
+}
+
+:global([data-theme="light"]) .datesRow,
+:global(.light) .datesRow { 
+  border-top-color: #e2e8f0; 
+  color: #475569; 
+}
+
+:global([data-theme="light"]) .emptyState,
+:global(.light) .emptyState {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+/* Paginación */
+:global([data-theme="light"]) .pageInfo,
+:global(.light) .pageInfo {
+  color: #475569;
+}
+
+:global([data-theme="light"]) .pageBtn,
+:global(.light) .pageBtn {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+:global([data-theme="light"]) .pageBtn:hover:not(:disabled),
+:global(.light) .pageBtn:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  border-color: #0ea5e9;
+  color: #0284c7;
+}

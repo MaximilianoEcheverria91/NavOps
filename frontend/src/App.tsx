@@ -14,9 +14,9 @@ import { ListShips } from "./pages/ships/ListShips/ListShips.tsx";
 import { CreateShip } from "./pages/ships/CreateShip/CreateShip.tsx";
 import { UpdateShip } from "./pages/ships/UpdateShip/UpdateShip.tsx";
 import { ProtectedRoute } from './components/ProtectedRoute';
-// 🛠️ LINEA 17 CORREGIDA: Ruta de importación limpia y relativa al directorio src
 import { NavigationMenu } from './pages/navigation/NavigationMenu/NavigationMenu.tsx'; 
 import { CreateVoyagePlan } from './pages/navigation/CreateVoyagePlan/CreateVoyagePlan';
+import { TravelPlanList } from './pages/navigation/ListTravelPlan/TravelPlanList.tsx';
 
 function App() {
   return (
@@ -50,6 +50,8 @@ function App() {
         {/* Asistente de 4 pasos */}
         <Route path="/navigation/create-plan" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><CreateVoyagePlan /></ProtectedRoute>} />
 
+        <Route path="/navigation/travel-plans" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><TravelPlanList /></ProtectedRoute>} />
+        
         {/* Rutas Públicas de Recuperación */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />

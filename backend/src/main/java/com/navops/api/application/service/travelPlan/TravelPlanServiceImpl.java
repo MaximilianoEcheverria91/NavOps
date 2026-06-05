@@ -2,22 +2,30 @@ package com.navops.api.application.service.travelPlan;
 
 import com.navops.api.application.dto.request.travelPlan.CargoItemRequestDTO;
 import com.navops.api.application.dto.request.travelPlan.StopRequestDTO;
+import com.navops.api.application.dto.request.travelPlan.TravelPlanFilterRequest;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanRequestDTO;
 import com.navops.api.application.dto.response.travelPlan.StopResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
 import com.navops.api.application.dto.response.travelPlanCargo.TravelPlanCargoResponseDTO;
 import com.navops.api.domain.entity.*;
 import com.navops.api.domain.enums.CrewMemberStatusEnum;
 import com.navops.api.domain.enums.ShipStatusEnum;
+import com.navops.api.domain.enums.TravelPlanStatusEnum;
 import com.navops.api.domain.enums.travelPlanCargo.CargoStatusEnum;
 import com.navops.api.domain.enums.travelPlanCargo.CargoTypeEnum;
 import com.navops.api.domain.enums.travelPlanCargo.ContainerTypeEnum;
 import com.navops.api.domain.enums.travelPlanCargo.ProductCategoryEnum;
+import com.navops.api.domain.specification.TravelPlanSpecification;
 import com.navops.api.infrastructure.exception.BadRequestException;
 import com.navops.api.infrastructure.exception.ResourceNotFoundException;
 import com.navops.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -151,6 +159,52 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         log.info("Plan de travesía creado exitosamente con ID: {}", saved.getId());
 
         return buildResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TravelPlanMetricsDTO getMetrics() {
+        log.info("Recuperando métricas de planes de travesía");
+        Long scheduledCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.PLANNED);
+        Long totalCompletedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.COMPLETED);
+        return new TravelPlanMetricsDTO(scheduledCount, totalCompletedCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TravelPlanSummaryResponseDTO> getActiveTravelPlans() {
+        log.info("Recuperando planes de travesía activos");
+        List<TravelPlanStatusEnum> excluded = List.of(
+                TravelPlanStatusEnum.COMPLETED,
+                TravelPlanStatusEnum.CANCELLED);
+        List<TravelPlan> plans = travelPlanRepository.findActiveTravelPlans(excluded);
+        return plans.stream()
+                .map(this::toSummaryResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TravelPlanSummaryResponseDTO> getFilteredTravelPlans(TravelPlanFilterRequest filter, Pageable pageable) {
+        log.info("Ejecutando búsqueda filtrada de planes de travesía con criterios: {}", filter);
+        Specification<TravelPlan> spec = TravelPlanSpecification.buildSpecification(filter);
+        Page<TravelPlan> page = travelPlanRepository.findAll(spec, pageable);
+        return page.map(this::toSummaryResponse);
+    }
+
+    private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {
+        return new TravelPlanSummaryResponseDTO(
+                entity.getId(),
+                entity.getShip().getName(),
+                entity.getShip().getMainImageUrl(),
+                entity.getOriginPort().getName(),
+                entity.getDestinationPort().getName(),
+                entity.getDistanceMiles(),
+                entity.getDepartureTime(),
+                entity.getEta(),
+                entity.getStatus().name(),
+                entity.getStops().size()
+        );
     }
 
     private void validateStopChronology(TravelPlanRequestDTO dto) {
