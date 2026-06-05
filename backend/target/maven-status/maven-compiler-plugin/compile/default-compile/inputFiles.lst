@@ -111,7 +111,6 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/PortFilterController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/ShipFilterController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/filters/TravelPlanCargoFilterController.java
-/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/controller/travelPlanCargo/TravelPlanCargoController.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/CargoValidationException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/EmailNotFoundException.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/infrastructure/exception/ExpiredResetCodeException.java

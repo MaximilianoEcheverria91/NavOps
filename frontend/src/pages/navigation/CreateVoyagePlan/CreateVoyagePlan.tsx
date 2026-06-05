@@ -6,6 +6,7 @@ import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
 import { SelectCrew } from './SelectCrew/SelectCrew';
 import { ManageCargo } from './SelectCargo/ManageCargo/ManageCargo';
+import { SelectRoute } from './SelectRoute/SelectRoute';
 import imagenCarga from '../../../assets/carga.jpg';
 import type { ShipActiveSelect } from '../../../types/ship';
 
@@ -16,6 +17,7 @@ type VoyagePlanState = {
   crewIds: string[];
   cargoDetails: any | null;
   currentStep: number;
+  routeData?: any;
 };
 
 // Mock Data
@@ -76,6 +78,15 @@ export const CreateVoyagePlan: React.FC = () => {
     setActiveModal(null);
   };
 
+  const handleSetRoute = (routeData: any) => {
+    setPlanState(prev => ({ 
+      ...prev, 
+      destinationId: routeData.destination.id,
+      routeData: routeData 
+    }));
+    setActiveModal(null);
+  };
+
   const handleSelectCrew = (crewIds: string[]) => {
     setPlanState(prev => ({ ...prev, crewIds }));
     setActiveModal(null);
@@ -96,7 +107,13 @@ export const CreateVoyagePlan: React.FC = () => {
 
   return (
     <NavigationLayout>
-      {activeModal === 'ship' ? (
+      {activeModal === 'destination' ? (
+        <SelectRoute
+          onSaveSelection={handleSetRoute}
+          onCancel={() => setActiveModal(null)}
+          initialRouteData={planState.routeData}
+        />
+      ) : activeModal === 'ship' ? (
         <SelectShip 
           onSelectShip={handleSelectShip} 
           onCancel={() => setActiveModal(null)}
@@ -148,21 +165,99 @@ export const CreateVoyagePlan: React.FC = () => {
         {/* 🎯 Grilla de 4 Cards en orden Lógico de lectura en Z (Sin bloqueo de clicks) */}
         <div className={styles.grid}>
           
-          {/* 📍 PASO 1: SELECCIONAR DESTINO (Arriba Izquierda) */}
-          <div 
-            className={`${styles.card} ${planState.destinationId ? styles.cardCompleted : styles.cardPending}`}
-            onClick={() => setActiveModal('destination')}
-          >
-            {planState.destinationId && (
-              <div className={styles.checkIcon}>
-                <Check size={24} color="#10b981" strokeWidth={3} />
+    
+          {/* 📍 PASO 1: SELECCIONAR DESTINO (Arriba Izquierda) - VERSIÓN PREMIUM NAVOPS */}
+          {planState.routeData ? (
+            <div 
+              className={styles.shipSelectedCard} 
+              onClick={() => setActiveModal('destination')}
+              title="Haga clic para modificar el itinerario o la ruta"
+            >
+              {/* Contenedor Izquierdo: Visualizador de Ruta */}
+              <div className={styles.imageContainer}>
+                {planState.shipData?.mainImageUrl ? (
+                  // Si querés una estética de mapa genérica o la foto del puerto de destino
+                  <div className={styles.noImagePlaceholder} style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
+                    <Map size={48} color="#0284c7" />
+                  </div>
+                ) : (
+                  <div className={styles.noImagePlaceholder}>
+                    <Map size={48} />
+                  </div>
+                )}
+                
+                {/* Badge dinámico de paradas en base a los datos reales de la ruta */}
+                {planState.routeData.stops && planState.routeData.stops.length > 0 ? (
+                  <span className={styles.statusBadge} style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)', borderColor: '#f59e0b', color: '#f59e0b' }}>
+                    ⚠️ {planState.routeData.stops.length} {planState.routeData.stops.length === 1 ? 'Parada' : 'Paradas'}
+                  </span>
+                ) : (
+                  <span className={styles.statusBadgeSuccess} style={{ position: 'absolute', top: '12px', right: '12px' }}>
+                    Ruta Directa
+                  </span>
+                )}
               </div>
-            )}
-            <div className={styles.iconWrapper}>
-              <Map strokeWidth={1.5} size={72} />
+
+              {/* Contenedor Derecho: Información de Itinerario con Alta Jerarquía Visual */}
+              <div className={styles.cardContent}>
+                <div className={styles.shipNameRow} style={{ color: '#22d3ee', gap: '6px' }}>
+                  <Map size={18} /> Itinerario de Navegación
+                </div>
+
+                <div className={styles.crewSummaryText} style={{ fontSize: '13px', fontWeight: 500, color: '#f8fafc', marginBottom: '8px' }}>
+                  {planState.routeData.origin.name} <span style={{ color: '#94a3b8' }}>➝</span> {planState.routeData.destination.name}
+                </div>
+
+                {/* Lista de Detalles Operativos e Itinerario */}
+                <div className={styles.detailsList} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  
+                  {/* Fila: Salida */}
+                  <div className={styles.detailRow} style={{ borderLeft: '2px solid #10b981', paddingLeft: '8px' }}>
+                    <span className={styles.detailLabel} style={{ fontSize: '11px' }}>Zarpada:</span>
+                    <span className={styles.detailValue} style={{ fontSize: '12px' }}>
+                      {planState.routeData.departureDate} a las {planState.routeData.departureTime} hs
+                    </span>
+                  </div>
+
+                  {/* Fila: Arribo */}
+                  <div className={styles.detailRow} style={{ borderLeft: '2px solid #0284c7', paddingLeft: '8px' }}>
+                    <span className={styles.detailLabel} style={{ fontSize: '11px' }}>Arribo Estimado:</span>
+                    <span className={styles.detailValue} style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 500 }}>
+                      {planState.routeData.arrivalDate} ({planState.routeData.arrivalTime} hs)
+                    </span>
+                  </div>
+
+                  {/* Fila Métricas Rápidas */}
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(51, 65, 85, 0.4)' }}>
+                    <div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Distancia</div>
+                      <div style={{ fontSize: '13px', color: '#f8fafc', fontWeight: 600 }}>{planState.routeData.totalDistance?.toLocaleString()} NM</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Duración</div>
+                      <div style={{ fontSize: '13px', color: '#38bdf8', fontWeight: 600 }}>{planState.routeData.totalDays || Math.ceil(planState.routeData.etaHours / 24)} Días</div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Check Verde de Validación de Sección */}
+                <div className={styles.successCheckWrapper}>
+                  <Check size={20} strokeWidth={3} />
+                </div>
+              </div>
             </div>
-            <h3 className={styles.cardTitle}>Paso 1: Seleccionar Destino</h3>
-          </div>
+          ) : (
+            <div 
+              className={`${styles.card} ${styles.cardPending}`}
+              onClick={() => setActiveModal('destination')}
+            >
+              <div className={styles.iconWrapper}>
+                <Map strokeWidth={1.5} size={72} />
+              </div>
+              <h3 className={styles.cardTitle}>Paso 1: Seleccionar Destino</h3>
+            </div>
+          )}
 
           {/* 🚢 PASO 2: SELECCIONAR BARCO (Arriba Derecha) */}
           {planState.shipData ? (
@@ -387,7 +482,6 @@ export const CreateVoyagePlan: React.FC = () => {
               <div className={styles.modalHeader}>
                 <h3>
                   {activeModal === 'ship' && 'Seleccionar Barco'}
-                  {activeModal === 'destination' && 'Seleccionar Destino'}
                   {activeModal === 'crew' && 'Seleccionar Tripulación'}
                   {activeModal === 'cargo' && 'Detalles de Carga'}
                 </h3>
@@ -397,19 +491,6 @@ export const CreateVoyagePlan: React.FC = () => {
               </div>
               
               <div className={styles.modalBody}>
-                {activeModal === 'destination' && (
-                  <div className={styles.listContainer}>
-                    {MOCK_DESTINATIONS.map(dest => (
-                      <div 
-                        key={dest.id} 
-                        className={`${styles.listItem} ${planState.destinationId === dest.id ? styles.listItemSelected : ''}`}
-                        onClick={() => handleSelectDestination(dest.id)}
-                      >
-                        {dest.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </div>
