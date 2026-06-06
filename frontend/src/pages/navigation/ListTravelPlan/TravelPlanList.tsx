@@ -8,6 +8,9 @@ import { useTheme } from '../../../hooks/useTheme';
 import { FilterDropdown } from './FilterDropdown/FilterDropdown';
 import styles from './TravelPlanList.module.css';
 import type { TravelPlanStatus } from '../../../types/travelPlan';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal';
+// 🚀 CORREGIDO: Importamos la llamada de Axios nativa de tu servicio de travesías
+import { cancelVoyagePlan } from '../../../services/api/voyageService'; 
 
 const formatDate = (isoString: string) => {
   if (!isoString) return '';
@@ -45,6 +48,7 @@ const mapCategoryLabel = (val: string) => {
 export const TravelPlanList: React.FC = () => {
   useTheme(); 
   const navigate = useNavigate(); 
+  // Extraemos fetchFilteredPlans, filters y page para re-gatiIlar la consulta tras cancelar
   const { metrics, activePlans, pagination, loading, error, fetchFilteredPlans } = useTravelPlans();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,7 +57,10 @@ export const TravelPlanList: React.FC = () => {
   const pageSize = 6;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // 🚀 LÓGICA CORREGIDA: Un solo efecto limpio para la API que reacciona a los filtros avanzados y páginas
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [planIdToCancel, setPlanIdToCancel] = useState<string | null>(null);
+  const [isCanceling, setIsCanceling] = useState(false);
+
   useEffect(() => {
     fetchFilteredPlans(filters, page, pageSize);
   }, [filters, page, fetchFilteredPlans]);
@@ -67,6 +74,11 @@ export const TravelPlanList: React.FC = () => {
     setFilters({});
     setSearchTerm('');
     setPage(0);
+  };
+
+  const handleCancelClick = (id: string) => {
+    setPlanIdToCancel(id);      
+    setIsCancelModalOpen(true); 
   };
 
   const removeFilterChip = (type: string, value?: any) => {
@@ -103,7 +115,6 @@ export const TravelPlanList: React.FC = () => {
       filters.hazardousMaterial !== undefined;
   }, [filters]);
 
-  // 🚀 FILTRADO EN MEMORIA: Procesa instantáneamente lo que escribe el usuario
   const finalDisplayPlans = useMemo(() => {
     if (!searchTerm) return activePlans;
     const lower = searchTerm.toLowerCase();
@@ -114,6 +125,31 @@ export const TravelPlanList: React.FC = () => {
       (plan.id && plan.id.toLowerCase().includes(lower))
     );
   }, [activePlans, searchTerm]);
+
+  // 🚀 ACCIÓN DEFINITIVA: Sincronizada con las directivas de useTravelPlans
+  const handleConfirmCancel = async () => {
+    if (!planIdToCancel) return;
+    
+    try {
+      setIsCanceling(true);
+      
+      // Ejecutamos la petición PATCH de forma segura a Spring Boot
+      await cancelVoyagePlan(planIdToCancel);
+      
+      // 🚀 SOLUCIÓN SENIOR: En lugar de usar un setPlans inexistente, volvemos a llamar 
+      // a fetchFilteredPlans con los filtros actuales. Esto re-ejecuta la consulta JPA,
+      // actualiza los almacenes del hook y refresca la grilla entera de forma nativa.
+      await fetchFilteredPlans(filters, page, pageSize);
+      
+      setIsCancelModalOpen(false);
+      setPlanIdToCancel(null);
+    } catch (error) {
+      console.error("Error al cancelar la travesía:", error);
+      alert("No se pudo cancelar la travesía. Verifique las reglas de negocio en el servidor.");
+    } finally {
+      setIsCanceling(false);
+    }
+  };
 
   return (
     <NavigationLayout>
@@ -206,17 +242,17 @@ export const TravelPlanList: React.FC = () => {
           </div>
         )}
 
-        {/* Grilla Operada por el Filtro en Memoria */}
+        {/* Grilla */}
         {loading ? (
           <div className={styles.loadingContainer}><div className={styles.spinner}></div></div>
         ) : error ? (
           <div className={styles.emptyState}>{error}</div>
-        ) : finalDisplayPlans.length === 0 ? ( // 🚀 CAMBIADO AQUÍ PARA RECONOCER EL BUSCADOR
+        ) : finalDisplayPlans.length === 0 ? ( 
           <div className={styles.emptyState}>No se encontraron travesías activas.</div>
         ) : (
           <>
             <div className={styles.grid}>
-              {finalDisplayPlans.map(plan => { // 🚀 CAMBIADO AQUÍ PARA RENDERIZAR LAS FILTRADAS
+              {finalDisplayPlans.map(plan => { 
                 const statusStyle = getStatusStyles(plan.status);
                 return (
                   <div key={plan.id} className={styles.card}>
@@ -257,12 +293,17 @@ export const TravelPlanList: React.FC = () => {
                         <>
                           <button 
                             className={styles.btnEdit} 
-                            /* 🚀 METEMOS EL ONCLICK AQUÍ: Viaja al asistente y le pasa el ID en el state */
                             onClick={() => navigate('/navigation/create-plan', { state: { editPlanId: plan.id } })} 
                           >
                             Editar
                           </button>
-                          <button className={styles.btnCancel}>Cancelar</button>
+                          <button 
+                            className={styles.btnCancel}
+                            disabled={isCanceling} // 🚀 CORREGIDO: Evita doble clic, TypeScript ya no chilla
+                            onClick={() => handleCancelClick(plan.id)}
+                          >
+                            Cancelar 
+                          </button>
                         </>
                       )}
                     </div>
@@ -280,6 +321,16 @@ export const TravelPlanList: React.FC = () => {
           </>
         )}
       </div>
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        title="¿Confirmar cancelación de travesía?"
+        description="Esta acción cambiará el estado operacional del plan a CANCELADO. El buque y la tripulación asignados serán liberados para nuevos itinerarios."
+        onConfirm={handleConfirmCancel} 
+        onCancel={() => {
+          setIsCancelModalOpen(false);   
+          setPlanIdToCancel(null);       
+        }}
+      />
     </NavigationLayout>
   );
 };

@@ -24,4 +24,6 @@ public interface TravelPlanService {
     TravelPlanResponseDTO getTravelPlanById(UUID id);
 
     TravelPlanResponseDTO updateTravelPlan(UUID id, TravelPlanRequestDTO dto);
+
+    TravelPlanResponseDTO cancelTravelPlan(UUID id);
 }

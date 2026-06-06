@@ -342,6 +342,28 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         return buildResponse(saved);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public TravelPlanResponseDTO cancelTravelPlan(UUID id) {
+        log.info("Iniciando cancelación de plan de travesía ID: {}", id);
+
+        TravelPlan travelPlan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesía no encontrado con ID: " + id));
+
+        if (travelPlan.getStatus() == TravelPlanStatusEnum.IN_PROGRESS
+                || travelPlan.getStatus() == TravelPlanStatusEnum.COMPLETED
+                || travelPlan.getStatus() == TravelPlanStatusEnum.CANCELLED) {
+            throw new BadRequestException(
+                    "No se puede cancelar un plan de travesía en estado " + travelPlan.getStatus());
+        }
+
+        travelPlan.setStatus(TravelPlanStatusEnum.CANCELLED);
+        TravelPlan saved = travelPlanRepository.save(travelPlan);
+        log.info("Plan de travesía cancelado exitosamente con ID: {}", saved.getId());
+
+        return buildResponse(saved);
+    }
+
     private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {
         return new TravelPlanSummaryResponseDTO(
                 entity.getId(),
