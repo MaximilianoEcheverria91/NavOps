@@ -66,11 +66,8 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
      setIsFilterOpen(false);
   };
 
-
- // 🚀 CONTROL SENIOR: Solo va a la API si no tenemos datos temporales cargados previamente
   useEffect(() => {
     const fetchCargo = async () => {
-      // Si ya tenemos elementos en la lista inicial, no tocamos la API
       if (initialCargoList && initialCargoList.length > 0) return;
 
       try {
@@ -84,9 +81,8 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
       }
     };
     fetchCargo();
-  }, [planId, initialCargoList]); // Added initialCargoList to dependencies
+  }, [planId, initialCargoList]); 
 
-  // 🚀 SINCRONIZACIÓN SENIOR: Si la prop del padre cambia o se actualiza, refrescamos el estado local al instante
   useEffect(() => {
     if (initialCargoList) {
       setCargoList(initialCargoList);
@@ -101,7 +97,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     let biners = 0;
 
     cargoList.forEach(item => {
-     const qty = item.quantity || 0;
+      const qty = item.quantity || 0;
       const unitWeight = item.weightTonnes || 0;
       tonnes += (qty * unitWeight);
 
@@ -149,22 +145,21 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     setCargoList(cargoList.filter((_, i) => i !== index));
   };
 
-
   const handleSaveAll = async () => {
     // 🚀 CONTROL CRÍTICO DE PESO MÁXIMO (VGM)
     if (totalTonnes > shipCapacityTonnes) {
-      setIsOverloadAlertOpen(true); // Abre el cartel de la imagen
-      return; // 🛑 Frena la ejecución, no guarda ni cierra
+      setIsOverloadAlertOpen(true); 
+      return; 
     }
 
     try {
       setIsSaving(true);
-      if (planId !== 'V012') {
-        await cargoService.saveCargoList(planId, cargoList);
-      }
+      // 🚀 SOLUCIÓN SENIOR: Sincronizamos la lista local con el estado del padre.
+      // No disparamos llamados individuales a la API de carga intermedio para evitar colisiones,
+      // la persistencia total se ejecuta de forma unificada al guardar el Plan de Travesía.
       onSaveSelection(cargoList);
     } catch (error) {
-      console.error('Error al guardar', error);
+      console.error('Error al sincronizar la carga:', error);
       alert('Error al guardar la lista de carga');
     } finally {
       setIsSaving(false);
@@ -182,7 +177,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
       const matchCategory = filterCategories.length === 0 || 
         filterCategories.includes(item.productCategory);
 
-     const filterCargoTypes = typeof localFilters.cargoType === 'string'
+      const filterCargoTypes = typeof localFilters.cargoType === 'string'
         ? localFilters.cargoType.split(',').filter(Boolean)
         : Array.isArray(localFilters.cargoType) ? localFilters.cargoType : [];
 
@@ -208,19 +203,16 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
     return CARGO_TYPES.find(c => c.value === value)?.label || value;
   }; 
   
-  // 🚀 INTERCEPTOR SENIOR: Captura la flecha de la PC / Botón Atrás del Navegador
   useEffect(() => {
     const handleBackButton = (e: PopStateEvent) => {
-      // Si hay elementos cargados, bloqueamos el comportamiento por defecto
       if (cargoList.length > 0) {
-        window.history.pushState(null, '', window.location.pathname); // Bloquea el historial
-        setIsLeaveAlertOpen(true); // Dispara el cartel de confirmación
+        window.history.pushState(null, '', window.location.pathname); 
+        setIsLeaveAlertOpen(true); 
       } else {
-        onCancel(); // Si está vacío, se va directo a las 4 cards sin molestar
+        onCancel(); 
       }
     };
 
-    // Empujamos un estado falso al historial para poder capturar el primer click de atrás
     window.history.pushState(null, '', window.location.pathname);
     window.addEventListener('popstate', handleBackButton);
 
@@ -231,19 +223,18 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
 
   const handleBackNavigation = () => {
     if (cargoList.length > 0) {
-      setIsLeaveAlertOpen(true); // Abre el modal de advertencia
+      setIsLeaveAlertOpen(true); 
     } else {
-      onCancel(); // Vuelve directo a las 4 cards (ejecuta el setActiveModal(null) del padre)
+      onCancel(); 
     }
   };
-
-  
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.titleContainer}>
-          <h2>Gestión de Carga ID {planId}</h2>
+          {/* 🚀 CORREGIDO: Chau ID horrible, queda estético y corporativo */}
+          <h2>Gestión del Manifiesto de Carga</h2>
           <p>Administra productos y tipo de cargas</p>
         </div>
         <div className={styles.headerActions}>
@@ -262,7 +253,6 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
 
       <div className={styles.progressSection}>
         <div className={styles.progressHeader}>
-
           <span 
             style={{ 
               color: totalTonnes > shipCapacityTonnes ? '#ef4444' : 'inherit',
@@ -271,7 +261,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
           >
             {totalTonnes > shipCapacityTonnes 
               ? '⚠️ Límite Excedido (Sobrecarga)' 
-              : `Peso Máximo ${shipCapacityTonnes === 5000 && planId === 'V012' ? '(Sin barco asignado - Estimación)' : ''}`
+              : `Peso Máximo Autorizado (VGM)`
             }
           </span>
           
@@ -334,7 +324,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
           <Search size={18} />
           <input
             type="text"
-            placeholder="Buscar por nombre, legajo o rol..."
+            placeholder="Buscar por nombre de producto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -356,7 +346,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
               gap: '8px'
             }}
           >
-            <Filter size={18} /> Categorias <ChevronDown size={16} />
+            <Filter size={18} /> Categorías <ChevronDown size={16} />
           </button>
           
           {isFilterOpen && (
@@ -375,7 +365,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
         <div className={styles.emptyState}>
           <Package size={64} />
           <h3>No hay productos registrados</h3>
-          <p>Haz clic en "Agregar Producto" para comenzar a registrar la carga para este plan de travesía.</p>
+          <p>Haz clic en el botón "+" para comenzar a registrar la carga para este plan de travesía.</p>
         </div>
       ) : (
         <div className={styles.cardsGrid}>
@@ -398,7 +388,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
               <div className={styles.cardStats}>
                 <div className={styles.statItem}>
                   <span>Cantidad</span>
-                  <strong>{item.quantity} </strong> {/*{getTypeLabel(item.cargoType)}*/}
+                  <strong>{item.quantity} </strong>
                 </div>
                 <div className={styles.statItem}>
                   <span>Tipo de carga</span>
@@ -445,7 +435,6 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
         />
       )}
 
-      {/* 🚨 MODAL DE ADVERTENCIA VGM - SOBRECARGA */}
       <AlertModal
         isOpen={isOverloadAlertOpen}
         title={`VGM NO CONFORME. Tenés una sobrecarga de ${(totalTonnes - shipCapacityTonnes).toLocaleString()} Tn. Supera el límite máximo bruto:`}
@@ -458,7 +447,7 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
         isOpen={isDetailOpen}
         cargo={selectedCargo}
         onClose={() => { setIsDetailOpen(false); setSelectedCargo(null); }}
-        isLightTheme={false} // Cambialo a true si tu sistema conmuta a modo claro
+        isLightTheme={false} 
       />
 
       <ConfirmModal
@@ -467,9 +456,9 @@ export const ManageCargo: React.FC<ManageCargoProps> = ({
         description="Si sales ahora, perderás los productos cargados en el sistema que no hayan sido guardados de forma definitiva."
         onConfirm={() => {
           setIsLeaveAlertOpen(false);
-          onCancel(); // Forzamos la salida y volvemos a las 4 cards
+          onCancel(); 
         }}
-        onCancel={() => setIsLeaveAlertOpen(false)} // Cerramos el cartel y se queda editando
+        onCancel={() => setIsLeaveAlertOpen(false)} 
       />
       
     </div>

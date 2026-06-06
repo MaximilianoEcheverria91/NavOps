@@ -8,8 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -66,15 +66,15 @@ public class TravelPlan {
 
     @Builder.Default
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Stop> stops = new ArrayList<>();
+    private Set<Stop> stops = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TravelPlanCrew> crewMembers = new ArrayList<>();
+    private Set<TravelPlanCrew> crewMembers = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TravelPlanCargo> cargoItems = new ArrayList<>();
+    private Set<TravelPlanCargo> cargoItems = new HashSet<>();
 
     @Builder.Default
     @Version

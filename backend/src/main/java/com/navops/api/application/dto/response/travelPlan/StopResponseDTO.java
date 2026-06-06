@@ -17,6 +17,12 @@ public record StopResponseDTO(
     @Schema(description = "Nombre del puerto")
     String portName,
 
+    @Schema(description = "Latitud del puerto")
+    Double latitude,
+
+    @Schema(description = "Longitud del puerto")
+    Double longitude,
+
     @Schema(description = "Número de orden de la escala")
     Short sequence,
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCreateVoyagePlan } from '../../../hooks/useCreateVoyagePlan';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
-import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal'; // 🚀 IMPORTADO DESDE TU RUTA
+import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal'; 
 import { NavigationLayout } from '../../../layouts/NavigationLayout';
 import { Sailboat, Map, Users, Package, Check, X, ArrowLeft} from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
@@ -23,9 +23,46 @@ type VoyagePlanState = {
   routeData?: any;
 };
 
+const SHIP_TYPE_TRANSLATIONS: Record<string, string> = {
+  CONTAINER_SHIP: 'Portacontenedor',
+  BULK_CARRIER: 'Granelero',
+  TANKER: 'Petrolero',
+  RO_RO: 'Ro-Ro',
+  FISHING_VESSEL: 'Pesquero',
+  CRUISE_SHIP: 'Crucero',
+  FERRY: 'Ferry',
+  PASSENGER_SHIP: 'Buque de Pasajero',
+  SUPPLY_SHIP: 'Buque de suministro',
+  TUGBOAT: 'Remolque',
+  AIRCRAFT_CARRIER: 'Portaaviones',
+  SUBMARINE: 'Submarino',
+  PATROL_BOAT: 'Patrullero',
+  LANDING_SHIP: 'Barco de desembarque',
+  YACHT: 'Yate',
+  SAILBOAT: 'Velero',
+  SPEEDBOAT: 'Lancha',
+  RESEARCH_VESSEL: 'Buque de investigación',
+  TRAINING_SHIP: 'Barco de formación',
+  HOSPITAL_SHIP: 'Buque hospital',
+  PILOT_BOAT: 'Barco piloto',
+  BARGE: 'Barcaza',
+  ICEBREAKER: 'Rompehielos',
+  NOTICE_SHIP: 'Buque de aviso',
+  OCEAN_PATROL_OPV: 'Patrulla Oceanica OPV',
+  CAR_CARRIER: 'Portavehículos',
+  REEFER: 'Frigorífico',
+  GENERAL_CARGO: 'Cranelero',
+  DESTROYER: 'Destructor',
+  FRIGATE: 'Fragata',
+  CORVETTE: 'Corbeta',
+};
+
 export const CreateVoyagePlan: React.FC = () => {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const id = location.state?.editPlanId;
+  const isEditMode = !!id;
+
   const [planState, setPlanState] = useState<VoyagePlanState>({
     shipId: null,
     shipData: null,
@@ -37,10 +74,74 @@ export const CreateVoyagePlan: React.FC = () => {
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false); // 🚀 ESTADO PARA CONTROLAR EL MODAL DE SALIDA
-  const { saveVoyagePlan, loading } = useCreateVoyagePlan();
+  const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
+  const { saveVoyagePlan, updateVoyagePlan, fetchVoyagePlan, loading } = useCreateVoyagePlan();
 
-  // Calculates progress
+  useEffect(() => {
+    if (isEditMode && id) {
+      const loadPlan = async () => {
+        try {
+          const data = await fetchVoyagePlan(id);
+          
+          const departureDateObj = new Date(data.departureTime);
+          const arrivalDateObj = new Date(data.eta);
+          
+          const resolvedShipId = data.shipId || data.idShip;
+          const resolvedShipImageUrl = data.shipMainImageUrl || data.mainImageUrl || data.shipImageUrl || null;
+
+          setPlanState({
+            shipId: resolvedShipId, 
+            shipData: {
+              id: resolvedShipId,
+              name: data.shipName || 'Buque Seleccionado',
+              cargoCapacityTonnes: data.shipCargoCapacityTonnes, 
+              crewCapacity: data.shipCrewCapacity,
+              mainImageUrl: resolvedShipImageUrl, 
+              registration: data.shipRegistration || 'REG-OFICIAL', 
+              shipType: data.shipType || 'CONTAINER_SHIP'
+            } as any,
+            destinationId: data.destinationPortId,
+            crewIds: data.crewIds || data.crewMemberIds || [],
+            cargoDetails: data.cargoItems || [],
+            currentStep: 4, 
+            routeData: {
+              // 🚀 ENLAZADO AL BACKEND: Mapeamos latitud y longitud reales del puerto origen y destino
+              origin: { 
+                id: data.originPortId, 
+                name: data.originPortName || 'Puerto de Origen',
+                latitude: data.originLatitude,
+                longitude: data.originLongitude
+              },
+              destination: { 
+                id: data.destinationPortId, 
+                name: data.destinationPortName || 'Puerto de Destino',
+                latitude: data.destinationLatitude,
+                longitude: data.destinationLongitude
+              },
+              departureDate: departureDateObj.toISOString().split('T')[0],
+              departureTime: departureDateObj.toTimeString().substring(0, 5),
+              arrivalDate: arrivalDateObj.toISOString().split('T')[0],
+              arrivalTime: arrivalDateObj.toTimeString().substring(0, 5),
+              totalDistance: data.distanceMiles,
+              etaHours: data.estimatedHours,
+              totalDays: Math.ceil(data.estimatedHours / 24),
+              // 🚀 ENLAZADO AL BACKEND: Mapeamos también la geolocalización de las escalas
+              stops: data.stops ? data.stops.map((s: any) => ({ 
+                ...s, 
+                id: s.portId,
+                latitude: s.latitude,
+                longitude: s.longitude
+              })) : []
+            }
+          });
+        } catch (error) {
+          console.error("Error al precargar el plan", error);
+        }
+      };
+      loadPlan();
+    }
+  }, [id, isEditMode]);
+
   const completedSteps = [
     planState.shipId !== null,
     planState.destinationId !== null,
@@ -51,15 +152,13 @@ export const CreateVoyagePlan: React.FC = () => {
   const progressPercentage = (completedSteps / 4) * 100;
   const isComplete = completedSteps === 4;
 
-  // 🚀 INTERCEPTOR: Captura el botón "Atrás" del Navegador
   useEffect(() => {
     const handleBackButton = (e: PopStateEvent) => {
-      if (completedSteps > 0) {
-        // Bloqueamos la navegación hacia atrás reinsertando el estado actual en el historial
+      if (completedSteps > 0 || isEditMode) { 
         window.history.pushState(null, '', window.location.pathname);
-        setIsLeaveAlertOpen(true); // Abrimos tu ConfirmModal
+        setIsLeaveAlertOpen(true); 
       } else {
-        navigate('/navigation/menu'); // Si está todo en cero, se va sin molestar
+        navigate('/navigation/travel-plans'); 
       }
     };
 
@@ -69,14 +168,13 @@ export const CreateVoyagePlan: React.FC = () => {
     return () => {
       window.removeEventListener('popstate', handleBackButton);
     };
-  }, [completedSteps, navigate]);
+  }, [completedSteps, navigate, isEditMode]); 
 
-  // 🚀 MANEJADOR: Controla el click del botón "Cancelar" físico de la UI
   const handleCancelClick = () => {
     if (completedSteps > 0) {
       setIsLeaveAlertOpen(true);
     } else {
-      navigate('/navigation/menu');
+      navigate('/navigation/travel-plans');
     }
   };
 
@@ -120,10 +218,14 @@ export const CreateVoyagePlan: React.FC = () => {
   const handlePreview = async () => {
     if (isComplete && !loading) {
       try {
-        await saveVoyagePlan(planState);
+        if (isEditMode && id) {
+          await updateVoyagePlan(id, planState);
+        } else {
+          await saveVoyagePlan(planState);
+        }
         setShowSuccessModal(true);
       } catch (error) {
-        // El hook ya maneja el error internamente
+        // El hook maneja el error de forma interna
       }
     }
   };
@@ -147,12 +249,12 @@ export const CreateVoyagePlan: React.FC = () => {
           onSelectCrew={handleSelectCrew}
           onCancel={() => setActiveModal(null)}
           initialSelectedIds={planState.crewIds}
-          crewCapacity={planState.shipData?.crewCapacity || 100}
+          crewCapacity={planState.shipData?.crewCapacity}
         />
       ) : activeModal === 'cargo' ? (
         <ManageCargo
-          planId="V012"
-          shipCapacityTonnes={planState.shipData?.cargoCapacityTonnes || 5000}
+          planId={id}
+          shipCapacityTonnes={planState.shipData?.cargoCapacityTonnes}
           initialCargoList={planState.cargoDetails || []}
           onSaveSelection={handleSetCargo}
           onCancel={() => setActiveModal(null)}
@@ -160,17 +262,16 @@ export const CreateVoyagePlan: React.FC = () => {
       ) : (
         <div className={styles.container}>
           <header className={styles.header}>
-            <h1 className={styles.title}>Nuevo plan de Travesía</h1>
+            <h1 className={styles.title}>{isEditMode ? `Modificar Plan de Travesía` : `Nuevo plan de Travesía`}</h1>
             <button className={styles.cancelButton}
               type="button"
               onClick={handleCancelClick}
             >
-              <ArrowLeft size={16} /> Volver al Menú
+              <ArrowLeft size={16} /> Volver a Grilla
             </button>
           </header>
           <p className={styles.subtitle}>Bienvenido al sistema de gestión y Navegación</p>
 
-        {/* Barra de Progreso */}
         <div className={styles.progressSection}>
           <div className={styles.progressHeader}>
             <div className={styles.progressIcon}>
@@ -189,7 +290,6 @@ export const CreateVoyagePlan: React.FC = () => {
           </div>
         </div>
 
-        {/* 🎯 Grilla de 4 Cards */}
         <div className={styles.grid}>
           {/* Paso 1: Ruta */}
           {planState.routeData ? (
@@ -268,7 +368,7 @@ export const CreateVoyagePlan: React.FC = () => {
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Tipo de Barco:</span>
                     <span className={styles.detailValue}>
-                      {planState.shipData.shipType === 'CONTAINER_SHIP' ? 'Portacontenedor' : planState.shipData.shipType || 'General'}
+                      {SHIP_TYPE_TRANSLATIONS[planState.shipData.shipType] || planState.shipData.shipType || 'General'}
                     </span>
                   </div>
                   <div className={styles.detailRow}>
@@ -300,7 +400,7 @@ export const CreateVoyagePlan: React.FC = () => {
                 <span className={styles.statusBadgeSuccess}>Validada</span>
               </div>
               <div className={styles.cardContent} style={{ paddingTop: '8px' }}>
-                <div className={styles.shipNameRow} style={{ marginBottom: '8px' }}>Letra Oficial</div>
+                <div className={styles.shipNameRow} style={{ marginBottom: '8px' }}>Tripulación Asignada</div>
                 <p className={styles.crewSummaryText}>Roles críticos y dotación reglamentaria asignados.</p>
                 <div className={styles.avatarStackContainer}>
                   <div className={styles.avatarStack}>
@@ -350,19 +450,19 @@ export const CreateVoyagePlan: React.FC = () => {
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Peso Total:</span>
                     <span className={styles.detailValue}>
-                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.weightTonnes || 0), 0)} Tons
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + (Number(c.quantity || 0) * Number(c.weightTonnes || 0)), 0).toLocaleString()} Tons
                     </span>
                   </div>
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Volumen:</span>
+                    <span className={styles.detailLabel}>Volumen Total:</span>
                     <span className={styles.detailValue}>
-                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.volumeM3 || 0), 0)} m³
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + (Number(c.quantity || 0) * Number(c.volumeM3 || 0)), 0).toLocaleString()} m³
                     </span>
                   </div>
                   <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Bultos/Cont.:</span>
+                    <span className={styles.detailLabel}>Bultos Totales:</span>
                     <span className={styles.detailValue} style={{ color: '#38bdf8', fontWeight: 600 }}>
-                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.quantity || 0), 0)} u.
+                      {planState.cargoDetails.reduce((sum: number, c: any) => sum + Number(c.quantity || 0), 0).toLocaleString()} u.
                     </span>
                   </div>
                 </div>
@@ -377,22 +477,18 @@ export const CreateVoyagePlan: React.FC = () => {
           )}
         </div>
 
-        {/* 🚀 BOTONERA INFERIOR CON ACCIÓN DE CANCELAR REESTILIZADA */}
         <div className={styles.actionContainer} style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-          
           <button 
             className={`${styles.previewButton} ${isComplete ? styles.previewButtonActive : ''}`}
             disabled={!isComplete || loading}
             onClick={handlePreview}
           >
-            {loading ? <span className={styles.spinner}></span> : 'Vista Previa / Confirmar Plan'}
+            {loading ? <span className={styles.spinner}></span> : (isEditMode ? 'Actualizar Plan' : 'Vista Previa / Confirmar Plan')}
           </button>
         </div>
 
-        {/* Footer */}
         <footer className={styles.footer}>Sistema de Gestión Marítima V.1</footer>
 
-        {/* Modals Mock */}
         {activeModal && (
           <div className={styles.modalOverlay} onClick={() => setActiveModal(null)}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -409,27 +505,25 @@ export const CreateVoyagePlan: React.FC = () => {
           </div>
         )}
 
-        {/* Modal de Éxito */}
         {showSuccessModal && (
           <FeedbackModal 
-            message="¡Plan de Travesía guardado con éxito!" 
+            message={isEditMode ? "Plan de Travesía actualizado correctamente" : "¡Plan de Travesía guardado con éxito!"} 
             onClose={() => {
               setShowSuccessModal(false);
-              navigate('/navigation/menu'); // 👈 REDIRECCIÓN CORRECTA
+              navigate('/navigation/travel-plans');
             }} 
           />
         )}
 
-        {/* 🚀 TU CONFIRM MODAL COMPONENETIZADO INTEGRADO */}
         <ConfirmModal
           isOpen={isLeaveAlertOpen}
           title="¿Desea cancelar el Plan de Travesía?"
           description="Si sales ahora, perderás todos los cambios y selecciones asignadas en este asistente de navegación."
           onConfirm={() => {
             setIsLeaveAlertOpen(false);
-            navigate('/navigation/menu'); // 👈 TE ENVÍA DE UNA AL MENÚ DE NAVEGACIÓN
+            navigate('/navigation/travel-plans');
           }}
-          onCancel={() => setIsLeaveAlertOpen(false)} // 👈 CIERRA EL CARTEL Y SE QUEDA
+          onCancel={() => setIsLeaveAlertOpen(false)} 
         />
       </div>
       )}

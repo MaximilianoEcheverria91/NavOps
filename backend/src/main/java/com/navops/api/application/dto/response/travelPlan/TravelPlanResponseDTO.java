@@ -32,6 +32,18 @@ public record TravelPlanResponseDTO(
     @Schema(description = "Nombre del puerto de destino")
     String destinationPortName,
 
+    @Schema(description = "Latitud del puerto de origen")
+    Double originLatitude,
+
+    @Schema(description = "Longitud del puerto de origen")
+    Double originLongitude,
+
+    @Schema(description = "Latitud del puerto de destino")
+    Double destinationLatitude,
+
+    @Schema(description = "Longitud del puerto de destino")
+    Double destinationLongitude,
+
     @Schema(description = "Fecha y hora de partida")
     OffsetDateTime departureTime,
 
@@ -43,6 +55,21 @@ public record TravelPlanResponseDTO(
 
     @Schema(description = "Horas estimadas de navegación")
     BigDecimal estimatedHours,
+
+    @Schema(description = "Capacidad de carga real del barco")
+    BigDecimal shipCargoCapacityTonnes,
+
+    @Schema(description = "Capacidad de tripulación real del barco")
+    Short shipCrewCapacity,
+
+    @Schema(description = "Matrícula del buque")
+    String shipRegistration,
+
+    @Schema(description = "Tipo de buque")
+    String shipType,
+
+    @Schema(description = "URL de la imagen principal del buque")
+    String shipMainImageUrl,
 
     @Schema(description = "Estado del plan de travesía")
     String status,
