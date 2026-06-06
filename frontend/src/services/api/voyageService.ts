@@ -1,4 +1,5 @@
 import { apiClient } from '../../api/apiClient';
+import axios from 'axios';
 
 export interface StopRequest {
   portId: string;
@@ -47,5 +48,11 @@ export const updateVoyagePlan = async (id: string, request: VoyagePlanRequest): 
 
 export const getVoyagePlan = async (id: string): Promise<any> => {
   const response = await apiClient.get(`/navigation/travel-plans/${id}`);
+  return response.data;
+};
+
+export const cancelVoyagePlan = async (id: string): Promise<any> => {
+  // 🚀 CORREGIDO: Usamos apiClient para arrastrar los interceptores, headers y baseURL nativos
+  const response = await apiClient.patch(`/navigation/travel-plans/${id}/cancel`);
   return response.data;
 };
