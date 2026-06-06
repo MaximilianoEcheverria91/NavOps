@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/navigation/travel-plans")
@@ -83,6 +84,60 @@ public class TravelPlanController {
             Pageable pageable) {
         log.info("Recibida petición de búsqueda filtrada de planes de travesía");
         return ResponseEntity.ok(travelPlanService.getFilteredTravelPlans(filter, pageable));
+    }
+
+    @Operation(
+            summary = "Obtener plan de travesía por ID",
+            description = "Retorna un plan de travesía completo con escalas, barco, tripulación y carga.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Plan de travesía encontrado",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Plan de travesía no encontrado",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<TravelPlanResponseDTO> getTravelPlanById(@PathVariable UUID id) {
+        log.info("Recibida petición para obtener plan de travesía por ID: {}", id);
+        return ResponseEntity.ok(travelPlanService.getTravelPlanById(id));
+    }
+
+    @Operation(
+            summary = "Actualizar plan de travesía",
+            description = "Actualiza un plan de travesía existente reemplazando todos los datos. " +
+                    "No se permite actualizar planes en estado COMPLETED o CANCELLED. " +
+                    "Las escalas, tripulación y carga se reemplazan completamente.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Plan de travesía actualizado exitosamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Error de validación de negocio o datos",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Recurso no encontrado (plan, buque, puerto o tripulante)",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<TravelPlanResponseDTO> updateTravelPlan(
+            @PathVariable UUID id,
+            @Valid @RequestBody TravelPlanRequestDTO dto) {
+        log.info("Recibida petición para actualizar plan de travesía ID: {}", id);
+        TravelPlanResponseDTO response = travelPlanService.updateTravelPlan(id, dto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

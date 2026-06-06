@@ -39,3 +39,13 @@ export const createVoyagePlan = async (request: VoyagePlanRequest): Promise<any>
   const response = await apiClient.post('/navigation/travel-plans', request);
   return response.data;
 };
+
+export const updateVoyagePlan = async (id: string, request: VoyagePlanRequest): Promise<any> => {
+  const response = await apiClient.put(`/navigation/travel-plans/${id}`, request);
+  return response.data;
+};
+
+export const getVoyagePlan = async (id: string): Promise<any> => {
+  const response = await apiClient.get(`/navigation/travel-plans/${id}`);
+  return response.data;
+};

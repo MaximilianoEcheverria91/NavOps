@@ -42,4 +42,18 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, J
             @Param("shipId") UUID shipId,
             @Param("newDeparture") OffsetDateTime newDeparture,
             @Param("newEta") OffsetDateTime newEta);
+
+    @Query("SELECT COUNT(tp) > 0 FROM TravelPlan tp " +
+           "WHERE tp.ship.id = :shipId " +
+           "AND tp.id <> :excludePlanId " +
+           "AND tp.deletedAt IS NULL " +
+           "AND tp.status <> com.navops.api.domain.enums.TravelPlanStatusEnum.COMPLETED " +
+           "AND tp.status <> com.navops.api.domain.enums.TravelPlanStatusEnum.CANCELLED " +
+           "AND :newDeparture < tp.eta " +
+           "AND :newEta > tp.departureTime")
+    boolean existsOverlappingPlanExcludingId(
+            @Param("shipId") UUID shipId,
+            @Param("excludePlanId") UUID excludePlanId,
+            @Param("newDeparture") OffsetDateTime newDeparture,
+            @Param("newEta") OffsetDateTime newEta);
 }

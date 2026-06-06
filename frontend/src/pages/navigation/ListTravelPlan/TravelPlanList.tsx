@@ -117,7 +117,6 @@ export const TravelPlanList: React.FC = () => {
 
   return (
     <NavigationLayout>
-      <div className={`${styles.pageContainer} light`}></div>
       <div className={styles.pageContainer}>
         
         {/* Cabecera */}
@@ -255,7 +254,16 @@ export const TravelPlanList: React.FC = () => {
                     <div className={styles.cardActions}>
                       <button className={styles.btnDetail}>Ver detalle</button>
                       {(plan.status === 'PLANNED' || plan.status === 'DELAYED') && (
-                        <><button className={styles.btnEdit}>Editar</button><button className={styles.btnCancel}>Cancelar</button></>
+                        <>
+                          <button 
+                            className={styles.btnEdit} 
+                            /* 🚀 METEMOS EL ONCLICK AQUÍ: Viaja al asistente y le pasa el ID en el state */
+                            onClick={() => navigate('/navigation/create-plan', { state: { editPlanId: plan.id } })} 
+                          >
+                            Editar
+                          </button>
+                          <button className={styles.btnCancel}>Cancelar</button>
+                        </>
                       )}
                     </div>
                   </div>
