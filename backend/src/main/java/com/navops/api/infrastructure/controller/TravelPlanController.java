@@ -176,9 +176,80 @@ public class TravelPlanController {
             summary = "Crear plan de travesia",
             description = "Crea un plan de travesia completo con escalas, tripulacion y carga.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Plan de travesia creado exitosamente"),
-                    @ApiResponse(responseCode = "400", description = "Error de validacion de negocio o datos"),
-                    @ApiResponse(responseCode = "404", description = "Recurso no encontrado")
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Plan de travesía actualizado exitosamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Error de validación de negocio o datos",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Recurso no encontrado (plan, buque, puerto o tripulante)",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<TravelPlanResponseDTO> updateTravelPlan(
+            @PathVariable UUID id,
+            @Valid @RequestBody TravelPlanRequestDTO dto) {
+        log.info("Recibida petición para actualizar plan de travesía ID: {}", id);
+        TravelPlanResponseDTO response = travelPlanService.updateTravelPlan(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Cancelar plan de travesía",
+            description = "Cambia el estado del plan a CANCELLED. " +
+                    "No permite cancelar planes en estado IN_PROGRESS, COMPLETED o ya CANCELLED.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Plan de travesía cancelado exitosamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Error de validación de negocio",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Plan de travesía no encontrado",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<TravelPlanResponseDTO> cancelTravelPlan(@PathVariable UUID id) {
+        log.info("Recibida petición para cancelar plan de travesía ID: {}", id);
+        return ResponseEntity.ok(travelPlanService.cancelTravelPlan(id));
+    }
+
+    @Operation(
+            summary = "Crear plan de travesía",
+            description = "Crea un plan de travesía completo con escalas, tripulación y carga. " +
+                    "Persiste en cascada todas las entidades asociadas en una sola transacción ACID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Plan de travesía creado exitosamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Error de validación de negocio o datos",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Recurso no encontrado (buque, puerto o tripulante)",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
             }
     )
     @PostMapping
