@@ -18,6 +18,10 @@ export const MyTravelPlanList: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
 
+  
+  // 🚀 NUEVO: Para recordar qué viaje quiere cancelar el capitán
+  const [pendingCancelId, setPendingCancelId] = useState<string | null>(null);
+
   useEffect(() => {
     fetchVoyages();
   }, []);
@@ -54,15 +58,33 @@ export const MyTravelPlanList: React.FC = () => {
   }
 };
 
-  const handleCancel = async (id: string) => {
-    if (window.confirm('¿Está seguro de que desea cancelar este viaje?')) {
-      try {
-        await cancelVoyagePlan(id);
-        fetchVoyages(); // Refetch the list after cancellation
-      } catch (err) {
-        console.error('Error cancelling voyage:', err);
-        alert('Error al cancelar el viaje. Por favor, intente nuevamente.');
-      }
+  const handleCancelClick = (id: string) => {
+    setPendingCancelId(id);
+    setAlertMessage('¿Está seguro de que desea cancelar este plan de travesía? Esta acción no se puede deshacer.');
+    setIsAlertOpen(true);
+  };
+
+  // 🚀 LA MAGIA: Esta función se ejecuta cuando confirman adentro del modal
+  const executeCancellation = async () => {
+    if (!pendingCancelId) return;
+    
+    try {
+      setLoading(true);
+      setIsAlertOpen(false); // Cerramos el modal primero
+      
+      await cancelVoyagePlan(pendingCancelId); // Le pega al PATCH /cancel del service
+      await fetchVoyages(); // 🔄 Recargamos la lista en vivo desde el Back
+      
+      setPendingCancelId(null);
+    } catch (err: any) {
+      console.error('Error cancelling voyage:', err);
+      // Si el back rechaza la cancelación, reusamos el modal para mostrar la falla
+      const backendError = err.response?.data?.message || 'Error al intentar cancelar el viaje.';
+      setAlertMessage(backendError);
+      setPendingCancelId(null);
+      setIsAlertOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -166,7 +188,7 @@ export const MyTravelPlanList: React.FC = () => {
                             </button>
                             <button 
                               className={`${styles.actionBtn} ${styles.btnCancel}`}
-                              onClick={() => handleCancel(voyage.id)}
+                              onClick={() => handleCancelClick(voyage.id)}
                             >
                               Cancelar
                             </button>
@@ -196,6 +218,14 @@ export const MyTravelPlanList: React.FC = () => {
        title={"Control de Operaciones"} // 👈 Inyectamos tu mensaje acá temporalmente
        highlightText={alertMessage} 
        onClose={() => setIsAlertOpen(false)}
+      />
+
+      <AlertModal 
+       isOpen={isAlertOpen} 
+       title={pendingCancelId ? "Confirmar Cancelación" : "Control de Operaciones"} 
+       highlightText={alertMessage} 
+       buttonText={pendingCancelId ? "Confirmar" : "Aceptar"} // 👈 Botón dinámico
+       onClose={pendingCancelId ? executeCancellation : () => setIsAlertOpen(false)} // 👈 Acción dinámica
       />
     </NavigationLayout>
   );
