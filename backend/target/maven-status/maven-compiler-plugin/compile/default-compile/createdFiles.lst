@@ -27,11 +27,13 @@ com/navops/api/domain/enums/GenderEnum.class
 com/navops/api/repository/MaintenanceRepository.class
 com/navops/api/application/dto/response/ship/ShipFilterResponse.class
 com/navops/api/domain/enums/PeopleStatusEnum.class
+com/navops/api/application/service/travelPlan/TravelPlanServiceImpl$1.class
 com/navops/api/application/service/RoleService.class
 com/navops/api/domain/entity/Ship$ShipBuilder.class
 com/navops/api/application/dto/response/user/PersonnelEditResponse.class
 com/navops/api/domain/enums/SystemRoleFilterEnum.class
 com/navops/api/application/dto/response/CountryResponseDto.class
+com/navops/api/application/dto/response/travelPlan/GlobalVoyagesMetricsDTO.class
 com/navops/api/domain/entity/Stop.class
 com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ResidenceInfo$ResidenceInfoBuilder.class
 com/navops/api/application/dto/response/auth/LoginResponseDto.class
@@ -47,6 +49,7 @@ com/navops/api/domain/entity/TravelPlan.class
 com/navops/api/application/service/EmailService.class
 com/navops/api/application/dto/request/port/PortFilterRequest.class
 com/navops/api/infrastructure/exception/UserNotFoundException.class
+com/navops/api/application/dto/response/travelPlan/HistoryVoyagesMetricsDTO.class
 com/navops/api/domain/entity/TravelPlanCargo$TravelPlanCargoBuilder.class
 com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$SystemAccessData.class
 com/navops/api/security/JwtService.class
@@ -216,6 +219,7 @@ com/navops/api/application/dto/response/user/PersonnelDetailedResponse.class
 com/navops/api/domain/entity/Role$RoleBuilder.class
 com/navops/api/application/dto/response/ship/ShipDetailResponse.class
 com/navops/api/domain/entity/Role.class
+com/navops/api/application/dto/response/travelPlan/MyVoyagesMetricsDTO.class
 com/navops/api/infrastructure/controller/ImageController.class
 com/navops/api/repository/TravelPlanCargoRepository.class
 com/navops/api/application/dto/request/user/UserUpdateRequest$ContactInfo.class

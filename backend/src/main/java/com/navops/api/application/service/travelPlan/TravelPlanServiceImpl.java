@@ -4,6 +4,9 @@ import com.navops.api.application.dto.request.travelPlan.CargoItemRequestDTO;
 import com.navops.api.application.dto.request.travelPlan.StopRequestDTO;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanFilterRequest;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanRequestDTO;
+import com.navops.api.application.dto.response.travelPlan.GlobalVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.HistoryVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.StopResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
@@ -172,6 +175,81 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         Long scheduledCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.PLANNED);
         Long totalCompletedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.COMPLETED);
         return new TravelPlanMetricsDTO(scheduledCount, totalCompletedCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GlobalVoyagesMetricsDTO getGlobalVoyagesMetrics() {
+        log.info("Recuperando metricas globales de viajes");
+
+        Long inProgressCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.IN_PROGRESS);
+        Long plannedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.PLANNED);
+        Long delayedCount = travelPlanRepository.countDelayedByStatuses(
+                List.of(TravelPlanStatusEnum.IN_PROGRESS, TravelPlanStatusEnum.PLANNED));
+        Long totalCount = plannedCount + inProgressCount + delayedCount;
+
+        log.info("Metricas globales - En progreso: {}, Planificados: {}, Demorados: {}, Total: {}",
+                inProgressCount, plannedCount, delayedCount, totalCount);
+
+        return new GlobalVoyagesMetricsDTO(inProgressCount, plannedCount, delayedCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyVoyagesMetricsDTO getMyVoyagesMetrics(UUID userId) {
+        log.info("Recuperando metricas de viajes para el usuario ID: {}", userId);
+
+        List<Object[]> results = travelPlanRepository.countByUserIdGroupByStatus(userId);
+
+        long completedCount = 0;
+        long plannedCount = 0;
+        long cancelledCount = 0;
+
+        for (Object[] row : results) {
+            TravelPlanStatusEnum status = (TravelPlanStatusEnum) row[0];
+            long count = ((Number) row[1]).longValue();
+            switch (status) {
+                case COMPLETED -> completedCount += count;
+                case PLANNED -> plannedCount += count;
+                case CANCELLED -> cancelledCount += count;
+                default -> {}
+            }
+        }
+
+        long totalCount = completedCount + plannedCount + cancelledCount;
+
+        log.info("Metricas personales para usuario {} - Completados: {}, Planificados: {}, Cancelados: {}, Total: {}",
+                userId, completedCount, plannedCount, cancelledCount, totalCount);
+
+        return new MyVoyagesMetricsDTO(completedCount, plannedCount, cancelledCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HistoryVoyagesMetricsDTO getHistoryVoyagesMetrics() {
+        log.info("Recuperando metricas de historial de viajes");
+
+        Long completedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.COMPLETED);
+        Long cancelledCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.CANCELLED);
+        Long totalCount = completedCount + cancelledCount;
+
+        log.info("Historial de viajes - Completados: {}, Cancelados: {}, Total: {}",
+                completedCount, cancelledCount, totalCount);
+
+        return new HistoryVoyagesMetricsDTO(completedCount, cancelledCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TravelPlanSummaryResponseDTO> getMyAssignedVoyages(UUID userId) {
+        log.info("Recuperando viajes asignados al usuario ID: {}", userId);
+        List<String> activeStatuses = List.of("PLANNED", "IN_PROGRESS");
+        List<TravelPlan> plans = travelPlanRepository.findActiveByCrewMemberIdAndDeletedAtIsNull(userId, activeStatuses);
+        List<TravelPlanSummaryResponseDTO> result = plans.stream()
+                .map(this::toSummaryResponse)
+                .toList();
+        log.info("Viajes asignados encontrados para usuario {}: {}", userId, result.size());
+        return result;
     }
 
     @Override

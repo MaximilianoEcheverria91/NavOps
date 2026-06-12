@@ -38,6 +38,9 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipDetailResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipFilterResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/ship/ShipSummaryResponse.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/GlobalVoyagesMetricsDTO.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/HistoryVoyagesMetricsDTO.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/MyVoyagesMetricsDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/StopResponseDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/TravelPlanMetricsDTO.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/travelPlan/TravelPlanResponseDTO.java

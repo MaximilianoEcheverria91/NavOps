@@ -17,6 +17,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { NavigationMenu } from './pages/navigation/NavigationMenu/NavigationMenu.tsx'; 
 import { CreateVoyagePlan } from './pages/navigation/CreateVoyagePlan/CreateVoyagePlan';
 import { TravelPlanList } from './pages/navigation/ListTravelPlan/TravelPlanList.tsx';
+import { MyTravelPlanList } from './pages/navigation/MyTravelPlanList/MyTravelPlanList';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
         <Route path="/navigation/create-plan" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><CreateVoyagePlan /></ProtectedRoute>} />
 
         <Route path="/navigation/travel-plans" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><TravelPlanList /></ProtectedRoute>} />
+        <Route path="/navigation/my-voyages" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><MyTravelPlanList /></ProtectedRoute>} />
         
         {/* Rutas Públicas de Recuperación */}
         <Route path="/forgot-password" element={<ForgotPassword />} />

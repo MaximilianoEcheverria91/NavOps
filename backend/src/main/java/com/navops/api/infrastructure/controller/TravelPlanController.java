@@ -2,6 +2,9 @@ package com.navops.api.infrastructure.controller;
 
 import com.navops.api.application.dto.request.travelPlan.TravelPlanFilterRequest;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanRequestDTO;
+import com.navops.api.application.dto.response.travelPlan.GlobalVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.HistoryVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
@@ -15,11 +18,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.navops.api.domain.entity.User;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +53,69 @@ public class TravelPlanController {
     public ResponseEntity<TravelPlanMetricsDTO> getMetrics() {
         log.info("Recibida petición de métricas de planes de travesía");
         return ResponseEntity.ok(travelPlanService.getMetrics());
+    }
+
+    @Operation(
+            summary = "Obtener metricas globales de viajes",
+            description = "Retorna conteos de viajes en progreso, planificados, demorados y total global.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Metricas obtenidas correctamente",
+                            content = @Content(schema = @Schema(implementation = GlobalVoyagesMetricsDTO.class)))
+            }
+    )
+    @GetMapping("/global-voyages/metrics")
+    public ResponseEntity<GlobalVoyagesMetricsDTO> getGlobalVoyagesMetrics() {
+        log.info("Recibida peticion de metricas globales de viajes");
+        return ResponseEntity.ok(travelPlanService.getGlobalVoyagesMetrics());
+    }
+
+    @Operation(
+            summary = "Obtener metricas de viajes del usuario autenticado",
+            description = "Retorna conteos personales de viajes completados, planificados y cancelados.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Metricas personales obtenidas correctamente",
+                            content = @Content(schema = @Schema(implementation = MyVoyagesMetricsDTO.class)))
+            }
+    )
+    @GetMapping("/my-voyages/metrics")
+    public ResponseEntity<MyVoyagesMetricsDTO> getMyVoyagesMetrics() {
+        log.info("Recibida peticion de metricas de viajes personales");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        return ResponseEntity.ok(travelPlanService.getMyVoyagesMetrics(user.getId()));
+    }
+
+    @Operation(
+            summary = "Obtener metricas historicas de viajes",
+            description = "Retorna conteos historicos de viajes completados y cancelados.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Metricas historicas obtenidas correctamente",
+                            content = @Content(schema = @Schema(implementation = HistoryVoyagesMetricsDTO.class)))
+            }
+    )
+    @GetMapping("/history-voyages/metrics")
+    public ResponseEntity<HistoryVoyagesMetricsDTO> getHistoryVoyagesMetrics() {
+        log.info("Recibida peticion de metricas de historial de viajes");
+        return ResponseEntity.ok(travelPlanService.getHistoryVoyagesMetrics());
+    }
+
+    @Operation(
+            summary = "Listar viajes asignados al usuario autenticado",
+            description = "Retorna las travesias donde el usuario logueado figura como tripulante, ordenadas por fecha de salida ascendente.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Viajes asignados obtenidos correctamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanSummaryResponseDTO.class))
+                    )
+            }
+    )
+    @GetMapping("/my-voyages")
+    public ResponseEntity<List<TravelPlanSummaryResponseDTO>> getMyAssignedVoyages() {
+        log.info("Recibida peticion de viajes asignados al usuario autenticado");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        return ResponseEntity.ok(travelPlanService.getMyAssignedVoyages(user.getId()));
     }
 
     @Operation(

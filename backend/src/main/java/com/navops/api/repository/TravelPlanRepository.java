@@ -29,6 +29,30 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, J
 
     Long countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum status);
 
+    @Query("SELECT COUNT(tp) FROM TravelPlan tp WHERE tp.deletedAt IS NULL")
+    Long countAllNotDeleted();
+
+    @Query("SELECT COUNT(tp) FROM TravelPlan tp WHERE tp.status IN (:statuses) AND tp.delayHours > 0 AND tp.deletedAt IS NULL")
+    Long countDelayedByStatuses(@Param("statuses") List<TravelPlanStatusEnum> statuses);
+
+    @Query("SELECT tp.status, COUNT(tp) FROM TravelPlan tp " +
+           "JOIN tp.crewMembers tpc " +
+           "JOIN tpc.crewMember cm " +
+           "JOIN cm.person p " +
+           "JOIN p.user u " +
+           "WHERE u.id = :userId AND tp.deletedAt IS NULL " +
+           "GROUP BY tp.status")
+    List<Object[]> countByUserIdGroupByStatus(@Param("userId") UUID userId);
+
+    @Query("SELECT tp FROM TravelPlan tp " +
+           "JOIN tp.crewMembers cm " +
+           "WHERE cm.crewMember.person.user.id = :userId " +
+           "AND tp.status IN (:statuses) " +
+           "AND tp.deletedAt IS NULL " +
+           "ORDER BY tp.departureTime ASC")
+    List<TravelPlan> findActiveByCrewMemberIdAndDeletedAtIsNull(@Param("userId") UUID userId,
+                                                                @Param("statuses") List<String> statuses);
+
     @EntityGraph(attributePaths = {"ship", "originPort", "destinationPort", "stops"})
     @Query("SELECT tp FROM TravelPlan tp WHERE tp.status NOT IN (:excludedStatuses) AND tp.deletedAt IS NULL")
     List<TravelPlan> findActiveTravelPlans(@Param("excludedStatuses") List<TravelPlanStatusEnum> excludedStatuses);

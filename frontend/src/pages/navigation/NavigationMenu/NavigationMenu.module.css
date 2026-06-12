@@ -28,7 +28,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 32px;
   margin-bottom: auto; /* Empuja el footer hacia abajo */
 }
@@ -37,11 +37,11 @@
   background-color: transparent;
   border: 1px solid rgba(14, 165, 233, 0.4);
   border-radius: 12px;
-  padding: 40px 24px;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease;
@@ -63,9 +63,6 @@
 .iconWrapper {
   color: #38bdf8;
   margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .cardTitle {
@@ -73,6 +70,70 @@
   font-weight: 400;
   color: #64748b; /* Color sutil como en la imagen */
   margin: 0;
+}
+
+.badgesContainer {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.badgeGrey {
+  background-color: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
+.badgeGreen {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.badgeYellow {
+  background-color: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.badgeRed {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.totalContainer {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.totalNumber {
+  font-size: 2.5rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
 }
 
 .footer {
@@ -107,6 +168,10 @@
 
 :global(.light) .cardTitle {
   color: #475569;
+}
+
+:global(.light) .totalNumber {
+  color: #0f172a;
 }
 
 @media (max-width: 1024px) {
