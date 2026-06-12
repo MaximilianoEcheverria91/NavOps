@@ -1,6 +1,7 @@
 import { apiClient } from '../../api/apiClient';
 import axios from 'axios';
 import type { GlobalVoyagesMetrics, MyVoyagesMetrics, HistoryVoyagesMetrics, VoyageSummary } from '../../types/navigation';
+import type { TravelPlanActive } from '../../types/travelPlan';
 
 export interface StopRequest {
   portId: string;
@@ -82,3 +83,4 @@ export const startTravelPlan = async (id: string): Promise<any> => {
   const response = await apiClient.patch(`/navigation/travel-plans/${id}/start`);
   return response.data;
 };
+

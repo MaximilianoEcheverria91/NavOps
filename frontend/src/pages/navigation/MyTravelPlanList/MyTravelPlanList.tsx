@@ -5,6 +5,7 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import styles from './MyTravelPlanList.module.css';
 import { getMyAssignedVoyages, startTravelPlan, cancelVoyagePlan } from '../../../services/api/voyageService';
 import type { VoyageSummary } from '../../../types/navigation';
+import { AlertModal } from '../../../components/ui/AlertModal/AlertModal';
 
 export const MyTravelPlanList: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,10 @@ export const MyTravelPlanList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // States for Alert Modal
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchVoyages();
@@ -31,15 +36,23 @@ export const MyTravelPlanList: React.FC = () => {
     }
   };
 
-  const handleStart = async (id: string) => {
-    try {
-      await startTravelPlan(id);
-      navigate('/navigation/dashboard', { state: { activePlanId: id } });
-    } catch (err) {
-      console.error('Error starting voyage:', err);
-      alert('Error al iniciar el viaje. Por favor, intente nuevamente.');
-    }
-  };
+  const handleStartVoyage = async (id: string) => {
+  try {
+    await startTravelPlan(id);
+    // Si sale todo bien, nos eyectamos al dashboard
+    navigate('/navigation/dashboard', { state: { travelPlanId: id } });
+  } catch (error: any) {
+    console.error("Error capturado en el Frente:", error);
+    
+    // 🚀 LA MAGIA: Buscamos el campo 'message' que envía el GlobalExceptionHandler
+    const mensajeDelBackend = error.response?.data?.message 
+      || "Error al iniciar el viaje. Por favor, intente nuevamente.";
+    
+    // Asignamos el mensaje real al estado del modal
+    setAlertMessage(mensajeDelBackend); 
+    setIsAlertOpen(true); // Abrimos tu modal
+  }
+};
 
   const handleCancel = async (id: string) => {
     if (window.confirm('¿Está seguro de que desea cancelar este viaje?')) {
@@ -147,7 +160,7 @@ export const MyTravelPlanList: React.FC = () => {
                           <>
                             <button 
                               className={`${styles.actionBtn} ${styles.btnStart}`}
-                              onClick={() => handleStart(voyage.id)}
+                              onClick={() => handleStartVoyage(voyage.id)}
                             >
                               Iniciar
                             </button>
@@ -176,6 +189,14 @@ export const MyTravelPlanList: React.FC = () => {
           </table>
         </div>
       </div>
+      
+      {/* Alert Modal for Errors */}
+      <AlertModal 
+       isOpen={isAlertOpen} 
+       title={"Control de Operaciones"} // 👈 Inyectamos tu mensaje acá temporalmente
+       highlightText={alertMessage} 
+       onClose={() => setIsAlertOpen(false)}
+      />
     </NavigationLayout>
   );
 };

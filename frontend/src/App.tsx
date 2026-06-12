@@ -18,6 +18,7 @@ import { NavigationMenu } from './pages/navigation/NavigationMenu/NavigationMenu
 import { CreateVoyagePlan } from './pages/navigation/CreateVoyagePlan/CreateVoyagePlan';
 import { TravelPlanList } from './pages/navigation/ListTravelPlan/TravelPlanList.tsx';
 import { MyTravelPlanList } from './pages/navigation/MyTravelPlanList/MyTravelPlanList';
+import { VoyageDashboard } from './pages/navigation/Dashboard/VoyageDashboard.tsx';
 
 function App() {
   return (
@@ -53,7 +54,8 @@ function App() {
 
         <Route path="/navigation/travel-plans" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><TravelPlanList /></ProtectedRoute>} />
         <Route path="/navigation/my-voyages" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><MyTravelPlanList /></ProtectedRoute>} />
-        
+        <Route path="/navigation/dashboard" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><VoyageDashboard /></ProtectedRoute>} />
+
         {/* Rutas Públicas de Recuperación */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-code" element={<VerifyToken />} />

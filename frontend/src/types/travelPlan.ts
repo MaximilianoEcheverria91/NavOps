@@ -16,15 +16,19 @@ export interface TravelPlanMetrics {
 export type TravelPlanStatus = 'PLANNED' | 'IN_PROGRESS' | 'EN_ROUTE' | 'COMPLETED' | 'CANCELLED' | 'DELAYED';
 
 export interface TravelPlanActive {
-  id: string;
+id: string;
   shipId: string;
   shipName: string;
   shipMainImageUrl: string | null;
   originPortName: string;
   destinationPortName: string;
-  departureTime: string;
-  eta: string;
+  departureTime: string; // ISO String
+  eta: string;           // ISO String
   distanceMiles: number;
   stopCount: number;
   status: TravelPlanStatus;
+  
+  // 🚀 AGREGAMOS ESTOS DOS PARA LAS METRICAS REALES DEL DASHBOARD
+  totalCargoTonnes?: number; 
+  crewIds?: string[];
 }

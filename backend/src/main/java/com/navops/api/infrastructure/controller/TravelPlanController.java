@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.navops.api.domain.entity.User;
@@ -165,6 +166,7 @@ public class TravelPlanController {
             }
     )
     @PatchMapping("/{id}/start")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHIEF_NAVIGATION')")
     public ResponseEntity<TravelPlanResponseDTO> startTravelPlan(@PathVariable UUID id) {
         log.info("Recibida peticion para iniciar travesia en tiempo real ID: {}", id);
         return ResponseEntity.ok(travelPlanService.startTravelPlan(id));

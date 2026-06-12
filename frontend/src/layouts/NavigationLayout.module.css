@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #ffffff;
+  color: var(--text-secundary);
 }
 
 .logo {
@@ -143,7 +143,7 @@
   font-size: 0.85rem;
   font-weight: 300;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .userRole {

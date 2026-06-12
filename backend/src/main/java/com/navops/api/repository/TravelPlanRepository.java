@@ -82,4 +82,12 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, J
             @Param("excludePlanId") UUID excludePlanId,
             @Param("newDeparture") OffsetDateTime newDeparture,
             @Param("newEta") OffsetDateTime newEta);
+
+    @Query("SELECT COUNT(tp) > 0 FROM TravelPlan tp " +
+           "JOIN tp.crewMembers cm " +
+           "WHERE cm.crewMember.person.user.id = :userId " +
+           "AND tp.status = :status " +
+           "AND tp.deletedAt IS NULL")
+    boolean existsByCrewMemberUserIdAndStatus(@Param("userId") UUID userId,
+                                              @Param("status") TravelPlanStatusEnum status);;
 }
