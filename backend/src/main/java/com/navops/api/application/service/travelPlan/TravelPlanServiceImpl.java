@@ -42,6 +42,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
     private final ShipRepository shipRepository;
     private final PortRepository portRepository;
     private final CrewMemberRepository crewMemberRepository;
+    private final ShipTankRepository shipTankRepository;
+    private final TankReadingRepository tankReadingRepository;
     private final jakarta.persistence.EntityManager entityManager;
 
 
@@ -364,6 +366,43 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         return buildResponse(saved);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public TravelPlanResponseDTO startTravelPlan(UUID id) {
+        log.info("Iniciando travesia en tiempo real para plan ID: {}", id);
+
+        TravelPlan travelPlan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesia no encontrado con ID: " + id));
+
+        if (travelPlan.getStatus() != TravelPlanStatusEnum.PLANNED) {
+            throw new BadRequestException(
+                    "Solo se puede iniciar un plan de travesia en estado PLANNED. Estado actual: " + travelPlan.getStatus());
+        }
+
+        travelPlan.setStatus(TravelPlanStatusEnum.IN_PROGRESS);
+
+        travelPlan.setCurrentLatitude(BigDecimal.valueOf(travelPlan.getOriginPort().getLatitude()));
+        travelPlan.setCurrentLongitude(BigDecimal.valueOf(travelPlan.getOriginPort().getLongitude()));
+        travelPlan.setCurrentEngineStatus("OK");
+        travelPlan.setCurrentHeading(0);
+
+        List<ShipTank> tanks = shipTankRepository.findAllByShipIdAndDeletedAtIsNull(travelPlan.getShip().getId());
+        for (ShipTank tank : tanks) {
+            TankReading reading = TankReading.builder()
+                    .tank(tank)
+                    .travelPlan(travelPlan)
+                    .currentVolumeLiters(tank.getMaxCapacityLiters())
+                    .fillPercentage(new BigDecimal("100.00"))
+                    .build();
+            tankReadingRepository.save(reading);
+        }
+
+        TravelPlan saved = travelPlanRepository.save(travelPlan);
+        log.info("Travesia iniciada exitosamente para plan ID: {}", saved.getId());
+
+        return buildResponse(saved);
+    }
+
     private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {
         return new TravelPlanSummaryResponseDTO(
                 entity.getId(),
@@ -450,7 +489,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         }
     }
 
-    private TravelPlanResponseDTO buildResponse(TravelPlan entity) {
+    public TravelPlanResponseDTO buildResponse(TravelPlan entity) {
         List<StopResponseDTO> stopResponses = entity.getStops().stream()
                 .map(s -> new StopResponseDTO(
                         s.getId(),

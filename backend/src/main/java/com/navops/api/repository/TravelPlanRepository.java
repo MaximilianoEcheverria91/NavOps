@@ -25,6 +25,8 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, J
 
     List<TravelPlan> findByShipIdAndDeletedAtIsNull(UUID shipId);
 
+    List<TravelPlan> findByStatusAndDeletedAtIsNull(TravelPlanStatusEnum status);
+
     Long countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum status);
 
     @EntityGraph(attributePaths = {"ship", "originPort", "destinationPort", "stops"})

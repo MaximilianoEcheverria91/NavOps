@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -46,6 +47,10 @@ public class Engine {
 
     @Column(name = "last_tbo_engine_hours")
     private Integer lastTboEngineHours;
+
+    @Builder.Default
+    @Column(name = "fuel_consumption_liters_per_hour", precision = 8, scale = 2, nullable = false)
+    private BigDecimal fuelConsumptionLitersPerHour = new BigDecimal("250.00");
 
     @Builder.Default
     @Version

@@ -3,7 +3,9 @@ com/navops/api/domain/enums/travelPlanCargo/CargoStatusEnum.class
 com/navops/api/domain/entity/LoginAttempt.class
 com/navops/api/application/service/CountryService.class
 com/navops/api/domain/entity/User.class
+com/navops/api/domain/entity/ShipTelemetry.class
 com/navops/api/domain/entity/LoginAttempt$LoginAttemptBuilder.class
+com/navops/api/domain/entity/TankReading$TankReadingBuilder.class
 com/navops/api/application/dto/response/dashboardAdmin/PortStatusCountResponse.class
 com/navops/api/domain/entity/Engine.class
 com/navops/api/repository/PersonRepository.class
@@ -37,6 +39,7 @@ com/navops/api/application/dto/response/port/PortFilterResponse.class
 com/navops/api/infrastructure/exception/NoPersonnelFoundException.class
 com/navops/api/domain/enums/ShipStatusEnum.class
 com/navops/api/application/dto/request/ship/ShipCreateRequest.class
+com/navops/api/application/dto/response/travelPlan/TravelPlanMetricsDTO.class
 com/navops/api/infrastructure/controller/RoleController.class
 com/navops/api/infrastructure/exception/NoRoleFoundException.class
 com/navops/api/domain/entity/Country$CountryBuilder.class
@@ -51,6 +54,7 @@ com/navops/api/application/service/filter/PersonnelFilterService.class
 com/navops/api/domain/entity/User$UserBuilder.class
 com/navops/api/domain/specification/PersonnelFilterSpecification.class
 com/navops/api/application/dto/response/ship/ShipActiveResponse.class
+com/navops/api/application/dto/request/travelPlan/TravelPlanFilterRequest.class
 com/navops/api/repository/EngineRepository.class
 com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ContactInfo$ContactInfoBuilder.class
 com/navops/api/application/dto/response/travelPlanCargo/TravelPlanCargoFilterResponse.class
@@ -74,7 +78,9 @@ com/navops/api/repository/UserRepository.class
 com/navops/api/infrastructure/exception/ExpiredResetCodeException.class
 com/navops/api/infrastructure/exception/CargoValidationException.class
 com/navops/api/infrastructure/exception/ResourceAlreadyExistsException.class
+com/navops/api/config/WebSocketConfig.class
 com/navops/api/application/service/ProvinceService.class
+com/navops/api/application/dto/response/travelPlan/TravelPlanSummaryResponseDTO.class
 com/navops/api/infrastructure/exception/NoShipsFoundException.class
 com/navops/api/domain/enums/AccessStatusEnum.class
 com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.class
@@ -99,6 +105,7 @@ com/navops/api/infrastructure/exception/NoCountriesFoundException.class
 com/navops/api/security/JwtAuthenticationFilter.class
 com/navops/api/application/dto/response/user/StatsUserResponse.class
 com/navops/api/domain/entity/TravelPlanCrew$TravelPlanCrewBuilder.class
+com/navops/api/repository/ShipTelemetryRepository.class
 com/navops/api/domain/entity/PasswordResetCode.class
 com/navops/api/domain/enums/TypePortEnum.class
 com/navops/api/application/service/filter/PortFilterService.class
@@ -106,6 +113,7 @@ com/navops/api/application/dto/response/travelPlan/TravelPlanResponseDTO.class
 com/navops/api/repository/filters/PersonFilterRepository.class
 com/navops/api/domain/entity/City.class
 com/navops/api/domain/entity/Province.class
+com/navops/api/repository/TankReadingRepository.class
 com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$GeneralInfo.class
 com/navops/api/MaritimeApiApplication.class
 com/navops/api/application/dto/response/ErrorResponseDto.class
@@ -152,6 +160,7 @@ com/navops/api/application/service/dashboardAdmin/DashboardAdminService.class
 com/navops/api/repository/CrewMemberRepository.class
 com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.class
 com/navops/api/domain/enums/DockTypeEnum.class
+com/navops/api/domain/entity/ShipTelemetry$ShipTelemetryBuilder.class
 com/navops/api/application/dto/response/user/PersonnelEditResponse$GeneralInfo.class
 com/navops/api/domain/entity/Person$PersonBuilder.class
 com/navops/api/domain/entity/Country.class
@@ -162,6 +171,7 @@ com/navops/api/application/dto/response/LocationResponseDto.class
 com/navops/api/domain/entity/Ship.class
 com/navops/api/application/dto/request/port/PortUpdateRequest.class
 com/navops/api/infrastructure/exception/NoCitiesFoundException.class
+com/navops/api/domain/entity/TankReading.class
 com/navops/api/domain/enums/travelPlanCargo/ContainerTypeEnum.class
 com/navops/api/application/dto/response/user/PersonnelEditResponse$LaborData.class
 com/navops/api/application/service/filter/ShipFilterService.class
@@ -176,6 +186,7 @@ com/navops/api/domain/enums/MaritalStatusEnum.class
 com/navops/api/repository/filters/PortFilterRepository.class
 com/navops/api/application/dto/request/travelPlan/TravelPlanRequestDTO.class
 com/navops/api/application/service/travelPlanCargo/TravelPlanCargoService.class
+com/navops/api/application/service/DashboardNavigation/TelemetrySimulatorService.class
 com/navops/api/application/dto/response/travelPlanCargo/TravelPlanCargoResponseDTO.class
 com/navops/api/application/dto/request/user/UserUpdateRequest$LaborData.class
 com/navops/api/infrastructure/exception/ShipNotFoundException.class
@@ -184,6 +195,7 @@ com/navops/api/infrastructure/exception/BadRequestException.class
 com/navops/api/domain/entity/Stop$StopBuilder.class
 com/navops/api/infrastructure/controller/filters/PersonnelFilterController.class
 com/navops/api/repository/RoleRepository.class
+com/navops/api/domain/specification/TravelPlanSpecification.class
 com/navops/api/application/dto/response/user/PersonnelEditResponse$ResidenceInfo.class
 com/navops/api/application/service/PortService.class
 com/navops/api/application/dto/request/user/UserUpdateRequest$GeneralInfo.class
