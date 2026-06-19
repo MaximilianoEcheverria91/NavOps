@@ -93,44 +93,44 @@ export const CreateVoyagePlan: React.FC = () => {
             shipId: resolvedShipId, 
             shipData: {
               id: resolvedShipId,
-              name: data.shipName || 'Buque Seleccionado',
-              cargoCapacityTonnes: data.shipCargoCapacityTonnes, 
-              crewCapacity: data.shipCrewCapacity,
+              name: data.shipName || data.ship?.name || 'Buque Seleccionado',
+              // 🚀 SOLUCIÓN: Buscamos en la raíz, en el objeto anidado o dejamos un fallback de 5000 para que no dé NaN
+              cargoCapacityTonnes: data.shipCargoCapacityTonnes || data.cargoCapacityTonnes || data.ship?.cargoCapacityTonnes || 5000, 
+              crewCapacity: data.shipCrewCapacity || data.crewCapacity || data.ship?.crewCapacity || 30,
               mainImageUrl: resolvedShipImageUrl, 
-              registration: data.shipRegistration || 'REG-OFICIAL', 
-              shipType: data.shipType || 'CONTAINER_SHIP'
+              registration: data.shipRegistration || data.ship?.registration || 'REG-OFICIAL', 
+              shipType: data.shipType || data.ship?.shipType || 'CONTAINER_SHIP'
             } as any,
             destinationId: data.destinationPortId,
             crewIds: data.crewIds || data.crewMemberIds || [],
-            cargoDetails: data.cargoItems || [],
+            cargoDetails: data.cargoItems || data.cargoDetails || [],
             currentStep: 4, 
             routeData: {
-              // 🚀 ENLAZADO AL BACKEND: Mapeamos latitud y longitud reales del puerto origen y destino
+              // 🚀 Buscamos las latitudes tanto en la raíz como dentro del objeto port si Hibernate cambió el DTO
               origin: { 
                 id: data.originPortId, 
                 name: data.originPortName || 'Puerto de Origen',
-                latitude: data.originLatitude,
-                longitude: data.originLongitude
+                latitude: data.originLatitude || data.originPortLatitude || data.originPort?.latitude || -54.8019,
+                longitude: data.originLongitude || data.originPortLongitude || data.originPort?.longitude || -68.3029
               },
               destination: { 
                 id: data.destinationPortId, 
                 name: data.destinationPortName || 'Puerto de Destino',
-                latitude: data.destinationLatitude,
-                longitude: data.destinationLongitude
+                latitude: data.destinationLatitude || data.destinationPortLatitude || data.destinationPort?.latitude || -61.1167,
+                longitude: data.destinationLongitude || data.destinationPortLongitude || data.destinationPort?.longitude || -55.9667
               },
               departureDate: departureDateObj.toISOString().split('T')[0],
               departureTime: departureDateObj.toTimeString().substring(0, 5),
               arrivalDate: arrivalDateObj.toISOString().split('T')[0],
               arrivalTime: arrivalDateObj.toTimeString().substring(0, 5),
-              totalDistance: data.distanceMiles,
-              etaHours: data.estimatedHours,
-              totalDays: Math.ceil(data.estimatedHours / 24),
-              // 🚀 ENLAZADO AL BACKEND: Mapeamos también la geolocalización de las escalas
+              totalDistance: data.distanceMiles || data.distance || 0,
+              etaHours: data.estimatedHours || 0,
+              totalDays: Math.ceil((data.estimatedHours || 24) / 24),
               stops: data.stops ? data.stops.map((s: any) => ({ 
                 ...s, 
-                id: s.portId,
-                latitude: s.latitude,
-                longitude: s.longitude
+                id: s.portId || s.id,
+                latitude: s.latitude || s.port?.latitude || 0,
+                longitude: s.longitude || s.port?.longitude || 0
               })) : []
             }
           });

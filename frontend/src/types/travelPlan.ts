@@ -32,3 +32,34 @@ id: string;
   totalCargoTonnes?: number; 
   crewIds?: string[];
 }
+
+export interface PortCoords {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface StopCoords {
+  portName: string;
+  latitude: number;
+  longitude: number;
+  sequence: number;
+}
+
+export interface TravelPlanTelemetryResponse {
+  id: string;
+  shipName: string;
+  status: string;
+  crewCount: number;
+  departureTime: string;
+  eta: string;
+  fuelPercentage: number;
+  totalCargoTonnes: number;
+  delayHours: number;
+  currentEngineStatus: string;
+  currentLatitude: number;
+  currentLongitude: number;
+  origin: PortCoords;
+  destination: PortCoords;
+  stops: StopCoords[];
+}

@@ -11,6 +11,7 @@ import com.navops.api.application.dto.response.travelPlan.StopResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import com.navops.api.application.dto.response.travelPlanCargo.TravelPlanCargoResponseDTO;
 import com.navops.api.domain.entity.*;
 import com.navops.api.domain.enums.CrewMemberStatusEnum;
@@ -491,6 +492,57 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         log.info("Travesia iniciada exitosamente para plan ID: {}", saved.getId());
 
         return buildResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TravelPlanTelemetryResponseDTO getTelemetryByPlanId(UUID id) {
+        log.info("Recuperando telemetria para plan ID: {}", id);
+
+        TravelPlan plan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesia no encontrado con ID: " + id));
+
+        int crewCount = plan.getCrewMembers().size();
+
+        List<TravelPlanTelemetryResponseDTO.StopCoordsDTO> stopCoords = plan.getStops().stream()
+                .filter(s -> s.getDeletedAt() == null)
+                .sorted(Comparator.comparing(Stop::getSequence))
+                .map(s -> TravelPlanTelemetryResponseDTO.StopCoordsDTO.builder()
+                        .portName(s.getPort().getName())
+                        .latitude(s.getPort().getLatitude())
+                        .longitude(s.getPort().getLongitude())
+                        .sequence(s.getSequence().intValue())
+                        .build())
+                .toList();
+
+        TravelPlanTelemetryResponseDTO response = TravelPlanTelemetryResponseDTO.builder()
+                .id(plan.getId())
+                .shipName(plan.getShip().getName())
+                .status(plan.getStatus().name())
+                .crewCount(crewCount)
+                .departureTime(plan.getDepartureTime())
+                .eta(plan.getEta())
+                .fuelPercentage(BigDecimal.ZERO)
+                .totalCargoTonnes(plan.getTotalCargoTonnes())
+                .delayHours(plan.getDelayHours())
+                .currentEngineStatus(plan.getCurrentEngineStatus())
+                .currentLatitude(plan.getCurrentLatitude())
+                .currentLongitude(plan.getCurrentLongitude())
+                .origin(TravelPlanTelemetryResponseDTO.PortCoordsDTO.builder()
+                        .name(plan.getOriginPort().getName())
+                        .latitude(plan.getOriginPort().getLatitude())
+                        .longitude(plan.getOriginPort().getLongitude())
+                        .build())
+                .destination(TravelPlanTelemetryResponseDTO.PortCoordsDTO.builder()
+                        .name(plan.getDestinationPort().getName())
+                        .latitude(plan.getDestinationPort().getLatitude())
+                        .longitude(plan.getDestinationPort().getLongitude())
+                        .build())
+                .stops(stopCoords)
+                .build();
+
+        log.info("Telemetria recuperada exitosamente para plan ID: {}", id);
+        return response;
     }
 
     private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {

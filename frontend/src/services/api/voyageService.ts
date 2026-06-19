@@ -2,6 +2,7 @@ import { apiClient } from '../../api/apiClient';
 import axios from 'axios';
 import type { GlobalVoyagesMetrics, MyVoyagesMetrics, HistoryVoyagesMetrics, VoyageSummary } from '../../types/navigation';
 import type { TravelPlanActive } from '../../types/travelPlan';
+import type { TravelPlanTelemetryResponse } from '../../types/travelPlan';
 
 export interface StopRequest {
   portId: string;
@@ -81,6 +82,11 @@ export const getMyAssignedVoyages = async (): Promise<VoyageSummary[]> => {
 
 export const startTravelPlan = async (id: string): Promise<any> => {
   const response = await apiClient.patch(`/navigation/travel-plans/${id}/start`);
+  return response.data;
+};
+
+export const getVoyageTelemetry = async (id: string): Promise<TravelPlanTelemetryResponse> => {
+  const response = await apiClient.get(`/navigation/travel-plans/${id}/telemetry`);
   return response.data;
 };
 

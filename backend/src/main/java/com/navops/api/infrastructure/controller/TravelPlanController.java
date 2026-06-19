@@ -8,6 +8,7 @@ import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import com.navops.api.application.service.travelPlan.TravelPlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -157,6 +158,28 @@ public class TravelPlanController {
     }
 
     @Operation(
+            summary = "Obtener plan de travesía por ID",
+            description = "Retorna un plan de travesía completo con escalas, barco, tripulación y carga.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Plan de travesía encontrado",
+                            content = @Content(schema = @Schema(implementation = TravelPlanResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Plan de travesía no encontrado",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<TravelPlanResponseDTO> getTravelPlanById(@PathVariable UUID id) {
+        log.info("Recibida petición para obtener plan de travesía por ID: {}", id);
+        return ResponseEntity.ok(travelPlanService.getTravelPlanById(id));
+    }
+
+    @Operation(
             summary = "Iniciar travesia en tiempo real",
             description = "Cambia el estado del plan a IN_PROGRESS, inicializa telemetria y registra lecturas de combustible.",
             responses = {
@@ -170,6 +193,28 @@ public class TravelPlanController {
     public ResponseEntity<TravelPlanResponseDTO> startTravelPlan(@PathVariable UUID id) {
         log.info("Recibida peticion para iniciar travesia en tiempo real ID: {}", id);
         return ResponseEntity.ok(travelPlanService.startTravelPlan(id));
+    }
+
+    @Operation(
+            summary = "Obtener telemetria en tiempo real de una travesia",
+            description = "Retorna datos de telemetria del plan: coordenadas actuales, origen, destino, escalas, tripulacion y estado.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Telemetria obtenida correctamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanTelemetryResponseDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Plan de travesia no encontrado"
+                    )
+            }
+    )
+    @GetMapping("/{id}/telemetry")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHIEF_NAVIGATION')")
+    public ResponseEntity<TravelPlanTelemetryResponseDTO> getTelemetry(@PathVariable UUID id) {
+        log.info("Recibida peticion de telemetria para plan ID: {}", id);
+        return ResponseEntity.ok(travelPlanService.getTelemetryByPlanId(id));
     }
 
     @Operation(
