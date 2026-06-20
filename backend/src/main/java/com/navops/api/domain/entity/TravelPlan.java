@@ -64,6 +64,20 @@ public class TravelPlan {
     @Column(name = "total_cargo_tonnes", precision = 12, scale = 2)
     private BigDecimal totalCargoTonnes;
 
+    @Column(name = "current_latitude", precision = 9, scale = 6)
+    private BigDecimal currentLatitude;
+
+    @Column(name = "current_longitude", precision = 9, scale = 6)
+    private BigDecimal currentLongitude;
+
+    @Builder.Default
+    @Column(name = "current_engine_status", length = 50, nullable = false)
+    private String currentEngineStatus = "OK";
+
+    @Builder.Default
+    @Column(name = "current_heading")
+    private Integer currentHeading = 0;
+
     @Builder.Default
     @OneToMany(mappedBy = "travelPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Stop> stops = new HashSet<>();

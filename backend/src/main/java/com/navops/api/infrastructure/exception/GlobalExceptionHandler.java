@@ -192,6 +192,8 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+
     @ExceptionHandler(NoCountriesFoundException.class) // Tendrías que crear esta clase
     public ResponseEntity<ErrorResponseDto> handleNoCountries(NoCountriesFoundException ex) {
         ErrorResponseDto response = new ErrorResponseDto(

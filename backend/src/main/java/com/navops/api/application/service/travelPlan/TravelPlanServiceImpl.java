@@ -4,10 +4,21 @@ import com.navops.api.application.dto.request.travelPlan.CargoItemRequestDTO;
 import com.navops.api.application.dto.request.travelPlan.StopRequestDTO;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanFilterRequest;
 import com.navops.api.application.dto.request.travelPlan.TravelPlanRequestDTO;
+import com.navops.api.application.dto.response.travelPlan.GlobalVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.HistoryVoyagesMetricsDTO;
+import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.StopResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.CargoDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.CargoItemDTO;
+import com.navops.api.application.dto.response.travelPlan.CrewMemberDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.RouteDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.ShipDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.StopDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanFullDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import com.navops.api.application.dto.response.travelPlanCargo.TravelPlanCargoResponseDTO;
 import com.navops.api.domain.entity.*;
 import com.navops.api.domain.enums.CrewMemberStatusEnum;
@@ -26,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +55,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
     private final ShipRepository shipRepository;
     private final PortRepository portRepository;
     private final CrewMemberRepository crewMemberRepository;
+    private final ShipTankRepository shipTankRepository;
+    private final TankReadingRepository tankReadingRepository;
     private final jakarta.persistence.EntityManager entityManager;
 
 
@@ -170,6 +185,81 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         Long scheduledCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.PLANNED);
         Long totalCompletedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.COMPLETED);
         return new TravelPlanMetricsDTO(scheduledCount, totalCompletedCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GlobalVoyagesMetricsDTO getGlobalVoyagesMetrics() {
+        log.info("Recuperando metricas globales de viajes");
+
+        Long inProgressCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.IN_PROGRESS);
+        Long plannedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.PLANNED);
+        Long delayedCount = travelPlanRepository.countDelayedByStatuses(
+                List.of(TravelPlanStatusEnum.IN_PROGRESS, TravelPlanStatusEnum.PLANNED));
+        Long totalCount = plannedCount + inProgressCount + delayedCount;
+
+        log.info("Metricas globales - En progreso: {}, Planificados: {}, Demorados: {}, Total: {}",
+                inProgressCount, plannedCount, delayedCount, totalCount);
+
+        return new GlobalVoyagesMetricsDTO(inProgressCount, plannedCount, delayedCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyVoyagesMetricsDTO getMyVoyagesMetrics(UUID userId) {
+        log.info("Recuperando metricas de viajes para el usuario ID: {}", userId);
+
+        List<Object[]> results = travelPlanRepository.countByUserIdGroupByStatus(userId);
+
+        long completedCount = 0;
+        long plannedCount = 0;
+        long cancelledCount = 0;
+
+        for (Object[] row : results) {
+            TravelPlanStatusEnum status = (TravelPlanStatusEnum) row[0];
+            long count = ((Number) row[1]).longValue();
+            switch (status) {
+                case COMPLETED -> completedCount += count;
+                case PLANNED -> plannedCount += count;
+                case CANCELLED -> cancelledCount += count;
+                default -> {}
+            }
+        }
+
+        long totalCount = completedCount + plannedCount + cancelledCount;
+
+        log.info("Metricas personales para usuario {} - Completados: {}, Planificados: {}, Cancelados: {}, Total: {}",
+                userId, completedCount, plannedCount, cancelledCount, totalCount);
+
+        return new MyVoyagesMetricsDTO(completedCount, plannedCount, cancelledCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HistoryVoyagesMetricsDTO getHistoryVoyagesMetrics() {
+        log.info("Recuperando metricas de historial de viajes");
+
+        Long completedCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.COMPLETED);
+        Long cancelledCount = travelPlanRepository.countByStatusAndDeletedAtIsNull(TravelPlanStatusEnum.CANCELLED);
+        Long totalCount = completedCount + cancelledCount;
+
+        log.info("Historial de viajes - Completados: {}, Cancelados: {}, Total: {}",
+                completedCount, cancelledCount, totalCount);
+
+        return new HistoryVoyagesMetricsDTO(completedCount, cancelledCount, totalCount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TravelPlanSummaryResponseDTO> getMyAssignedVoyages(UUID userId) {
+        log.info("Recuperando viajes asignados al usuario ID: {}", userId);
+        List<String> activeStatuses = List.of("PLANNED", "IN_PROGRESS");
+        List<TravelPlan> plans = travelPlanRepository.findActiveByCrewMemberIdAndDeletedAtIsNull(userId, activeStatuses);
+        List<TravelPlanSummaryResponseDTO> result = plans.stream()
+                .map(this::toSummaryResponse)
+                .toList();
+        log.info("Viajes asignados encontrados para usuario {}: {}", userId, result.size());
+        return result;
     }
 
     @Override
@@ -364,6 +454,193 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         return buildResponse(saved);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public TravelPlanResponseDTO startTravelPlan(UUID id) {
+        log.info("Iniciando travesia en tiempo real para plan ID: {}", id);
+
+        TravelPlan travelPlan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesia no encontrado con ID: " + id));
+
+        if (travelPlan.getStatus() != TravelPlanStatusEnum.PLANNED) {
+            throw new BadRequestException(
+                    "Solo se puede iniciar un plan de travesia en estado PLANNED. Estado actual: " + travelPlan.getStatus());
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+
+        boolean hasActiveVoyage = travelPlanRepository.existsByCrewMemberUserIdAndStatus(
+                currentUser.getId(),TravelPlanStatusEnum.IN_PROGRESS);
+        if (hasActiveVoyage) {
+            throw new BadRequestException(
+                    "Ya posees un viaje en curso. Debes finalizar la travesia actual antes de iniciar una nueva.");
+        }
+
+        travelPlan.setStatus(TravelPlanStatusEnum.IN_PROGRESS);
+
+        travelPlan.setCurrentLatitude(BigDecimal.valueOf(travelPlan.getOriginPort().getLatitude()));
+        travelPlan.setCurrentLongitude(BigDecimal.valueOf(travelPlan.getOriginPort().getLongitude()));
+        travelPlan.setCurrentEngineStatus("OK");
+        travelPlan.setCurrentHeading(0);
+
+        List<ShipTank> tanks = shipTankRepository.findAllByShipIdAndDeletedAtIsNull(travelPlan.getShip().getId());
+        for (ShipTank tank : tanks) {
+            TankReading reading = TankReading.builder()
+                    .tank(tank)
+                    .travelPlan(travelPlan)
+                    .currentVolumeLiters(tank.getMaxCapacityLiters())
+                    .fillPercentage(new BigDecimal("100.00"))
+                    .build();
+            tankReadingRepository.save(reading);
+        }
+
+        TravelPlan saved = travelPlanRepository.save(travelPlan);
+        log.info("Travesia iniciada exitosamente para plan ID: {}", saved.getId());
+
+        return buildResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TravelPlanTelemetryResponseDTO getTelemetryByPlanId(UUID id) {
+        log.info("Recuperando telemetria para plan ID: {}", id);
+
+        TravelPlan plan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesia no encontrado con ID: " + id));
+
+        int crewCount = plan.getCrewMembers().size();
+
+        List<TravelPlanTelemetryResponseDTO.StopCoordsDTO> stopCoords = plan.getStops().stream()
+                .filter(s -> s.getDeletedAt() == null)
+                .sorted(Comparator.comparing(Stop::getSequence))
+                .map(s -> TravelPlanTelemetryResponseDTO.StopCoordsDTO.builder()
+                        .portName(s.getPort().getName())
+                        .latitude(s.getPort().getLatitude())
+                        .longitude(s.getPort().getLongitude())
+                        .sequence(s.getSequence().intValue())
+                        .build())
+                .toList();
+
+        TravelPlanTelemetryResponseDTO response = TravelPlanTelemetryResponseDTO.builder()
+                .id(plan.getId())
+                .shipName(plan.getShip().getName())
+                .status(plan.getStatus().name())
+                .crewCount(crewCount)
+                .departureTime(plan.getDepartureTime())
+                .eta(plan.getEta())
+                .fuelPercentage(BigDecimal.ZERO)
+                .totalCargoTonnes(plan.getTotalCargoTonnes())
+                .delayHours(plan.getDelayHours())
+                .currentEngineStatus(plan.getCurrentEngineStatus())
+                .currentLatitude(plan.getCurrentLatitude())
+                .currentLongitude(plan.getCurrentLongitude())
+                .origin(TravelPlanTelemetryResponseDTO.PortCoordsDTO.builder()
+                        .name(plan.getOriginPort().getName())
+                        .latitude(plan.getOriginPort().getLatitude())
+                        .longitude(plan.getOriginPort().getLongitude())
+                        .build())
+                .destination(TravelPlanTelemetryResponseDTO.PortCoordsDTO.builder()
+                        .name(plan.getDestinationPort().getName())
+                        .latitude(plan.getDestinationPort().getLatitude())
+                        .longitude(plan.getDestinationPort().getLongitude())
+                        .build())
+                .stops(stopCoords)
+                .build();
+
+        log.info("Telemetria recuperada exitosamente para plan ID: {}", id);
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TravelPlanFullDetailDTO getTravelPlanFullDetail(UUID id) {
+        log.info("Recuperando detalle completo del plan de travesía ID: {}", id);
+
+        TravelPlan plan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesía no encontrado con ID: " + id));
+
+        Ship ship = plan.getShip();
+
+        ShipDetailDTO shipDetail = new ShipDetailDTO(
+                ship.getId(),
+                ship.getName(),
+                ship.getShipType().name(),
+                ship.getRegistration(),
+                ship.getStatus().name(),
+                ship.getHoldCount() != null ? ship.getHoldCount().intValue() : 0,
+                ship.getCargoCapacityTonnes() != null ? ship.getCargoCapacityTonnes().doubleValue() : 0.0,
+                ship.getHullNumber(),
+                ship.getMainImageUrl()
+        );
+
+        List<StopDetailDTO> stopDetails = plan.getStops().stream()
+                .filter(s -> s.getDeletedAt() == null)
+                .sorted(Comparator.comparing(Stop::getSequence))
+                .map(s -> new StopDetailDTO(
+                        s.getId(),
+                        s.getPort().getName(),
+                        s.getSequence(),
+                        s.getEstBoardingTime(),
+                        s.getEstDisembarkTime()))
+                .toList();
+
+        RouteDetailDTO routeDetail = new RouteDetailDTO(
+                plan.getOriginPort().getName(),
+                plan.getDestinationPort().getName(),
+                plan.getDepartureTime(),
+                plan.getEta(),
+                plan.getDistanceMiles() != null ? plan.getDistanceMiles().doubleValue() : 0.0,
+                plan.getEstimatedHours() != null ? plan.getEstimatedHours().intValue() : 0,
+                stopDetails.size(),
+                stopDetails
+        );
+
+        List<CargoItemDTO> cargoItems = plan.getCargoItems().stream()
+                .filter(c -> c.getDeletedAt() == null)
+                .map(c -> new CargoItemDTO(
+                        c.getId(),
+                        c.getProductName(),
+                        c.getOwningCompany(),
+                        c.getProductCategory().name(),
+                        c.getCargoType().name(),
+                        c.getQuantity(),
+                        c.getWeightTonnes() != null ? c.getWeightTonnes().doubleValue() : 0.0,
+                        c.getVolumeM3() != null ? c.getVolumeM3().doubleValue() : 0.0,
+                        c.getContainerType() != null ? c.getContainerType().name() : null))
+                .toList();
+
+        CargoDetailDTO cargoDetail = new CargoDetailDTO(
+                plan.getTotalCargoTonnes() != null ? plan.getTotalCargoTonnes().doubleValue() : 0.0,
+                ship.getCargoCapacityTonnes() != null ? ship.getCargoCapacityTonnes().doubleValue() : 0.0,
+                cargoItems
+        );
+
+        List<CrewMemberDetailDTO> crewDetails = plan.getCrewMembers().stream()
+                .filter(tpc -> tpc.getDeletedAt() == null)
+                .map(tpc -> {
+                    CrewMember cm = tpc.getCrewMember();
+                    return new CrewMemberDetailDTO(
+                            cm.getId(),
+                            cm.getPerson().getFullName(),
+                            tpc.getRole(),
+                            cm.getFileNumber(),
+                            cm.getPerson().getAvatarUrl()
+                    );
+                })
+                .toList();
+
+        return new TravelPlanFullDetailDTO(
+                plan.getId(),
+                plan.getStatus().name(),
+                plan.getCreatedAt(),
+                shipDetail,
+                routeDetail,
+                cargoDetail,
+                crewDetails
+        );
+    }
+
     private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {
         return new TravelPlanSummaryResponseDTO(
                 entity.getId(),
@@ -450,7 +727,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         }
     }
 
-    private TravelPlanResponseDTO buildResponse(TravelPlan entity) {
+    public TravelPlanResponseDTO buildResponse(TravelPlan entity) {
         List<StopResponseDTO> stopResponses = entity.getStops().stream()
                 .map(s -> new StopResponseDTO(
                         s.getId(),
