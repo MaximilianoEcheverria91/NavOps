@@ -11,6 +11,13 @@ import com.navops.api.application.dto.response.travelPlan.StopResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.CargoDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.CargoItemDTO;
+import com.navops.api.application.dto.response.travelPlan.CrewMemberDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.RouteDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.ShipDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.StopDetailDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanFullDetailDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import com.navops.api.application.dto.response.travelPlanCargo.TravelPlanCargoResponseDTO;
 import com.navops.api.domain.entity.*;
@@ -543,6 +550,95 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
         log.info("Telemetria recuperada exitosamente para plan ID: {}", id);
         return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TravelPlanFullDetailDTO getTravelPlanFullDetail(UUID id) {
+        log.info("Recuperando detalle completo del plan de travesía ID: {}", id);
+
+        TravelPlan plan = travelPlanRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Plan de travesía no encontrado con ID: " + id));
+
+        Ship ship = plan.getShip();
+
+        ShipDetailDTO shipDetail = new ShipDetailDTO(
+                ship.getId(),
+                ship.getName(),
+                ship.getShipType().name(),
+                ship.getRegistration(),
+                ship.getStatus().name(),
+                ship.getHoldCount() != null ? ship.getHoldCount().intValue() : 0,
+                ship.getCargoCapacityTonnes() != null ? ship.getCargoCapacityTonnes().doubleValue() : 0.0,
+                ship.getHullNumber(),
+                ship.getMainImageUrl()
+        );
+
+        List<StopDetailDTO> stopDetails = plan.getStops().stream()
+                .filter(s -> s.getDeletedAt() == null)
+                .sorted(Comparator.comparing(Stop::getSequence))
+                .map(s -> new StopDetailDTO(
+                        s.getId(),
+                        s.getPort().getName(),
+                        s.getSequence(),
+                        s.getEstBoardingTime(),
+                        s.getEstDisembarkTime()))
+                .toList();
+
+        RouteDetailDTO routeDetail = new RouteDetailDTO(
+                plan.getOriginPort().getName(),
+                plan.getDestinationPort().getName(),
+                plan.getDepartureTime(),
+                plan.getEta(),
+                plan.getDistanceMiles() != null ? plan.getDistanceMiles().doubleValue() : 0.0,
+                plan.getEstimatedHours() != null ? plan.getEstimatedHours().intValue() : 0,
+                stopDetails.size(),
+                stopDetails
+        );
+
+        List<CargoItemDTO> cargoItems = plan.getCargoItems().stream()
+                .filter(c -> c.getDeletedAt() == null)
+                .map(c -> new CargoItemDTO(
+                        c.getId(),
+                        c.getProductName(),
+                        c.getOwningCompany(),
+                        c.getProductCategory().name(),
+                        c.getCargoType().name(),
+                        c.getQuantity(),
+                        c.getWeightTonnes() != null ? c.getWeightTonnes().doubleValue() : 0.0,
+                        c.getVolumeM3() != null ? c.getVolumeM3().doubleValue() : 0.0,
+                        c.getContainerType() != null ? c.getContainerType().name() : null))
+                .toList();
+
+        CargoDetailDTO cargoDetail = new CargoDetailDTO(
+                plan.getTotalCargoTonnes() != null ? plan.getTotalCargoTonnes().doubleValue() : 0.0,
+                ship.getCargoCapacityTonnes() != null ? ship.getCargoCapacityTonnes().doubleValue() : 0.0,
+                cargoItems
+        );
+
+        List<CrewMemberDetailDTO> crewDetails = plan.getCrewMembers().stream()
+                .filter(tpc -> tpc.getDeletedAt() == null)
+                .map(tpc -> {
+                    CrewMember cm = tpc.getCrewMember();
+                    return new CrewMemberDetailDTO(
+                            cm.getId(),
+                            cm.getPerson().getFullName(),
+                            tpc.getRole(),
+                            cm.getFileNumber(),
+                            cm.getPerson().getAvatarUrl()
+                    );
+                })
+                .toList();
+
+        return new TravelPlanFullDetailDTO(
+                plan.getId(),
+                plan.getStatus().name(),
+                plan.getCreatedAt(),
+                shipDetail,
+                routeDetail,
+                cargoDetail,
+                crewDetails
+        );
     }
 
     private TravelPlanSummaryResponseDTO toSummaryResponse(TravelPlan entity) {

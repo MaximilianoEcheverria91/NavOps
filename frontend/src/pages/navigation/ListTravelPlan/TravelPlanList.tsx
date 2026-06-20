@@ -11,6 +11,7 @@ import type { TravelPlanStatus } from '../../../types/travelPlan';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal';
 // 🚀 CORREGIDO: Importamos la llamada de Axios nativa de tu servicio de travesías
 import { cancelVoyagePlan } from '../../../services/api/voyageService'; 
+import { TravelPlanDetailModal } from '../TravelPlanDetailModal/TravelPlanDetailModal';
 
 const formatDate = (isoString: string) => {
   if (!isoString) return '';
@@ -60,6 +61,8 @@ export const TravelPlanList: React.FC = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [planIdToCancel, setPlanIdToCancel] = useState<string | null>(null);
   const [isCanceling, setIsCanceling] = useState(false);
+
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFilteredPlans(filters, page, pageSize);
@@ -288,7 +291,7 @@ export const TravelPlanList: React.FC = () => {
                       </div>
                     </div>
                     <div className={styles.cardActions}>
-                      <button className={styles.btnDetail}>Ver detalle</button>
+                      <button className={styles.btnDetail} onClick={() => setSelectedPlanId(plan.id)}>Ver detalle</button>
                       {(plan.status === 'PLANNED' || plan.status === 'DELAYED') && (
                         <>
                           <button 
@@ -331,6 +334,12 @@ export const TravelPlanList: React.FC = () => {
           setPlanIdToCancel(null);       
         }}
       />
+      {selectedPlanId && (
+        <TravelPlanDetailModal
+          planId={selectedPlanId}
+          onClose={() => setSelectedPlanId(null)}
+        />
+      )}
     </NavigationLayout>
   );
 };

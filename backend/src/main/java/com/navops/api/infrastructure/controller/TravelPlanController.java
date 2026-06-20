@@ -8,6 +8,7 @@ import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanFullDetailDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import com.navops.api.application.service.travelPlan.TravelPlanService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -215,6 +216,28 @@ public class TravelPlanController {
     public ResponseEntity<TravelPlanTelemetryResponseDTO> getTelemetry(@PathVariable UUID id) {
         log.info("Recibida peticion de telemetria para plan ID: {}", id);
         return ResponseEntity.ok(travelPlanService.getTelemetryByPlanId(id));
+    }
+
+    @Operation(
+            summary = "Obtener detalle completo de un plan de travesía para la UI",
+            description = "Retorna un DTO compuesto con toda la información transaccional del viaje: buque, ruta, escalas, carga y tripulación.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Detalle completo obtenido correctamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanFullDetailDTO.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Plan de travesía no encontrado",
+                            content = @Content(schema = @Schema(implementation = com.navops.api.application.dto.response.ErrorResponseDto.class))
+                    )
+            }
+    )
+    @GetMapping("/{id}/full-detail")
+    public ResponseEntity<TravelPlanFullDetailDTO> getTravelPlanFullDetail(@PathVariable UUID id) {
+        log.info("Recibida petición de detalle completo para plan ID: {}", id);
+        return ResponseEntity.ok(travelPlanService.getTravelPlanFullDetail(id));
     }
 
     @Operation(

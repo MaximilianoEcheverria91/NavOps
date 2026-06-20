@@ -8,6 +8,7 @@ import com.navops.api.application.dto.response.travelPlan.MyVoyagesMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanMetricsDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanResponseDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanSummaryResponseDTO;
+import com.navops.api.application.dto.response.travelPlan.TravelPlanFullDetailDTO;
 import com.navops.api.application.dto.response.travelPlan.TravelPlanTelemetryResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,4 +43,6 @@ public interface TravelPlanService {
     List<TravelPlanSummaryResponseDTO> getMyAssignedVoyages(UUID userId);
 
     TravelPlanTelemetryResponseDTO getTelemetryByPlanId(UUID id);
+
+    TravelPlanFullDetailDTO getTravelPlanFullDetail(UUID id);
 }

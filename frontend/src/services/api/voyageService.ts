@@ -3,6 +3,7 @@ import axios from 'axios';
 import type { GlobalVoyagesMetrics, MyVoyagesMetrics, HistoryVoyagesMetrics, VoyageSummary } from '../../types/navigation';
 import type { TravelPlanActive } from '../../types/travelPlan';
 import type { TravelPlanTelemetryResponse } from '../../types/travelPlan';
+import type { VoyageFullDetailResponse } from '../../types/voyageTypes';
 
 export interface StopRequest {
   portId: string;
@@ -87,6 +88,11 @@ export const startTravelPlan = async (id: string): Promise<any> => {
 
 export const getVoyageTelemetry = async (id: string): Promise<TravelPlanTelemetryResponse> => {
   const response = await apiClient.get(`/navigation/travel-plans/${id}/telemetry`);
+  return response.data;
+};
+
+export const getVoyageFullDetail = async (id: string): Promise<VoyageFullDetailResponse> => {
+  const response = await apiClient.get(`/navigation/travel-plans/${id}/full-detail`);
   return response.data;
 };
 
