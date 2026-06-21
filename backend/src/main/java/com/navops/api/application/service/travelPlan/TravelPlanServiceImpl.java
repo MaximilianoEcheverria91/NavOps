@@ -582,7 +582,9 @@ public class TravelPlanServiceImpl implements TravelPlanService {
                         s.getPort().getName(),
                         s.getSequence(),
                         s.getEstBoardingTime(),
-                        s.getEstDisembarkTime()))
+                        s.getEstDisembarkTime(),
+                        s.getPort().getLatitude() != null ? s.getPort().getLatitude() : 0.0,
+                        s.getPort().getLongitude() != null ? s.getPort().getLongitude() : 0.0))
                 .toList();
 
         RouteDetailDTO routeDetail = new RouteDetailDTO(
@@ -593,6 +595,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
                 plan.getDistanceMiles() != null ? plan.getDistanceMiles().doubleValue() : 0.0,
                 plan.getEstimatedHours() != null ? plan.getEstimatedHours().intValue() : 0,
                 stopDetails.size(),
+                plan.getOriginPort().getLatitude() != null ? plan.getOriginPort().getLatitude() : 0.0,
+                plan.getOriginPort().getLongitude() != null ? plan.getOriginPort().getLongitude() : 0.0,
+                plan.getDestinationPort().getLatitude() != null ? plan.getDestinationPort().getLatitude() : 0.0,
+                plan.getDestinationPort().getLongitude() != null ? plan.getDestinationPort().getLongitude() : 0.0,
                 stopDetails
         );
 

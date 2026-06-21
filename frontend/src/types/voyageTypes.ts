@@ -16,6 +16,8 @@ export interface VoyageFullDetailStop {
   sequence: number;
   estBoardingTime: string;
   estDisembarkTime: string;
+  latitude: number;  // <-- Agregado
+  longitude: number; // <-- Agregado
 }
 
 export interface VoyageFullDetailRoute {
@@ -27,6 +29,10 @@ export interface VoyageFullDetailRoute {
   estimatedHours: number;
   stopsCount: number;
   stops: VoyageFullDetailStop[];
+  originLatitude: number;       // <-- Agregado
+  originLongitude: number;      // <-- Agregado
+  destinationLatitude: number;  // <-- Agregado
+  destinationLongitude: number; // <-- Agregado
 }
 
 export interface VoyageFullDetailCargoItem {
