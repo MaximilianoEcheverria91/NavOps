@@ -1,8 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { Download, X, Package, Anchor, Calendar, MapPin, Ship, Navigation, Users } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Download, X, Package, Anchor, Calendar, MapPin, Navigation, Users, Ship } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { getVoyageFullDetail } from '../../../services/api/voyageService';
 import type { VoyageFullDetailResponse } from '../../../types/voyageTypes';
-import './TravelPlanDetailModal.css'; // Importación directa del archivo de estilos fijados
+import styles from './TravelPlanDetailModal.module.css'; // Importación mandatoria del módulo
+
+// IMPORTACIONES DE TUS ARRAYS DE ENUMS NACOES
+import { CARGO_CATEGORIES } from '../../../types/cargoType';
+import { SHIP_TYPES } from '../../../types/shipEnums';
+import { TRAVEL_PLAN_STATUS } from '../../../types/travelPlan';
+import { POSITIONS } from '../../../types/userEnums';
+import { CARGO_TYPES} from '../../../types/cargoType';
+
+// Fix leaflet icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
+  iconUrl: new URL('leaflet/dist/images/marker-icon.png', import.meta.url).href,
+  shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
+});
+
+const createCustomIcon = (color: string, text: string, size: number) => {
+  return L.divIcon({
+    className: 'custom-div-icon',
+    html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${size > 20 ? '12px' : '10px'}; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">${text}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2]
+  });
+};
+
+const MapResizeTrigger: React.FC = () => {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+};
 
 interface TravelPlanDetailModalProps {
   planId: string;
@@ -32,20 +71,78 @@ export const TravelPlanDetailModal: React.FC<TravelPlanDetailModalProps> = ({ pl
     fetchData();
   }, [planId]);
 
+  const { ship, route, cargo, crewMembers } = data || {};
+
+  // FUNCIONES AUXILIARES DE TRADUCCIÓN DE ENUMS
+  const getStatusLabel = (statusKey: string) => {
+    const found = TRAVEL_PLAN_STATUS.find(s => s.value === statusKey);
+    return found ? found.label : statusKey;
+  };
+
+  const getShipTypeLabel = (typeKey: string) => {
+    const found = SHIP_TYPES.find(t => t.value === typeKey);
+    return found ? found.label : typeKey;
+  };
+
+  const getCargoCategoryLabel = (categoryKey: string) => {
+    const found = CARGO_CATEGORIES.find(c => c.value === categoryKey);
+    return found ? found.label : categoryKey;
+  };
+
+  const getCargoTypeLabel = (cargoTypeKey: string) => {
+    const found = CARGO_TYPES.find(c => c.value === cargoTypeKey);
+    return found ? found.label : cargoTypeKey;
+  };
+
+  const getCrewPositionLabel = (roleKey: string) => {
+    const found = POSITIONS.find(p => p.value === roleKey);
+    return found ? found.label : roleKey;
+  };
+
+  const coordinatesPath = useMemo<[number, number][]>(() => {
+    if (!route) return [];
+    const path: [number, number][] = [];
+    if (route.originLatitude && route.originLongitude) {
+      path.push([route.originLatitude, route.originLongitude]);
+    }
+    if (route.stops && Array.isArray(route.stops)) {
+      const sortedStops = [...route.stops].sort((a, b) => a.sequence - b.sequence);
+      sortedStops.forEach(stop => {
+        if (stop.latitude && stop.longitude) {
+          path.push([stop.latitude, stop.longitude]);
+        }
+      });
+    }
+    if (route.destinationLatitude && route.destinationLongitude) {
+      path.push([route.destinationLatitude, route.destinationLongitude]);
+    }
+    return path;
+  }, [route]);
+
+  const mapBounds = useMemo(() => {
+    if (coordinatesPath.length === 0) return undefined;
+    return L.latLngBounds(coordinatesPath);
+  }, [coordinatesPath]);
+
+  const utilizedCapacityPercentage = useMemo(() => {
+    if (!cargo || !cargo.shipCargoCapacityTonnes || cargo.shipCargoCapacityTonnes === 0) return 0;
+    return (cargo.totalCargoTonnes / cargo.shipCargoCapacityTonnes) * 100;
+  }, [cargo]);
+
   if (loading) {
     return (
-      <div className="navops-modal-overlay">
+      <div className={styles.navopsModalOverlay}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !ship || !route || !cargo) {
     return (
-      <div className="navops-modal-overlay" onClick={onClose}>
-        <div className="navops-modal-content" style={{ maxWidth: '400px', padding: '20px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+      <div className={styles.navopsModalOverlay} onClick={onClose}>
+        <div className={styles.navopsModalContent} style={{ maxWidth: '400px', padding: '20px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
           <X className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold mb-2 text-center">Error</h2>
+          <h2 className="text-xl font-bold mb-2 text-center text-white">Error</h2>
           <p className="text-slate-400 mb-6 text-center">{error || 'No se encontró información'}</p>
           <button onClick={onClose} className="w-full py-2 bg-blue-600 rounded-lg text-white font-medium">
             Cerrar
@@ -55,21 +152,18 @@ export const TravelPlanDetailModal: React.FC<TravelPlanDetailModalProps> = ({ pl
     );
   }
 
-  const { ship, route, cargo, crewMembers } = data;
-
   return (
-    <div className="navops-modal-overlay" onClick={onClose}>
-      {/* Ventana Modal */}
-      <div className="navops-modal-content" onClick={e => e.stopPropagation()}>
+    <div className={styles.navopsModalOverlay} onClick={onClose}>
+      <div className={styles.navopsModalContent} onClick={e => e.stopPropagation()}>
         
         {/* FILA SUPERIOR DE TÍTULO Y ACCIONES */}
-        <div className="px-5 py-4 flex items-center justify-between border-b border-[#162e4e]/50 bg-[#07172c] shrink-0">
-          <div className="flex items-center gap-2.5 text-white">
-            <Navigation className="h-5 w-5 text-sky-400 rotate-45" /> {/* Icono de navegación al estilo de tu diseño */}
-            <span className="text-lg font-semibold tracking-wide">Detalle de travesía</span>
+        <div className={styles.navopsHeaderTopRow}>
+          <div className={styles.navopsTitleArea}>
+            <Ship className="h-6 w-6 text-sky-400 " />
+            <span>Detalle de travesía</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className={styles.navopsActionArea}>
             <button className="flex items-center gap-2 border border-[#1e3a5f] bg-[#0c1f38]/80 rounded-xl px-4 py-1.5 text-white text-xs font-medium hover:bg-[#132841] transition-colors">
               <span>Descargar</span>
               <Download className="h-3.5 w-3.5" />
@@ -81,66 +175,64 @@ export const TravelPlanDetailModal: React.FC<TravelPlanDetailModalProps> = ({ pl
         </div>
         
         {/* CONTENEDOR DE LA IMAGEN HERO */}
-        <div className="navops-modal-hero">
+        <div className={styles.navopsModalHero}>
           {ship.mainImageUrl ? (
             <img src={ship.mainImageUrl} alt={ship.name} />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-slate-500">Sin Imagen Disponible</div>
           )}
-          <div className="navops-modal-gradient" />
+          <div className={styles.navopsModalGradient} />
 
-          {/* Estado del plan */}
-          <div className="absolute top-4 right-5 bg-blue-600 text-white px-4 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider z-10">
-            {data.status || 'Programando'}
+          {/* ESTADO TRADUCIDO */}
+          <div className="absolute top-4 right-8 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider z-10">
+            {getStatusLabel(data.status)}
           </div>
 
-          {/* Nombre de la unidad en la parte inferior */}
-          <div className="absolute bottom-4 left-5 flex items-center gap-2 text-white z-10">
-            <Anchor className="h-4 w-4 text-sky-400" />
+          <div className="absolute bottom-4 left-8 flex items-center gap-2 text-white z-10">
+            <Anchor className="h-6 w-6 right-5 text-sky-400" />
             <span className="text-base font-bold tracking-wider">{ship.name || 'Atlantis'}</span>
           </div>
         </div>
 
-        {/* CUERPO INTERNO CON SCROLL DEL MODAL */}
-        <div className="navops-modal-body">
+        {/* CUERPO INTERNO DEL MODAL */}
+        <div className={styles.navopsModalBody}>
           
-          {/* Ficha Técnica de 3 Columnas Fijas */}
-          <div className="navops-grid-technical">
-            <div className="space-y-1">
-              <div><span className="text-slate-400">Tipo de Barco:</span> <span className="text-white font-medium">{ship.shipType || 'Destructor'}</span></div>
-              <div><span className="text-slate-400">Matricula:</span> <span className="text-white font-medium">{ship.registration || 'CFR-4538-RRE'}</span></div>
+          {/* Ficha Técnica */}
+          <div className={styles.navopsGridTechnical}>
+            <div>
+              {/* TIPO DE BARCO TRADUCIDO */}
+              <div>Tipo de Barco: <span className="text-white font-medium">{getShipTypeLabel(ship.shipType)}</span></div>
+              <div>Matricula: <span className="text-white font-medium">{ship.registration || 'CFR-4538-RRE'}</span></div>
             </div>
-            <div className="space-y-1">
-              <div><span className="text-slate-400">Numero de casco:</span> <span className="text-white font-medium">{ship.hullNumber || '200-123ds-as'}</span></div>
-              <div><span className="text-slate-400">Cantidad de bodega:</span> <span className="text-white font-medium">{ship.holdCount || 4}</span></div>
+            <div>
+              <div>Numero de casco: <span className="text-white font-medium">{ship.hullNumber || '200-123ds-as'}</span></div>
+              <div>Cantidad de bodega: <span className="text-white font-medium">{ship.holdCount || 4}</span></div>
             </div>
-            <div className="space-y-1">
-              <div><span className="text-slate-400">Capacidad de tripulantes:</span> <span className="text-white font-medium">200</span></div>
-              <div><span className="text-slate-400">Capacidad:</span> <span className="text-white font-medium">{ship.cargoCapacityTonnes?.toLocaleString() || '4.500'} Toneladas</span></div>
+            <div>
+              <div>Capacidad de tripulantes: <span className="text-white font-medium">200</span></div>
+              <div>Capacidad: <span className="text-white font-medium">{ship.cargoCapacityTonnes?.toLocaleString() || '4.500'} Toneladas</span></div>
             </div>
           </div>
 
-          {/* BARRA DE PESTAÑAS ACTUALIZADA CON ICONOS */}
-          <div className="navops-tabs-container">
+          {/* BARRA DE PESTAÑAS */}
+          <div className={styles.navopsTabsContainer}>
             <button 
               onClick={() => setActiveTab('ROUTE')} 
-              className={`navops-tab-btn flex items-center justify-center gap-2 ${activeTab === 'ROUTE' ? 'active' : ''}`}
+              className={`${styles.navopsTabBtn} ${activeTab === 'ROUTE' ? styles.active : ''}`}
             >
               <Navigation className="h-3.5 w-3.5" />
               <span>Ruta</span>
             </button>
-            
             <button 
               onClick={() => setActiveTab('CARGO')} 
-              className={`navops-tab-btn flex items-center justify-center gap-2 ${activeTab === 'CARGO' ? 'active' : ''}`}
+              className={`${styles.navopsTabBtn} ${activeTab === 'CARGO' ? styles.active : ''}`}
             >
               <Package className="h-3.5 w-3.5" />
               <span>Carga</span>
             </button>
-            
             <button 
               onClick={() => setActiveTab('CREW')} 
-              className={`navops-tab-btn flex items-center justify-center gap-2 ${activeTab === 'CREW' ? 'active' : ''}`}
+              className={`${styles.navopsTabBtn} ${activeTab === 'CREW' ? styles.active : ''}`}
             >
               <Users className="h-3.5 w-3.5" />
               <span>Tripulación</span>
@@ -148,85 +240,221 @@ export const TravelPlanDetailModal: React.FC<TravelPlanDetailModalProps> = ({ pl
           </div>
 
           {/* Caja Envolvente Dinámica */}
-          <div className="navops-dynamic-box">
+          <div className={styles.navopsDynamicBox}>
             
-            {/* RUTA */}
+            {/* PESTAÑA: RUTA */}
             {activeTab === 'ROUTE' && (
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-stretch text-xs">
-                <div className="md:col-span-2 flex flex-col justify-between">
-                  <span className="font-bold text-white block mb-2">Plan de Navegación</span>
-                  <div className="relative border-l border-slate-700 ml-2 space-y-4 pb-1">
-                    <div className="relative pl-5">
-                      <div className="absolute -left-[4px] top-1 h-2 w-2 rounded-full bg-emerald-500" />
-                      <span className="text-slate-500 block text-[10px]">Origen</span>
-                      <p className="font-semibold text-white mt-0.5">{route.originPortName || 'Mar del Plata'}</p>
-                      <span className="text-slate-400 text-[10px] flex items-center gap-1 mt-0.5"><Calendar size={10} /> Salida 14 Junio / 07:30 Hs</span>
+              <div className={styles.navopsRouteLayout}>
+                <div className={`${styles.navopsRouteInfoPanel} text-xs pr-2 overflow-y-auto`}>
+                  <span className={styles.navopsRouteSectionTitle}>Plan de Navegación</span>
+                  
+                  <div className={styles.navopsTimeline}>
+                    <div className={styles.navopsTimelineItem}>
+                      <div className={`${styles.navopsTimelineIcon} ${styles.bgOrigin}`} />
+                      <span className={styles.navopsTimelineLabel}>Origen</span>
+                      <p className={styles.navopsTimelineValue}>{route.originPortName || 'Mar del Plata'}</p>
+                      <span className={styles.navopsTimelineDetail}>
+                        <Calendar size={12} /> Salida 14 Junio / 07:30 Hs
+                      </span>
                     </div>
-                    <div className="relative pl-5 text-[11px] text-slate-400 space-y-0.5">
-                      <div>Distancia: <span className="text-slate-200">{route.distanceMiles || '10.187'} MN</span></div>
-                      <div>Duración: <span className="text-slate-200">27 Días</span></div>
-                      <div>Cantidad de escalas: <span className="text-slate-200">{route.stopsCount || 2}</span></div>
+
+                    <div className={styles.navopsTimelineMetrics}>
+                      <div>
+                        <Navigation size={12} className="rotate-45 text-sky-400" />
+                        <span>Distancia: <strong className="text-slate-200">{route.distanceMiles || '10.187'} Millas Nauticas</strong></span>
+                      </div>
+                      <div>
+                        <Calendar size={12} className="text-sky-400" />
+                        <span>Duración: <strong className="text-slate-200">27 Días</strong></span>
+                      </div>
+                      <div>
+                        <Navigation size={12} className="text-sky-400" />
+                        <span>Cantidad de escalas: <strong className="text-slate-200">{route.stopsCount || 2}</strong></span>
+                      </div>
                     </div>
-                    <div className="relative pl-5">
-                      <div className="absolute -left-[4px] top-1 h-2 w-2 rounded-full bg-emerald-500" />
-                      <span className="text-slate-500 block text-[10px]">Destino</span>
-                      <p className="font-semibold text-white mt-0.5">{route.destinationPortName || 'Puerto Madryn'}</p>
-                      <span className="text-slate-400 text-[10px] flex items-center gap-1 mt-0.5"><Calendar size={10} /> Llegada 16 Agosto / 07:30 Hs</span>
+
+                    <div className={styles.navopsTimelineItem}>
+                      <div className={`${styles.navopsTimelineIcon} ${styles.bgDestination}`} />
+                      <span className={styles.navopsTimelineLabel}>Destino</span>
+                      <p className={styles.navopsTimelineValue}>{route.destinationPortName || 'Puerto Madryn'}</p>
+                      <span className={styles.navopsTimelineDetail}>
+                        <Calendar size={12} /> Llegada 16 Agosto / 07:30 Hs
+                      </span>
                     </div>
                   </div>
                 </div>
-                <div className="md:col-span-3">
-                  <div className="w-full h-full min-h-[200px] rounded-xl bg-sky-500/5 flex flex-col items-center justify-center border border-sky-500/20">
-                    <MapPin className="text-sky-400 h-8 w-8 mb-1 animate-pulse" />
-                    <span className="text-sky-300 font-medium">Mapa interactivo Leaflet</span>
-                  </div>
+                
+                <div className={styles.navopsMapWrapper}>
+                  {coordinatesPath.length > 0 ? (
+                   <MapContainer
+                      bounds={mapBounds}
+                      style={{ width: '100%', height: '100%', minHeight: '290px', position: 'relative' }}
+                      zoomControl={false}
+                      attributionControl={false}
+                    >
+                      <MapResizeTrigger />
+                      <TileLayer 
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
+                      />
+                      
+                      {route.originLatitude !== undefined && route.originLongitude !== undefined && (
+                        <Marker 
+                          position={[route.originLatitude, route.originLongitude] as [number, number]}
+                          icon={createCustomIcon('#10b981', 'O', 24)}
+                        >
+                          <Popup><strong>Origen:</strong> {route.originPortName}</Popup>
+                        </Marker>
+                      )}
+
+                      {route.stops && [...route.stops].sort((a, b) => a.sequence - b.sequence).map((stop, index) => (
+                        stop.latitude !== undefined && stop.longitude !== undefined ? (
+                          <Marker 
+                            key={stop.id}
+                            position={[stop.latitude, stop.longitude] as [number, number]}
+                            icon={createCustomIcon('#f59e0b', (index + 1).toString(), 24)}
+                          >
+                            <Popup><strong>Escala {index + 1}:</strong> {stop.portName}</Popup>
+                          </Marker>
+                        ) : null
+                      ))}
+
+                      {route.destinationLatitude !== undefined && route.destinationLongitude !== undefined && (
+                        <Marker 
+                          position={[route.destinationLatitude, route.destinationLongitude] as [number, number]}
+                          icon={createCustomIcon('#0284c7', 'D', 24)}
+                        >
+                          <Popup><strong>Destino:</strong> {route.destinationPortName}</Popup>
+                        </Marker>
+                      )}
+
+                      {coordinatesPath.length > 1 && (
+                        <Polyline 
+                          positions={coordinatesPath} 
+                          color="#38bdf8" 
+                          weight={3} 
+                          dashArray="5, 10" 
+                        />
+                      )}
+                    </MapContainer>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-sky-500/5">
+                      <MapPin className="text-sky-400 h-8 w-8 mb-1 animate-pulse" />
+                      <span className="text-sky-300 font-medium">Sin coordenadas</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* CARGA */}
+            {/* PESTAÑA: CARGA */}
             {activeTab === 'CARGO' && (
-              <div className="space-y-4 text-xs">
-                <span className="font-bold text-white block">Carga Transportada</span>
-                <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+              <div className={styles.navopsCargoLayout}>
+                <span className={styles.navopsCargoMainTitle}>Carga Transportada</span>
+                
+                <div className={styles.navopsCapacityContainer}>
+                  <div className={styles.navopsCapacityHeader}>
+                    <span>Capacidad Utilizada</span>
+                    <span>
+                      {cargo.totalCargoTonnes?.toLocaleString() || '0'}/
+                      {cargo.shipCargoCapacityTonnes?.toLocaleString() || '0'} Ton
+                    </span>
+                  </div>
+                  <div className={styles.navopsProgressBarTrack}>
+                    <div 
+                      className={styles.navopsProgressBarFill} 
+                      style={{ width: `${Math.min(utilizedCapacityPercentage, 100)}%` }}
+                    />
+                  </div>
+                  <div className={styles.navopsCapacityFooter}>
+                    <span>{utilizedCapacityPercentage.toFixed(0)} %</span>
+                  </div>
+                </div>
+
+                <div className={styles.navopsCargoCardsScrollArea}>
                   {cargo.items && cargo.items.map((item) => (
-                    <div key={item.id} className="bg-[#031930]/60 border border-[#132a4a] rounded-lg p-3 flex justify-between items-center">
-                      <div className="flex items-center gap-2.5">
-                        <Package className="text-blue-400 h-4 w-4" />
+                    <div key={item.id} className={styles.navopsCargoCard}>
+                      
+                      <div className={styles.navopsCargoHeader}>
+                        <h4>
+                          {item.productName}{' '}
+                          <span>/ {item.owningCompany}</span>
+                        </h4>
+                        {/* CATEGORÍA DE CARGA TRADUCIDA */}
+                        <span className={styles.navopsCargoSubcategory}>
+                          {getCargoCategoryLabel(item.productCategory)}
+                        </span>
+                      </div>
+
+                      <div className={styles.navopsCargoMetricsGrid}>
                         <div>
-                          <h4 className="font-semibold text-white">{item.productName || 'Nombre'} <span className="text-slate-400 font-light text-[10px]">/ Dueño</span></h4>
-                          <span className="text-[10px] text-slate-500 block">{item.productCategory || 'Categoria'}</span>
+                          <span>T. de carga</span>
+                          <strong>{getCargoTypeLabel(item.cargoType)}</strong>
+                        </div>
+                        <div>
+                          <span>Cantidad</span>
+                          <strong>{item.quantity}</strong>
+                        </div>
+                        <div>
+                          <span>Peso por unidad</span>
+                          <strong>{item.weightTonnes}</strong>
+                        </div>
+                        <div>
+                          <span>Peso total</span>
+                          <strong>{item.weightTonnes * item.quantity}</strong>
+                        </div>
+                        <div>
+                          <span>Volumen total</span>
+                          <strong>{item.volumeM3} M°</strong>
                         </div>
                       </div>
-                      <div className="flex gap-5 text-slate-300 font-medium text-[11px]">
-                        <div><span className="text-[9px] text-slate-500 block">Cantidad</span>5</div>
-                        <div><span className="text-[9px] text-slate-500 block">Peso</span>2400</div>
-                        <div><span className="text-[9px] text-slate-500 block">Volumen</span>1200 M°</div>
+
+                      <div className={styles.navopsCargoIconWrapper}>
+                        <Package className="h-5 w-5 text-sky-400" />
                       </div>
+
                     </div>
                   ))}
+                  
+                  {(!cargo.items || cargo.items.length === 0) && (
+                    <div style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>
+                      No hay cargamento registrado en este viaje.
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* TRIPULACIÓN */}
+           {/* PESTAÑA: TRIPULACIÓN */}
             {activeTab === 'CREW' && (
-              <div className="space-y-3 text-xs">
-                <span className="font-bold text-white block">Tripulación Asignada</span>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto pr-1">
+              <div className={styles.navopsCrewLayout}>
+                <span className={styles.navopsCrewMainTitle}>Tripulación Asignada</span>
+                
+                <div className={styles.navopsCrewCardsScrollArea}>
                   {crewMembers && crewMembers.map((member) => (
-                    <div key={member.id} className="bg-[#031930]/60 border border-[#132a4a] rounded-lg p-2 flex items-center gap-3">
+                    <div key={member.id} className={styles.navopsCrewCard}>
                       <img 
                         src={member.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.fullName || 'U')}&background=031930&color=fff`} 
                         alt={member.fullName}
-                        className="w-9 h-9 rounded-full object-cover border border-slate-700"
+                        className={styles.navopsCrewAvatar}
                       />
-                      <div>
-                        <h4 className="font-semibold text-white">{member.fullName || 'Tripulante'}</h4>
-                        <p className="text-sky-400 text-[10px]">{member.role || 'Oficial'}</p>
+                      <div className={styles.navopsCrewInfo}>
+                        <h4>{member.fullName || 'Diego Hernan Torres'}</h4>
+                        {/* RANGO / ROL TRADUCIDO */}
+                        <p className={styles.navopsCrewRole}>
+                          {getCrewPositionLabel(member.role)}
+                        </p>
+                        <span className={styles.navopsCrewFileId}>
+                          Legajo: <strong>{member.fileNumber || 'E97961'}</strong>
+                        </span>
                       </div>
                     </div>
                   ))}
+
+                  {(!crewMembers || crewMembers.length === 0) && (
+                    <div style={{ gridColumn: 'span 2', textAlign: 'center', padding: '24px', color: '#64748b' }}>
+                      No hay tripulantes asignados a esta travesía.
+                    </div>
+                  )}
                 </div>
               </div>
             )}

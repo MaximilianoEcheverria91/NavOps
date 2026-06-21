@@ -20,6 +20,12 @@ public record StopDetailDTO(
     OffsetDateTime estBoardingTime,
 
     @Schema(description = "Fecha y hora estimada de desembarque")
-    OffsetDateTime estDisembarkTime
+    OffsetDateTime estDisembarkTime,
+
+    @Schema(description = "Latitud del puerto de escala")
+    double latitude,
+
+    @Schema(description = "Longitud del puerto de escala")
+    double longitude
 
 ) {}

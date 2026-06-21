@@ -28,6 +28,18 @@ public record RouteDetailDTO(
     @Schema(description = "Cantidad de escalas intermedias")
     int stopsCount,
 
+    @Schema(description = "Latitud del puerto de origen")
+    double originLatitude,
+
+    @Schema(description = "Longitud del puerto de origen")
+    double originLongitude,
+
+    @Schema(description = "Latitud del puerto de destino")
+    double destinationLatitude,
+
+    @Schema(description = "Longitud del puerto de destino")
+    double destinationLongitude,
+
     @Schema(description = "Lista de escalas")
     List<StopDetailDTO> stops
 
