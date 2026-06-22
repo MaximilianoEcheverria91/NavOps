@@ -32,6 +32,8 @@
   --button-download: rgba(99, 186, 207, 0.9);
   --border-button-dowload: rgba(99, 186, 207, 0.4);
   --background-color-detail: #082842;
+  --fondo: #082842;
+  --delete-fondo:#450a0a9a;
 
   /*Navar*/
   --barckground-color-nav: none;
@@ -91,6 +93,8 @@
   --button-download: #082842;
   --border-button-dowload: #436a88;
   --background-color-detail: #ffff;
+  --fondo: #ffff;
+  --delete-fondo:#c4a3a3;
  
 
 

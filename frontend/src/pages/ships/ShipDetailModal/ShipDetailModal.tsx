@@ -1,6 +1,7 @@
 // frontend/src/pages/ships/ShipDetailModal/ShipDetailModal.tsx
 import React from 'react';
-import { X, Anchor } from 'lucide-react';
+import { X, Anchor, Edit2, Trash2} from 'lucide-react'; // 🔥 IMPORTAMOS EL ÍCONO EDIT2
+import { useNavigate } from 'react-router-dom'; // 🔥 IMPORTAMOS USENAVIGATE
 import { useShipDetail } from '../../../hooks/useShipDetail';
 import type { ShipStatus, ShipType } from '../../../types/ship';
 import { DeleteShipModal } from '../../../components/ui/DeleteShipModal/DeleteShipModal';
@@ -60,8 +61,9 @@ const val = (v: string | number | null | undefined): string =>
 export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({ 
   shipId, 
   onClose,
-  showActions = true // 🚀 Valor por defecto
+  showActions = true 
 }) => {
+  const navigate = useNavigate(); // 🔥 INICIALIZAMOS EL NAVEGADOR
   const { data: ship, loading, error } = useShipDetail(shipId);
   const [showDelete, setShowDelete] = React.useState(false);
   const [showReactivate, setShowReactivate] = React.useState(false);
@@ -103,7 +105,7 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({
               </div>
 
               <div className={styles.modalContentWrapper}>
-                {/* TOP: imagen + info general */}
+                {/* Información General */}
                 <div className={styles.infoBlock}>
                   <h3 className={styles.sectionTitle}>Información General</h3>
                   <div className={styles.gridData}>
@@ -240,18 +242,32 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({
               </div>
 
               {showActions && (
-                <div className={styles.footerActions}>
-                  {ship.status === 'INACTIVE' ? (
-                    <button className={styles.btnReactivate} onClick={() => setShowReactivate(true)}>
-                      Dar de alta
-                    </button>
-                  ) : (
-                    <button className={styles.btnDelete} onClick={() => setShowDelete(true)}>
-                      Dar de baja
-                    </button>
-                  )}
-                </div>
-              )}
+              <div className={styles.footerActions}>
+                {/* 1. Botón circular para Editar */}
+                <button 
+                  className={styles.editActionBtn} 
+                  title="Editar Barco"
+                  onClick={() => navigate(`/barcos/edit/${ship.id}`)}
+                >
+                  <Edit2 size={16} />
+                </button>
+
+                {/* 2. Control dinámico si está dado de baja o activo */}
+                {ship.status === 'INACTIVE' ? (
+                  <button className={styles.btnReactivate} onClick={() => setShowReactivate(true)}>
+                    Dar de alta
+                  </button>
+                ) : (
+                  <button 
+                    className={styles.deleteActionBtn} 
+                    title="Dar de baja" 
+                    onClick={() => setShowDelete(true)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            )}
             </>
           ) : null}
         </div>
@@ -266,8 +282,7 @@ export const ShipDetailModal: React.FC<ShipDetailModalProps> = ({
           onCancel={() => setShowDelete(false)}
           onSuccess={() => {
             setShowDelete(false);
-            onClose(); // Cerrar detalle para que refresque la lista (si lo refresca manualmente o se re-monta)
-            // idealmente deberíamos refrescar el modal o la lista
+            onClose();
           }}
         />
       )}

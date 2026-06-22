@@ -159,7 +159,7 @@
 
 .recommendedBadge {
   background: rgba(99, 186, 207, 0.2);
-  color: #63bacf;
+  color: #58b5cc;
   padding: 4px 12px;
   border-radius: 4px;
   font-size: 12px;
@@ -307,7 +307,7 @@
   border: 1px solid #63bacf;
   border-radius: 8px;
   padding: 12px;
-  color: white;
+  color: var(--text-secondary);
   outline: none;
 }
 

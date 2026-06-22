@@ -114,7 +114,7 @@
 
 .td {
   padding: 16px 24px;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   border-bottom: 1px solid rgba(14, 165, 233, 0.2);
 }

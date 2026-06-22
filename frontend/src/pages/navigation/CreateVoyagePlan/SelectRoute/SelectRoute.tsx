@@ -55,26 +55,6 @@ export const SelectRoute: React.FC<SelectRouteProps> = ({ onSaveSelection, onCan
   const [depDate, setDepDate] = useState(initialRouteData?.departureDate || '');
   const [depTime, setDepTime] = useState(initialRouteData?.departureTime || '');
 
-/*export const SelectRoute: React.FC<SelectRouteProps> = ({ onSaveSelection, onCancel, initialRouteData }) => {
-  const [ports, setPorts] = useState<PortSummaryResponse[]>([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [mapTarget, setMapTarget] = useState<[number, number] | null>(null);
-
-  // Estados del itinerario
-  const [origin, setOrigin] = useState<PortSummaryResponse | null>(null);
-  const [destination, setDestination] = useState<PortSummaryResponse | null>(null);
-  const [stops, setStops] = useState<PortSummaryResponse[]>([]);
-  
-  // Interacciones
-  const [isAddingStop, setIsAddingStop] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [detailPortId, setDetailPortId] = useState<string | null>(null);
-
-  // Fechas y horas
-  const [depDate, setDepDate] = useState('');
-  const [depTime, setDepTime] = useState('');
-*/
   // 1. Obtener puertos de la API
   useEffect(() => {
     const fetchPorts = async () => {

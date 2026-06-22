@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { X, Download, Anchor, Edit2, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import styles from './PortDetailModal.module.css';
 import { usePortDetail } from '../../../hooks/usePortDetail';
+
+// 🔥 IMPORTAMOS EL MODAL DE CONFIRMACIÓN REUTILIZABLE DESDE SU RUTA
+import DeletePortModal from '../DeletePortModal/DeletePortModal';
+
+// 🔥 IMPORTAMOS LAS CONSTANTES OFICIALES EN ESPAÑOL
+import { PORT_TYPES, DOCK_TYPES, PORT_STATUSES } from '../../../types/portEnums';
 
 interface PortDetailModalProps {
   portId: string;
@@ -10,10 +17,13 @@ interface PortDetailModalProps {
 }
 
 export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClose, showActions = true }) => {
+  const navigate = useNavigate();
   const { data: port, loading, error } = usePortDetail(portId);
   const [imageError, setImageError] = useState(false);
+  
+  // 🔥 ESTADO LOCAL PARA MOSTRAR/OCULTAR EL MODAL DE BORRADO
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Prevenir propagación de click para que cerrar funcione solo en el fondo overlay
   const handleModalContentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -21,9 +31,22 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
   React.useEffect(() => {
     if (port) {
       console.log('Datos del puerto recibidos en Modal:', port);
-      setImageError(false); // reset error state when new port loads
+      setImageError(false);
     }
   }, [port]);
+
+  // 💡 FUNCIONES AUXILIARES PARA TRADUCIR LOS ENUMS AL VUELO
+  const getPortTypeLabel = (typeKey: string) => {
+    if (!typeKey) return '-';
+    const found = PORT_TYPES.find(t => t.value === typeKey);
+    return found ? found.label : typeKey;
+  };
+
+  const getDockTypeLabel = (dockKey: string) => {
+    if (!dockKey) return '-';
+    const found = DOCK_TYPES.find(d => d.value === dockKey);
+    return found ? found.label : dockKey;
+  };
 
   const imageUrl = port?.mainImageUrl || (port as any)?.['main_image_url'] || null;
 
@@ -93,18 +116,22 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
                     <span className={styles.dataLabel}>Nombre del Puerto:</span>
                     <span className={styles.dataValue}>{port.name || '-'}</span>
                   </div>
+                  
                   <div className={styles.dataRow}>
                     <span className={styles.dataLabel}>Tipo de Puerto:</span>
-                    <span className={styles.dataValue}>{port.portType || '-'}</span>
+                    <span className={styles.dataValue}>{getPortTypeLabel(port.portType)}</span>
                   </div>
+                  
                   <div className={styles.dataRow}>
                     <span className={styles.dataLabel}>Código Internacional:</span>
                     <span className={styles.dataValue}>{port.code || '-'}</span>
                   </div>
+                  
                   <div className={styles.dataRow}>
                     <span className={styles.dataLabel}>Tipo de Muelle:</span>
-                    <span className={styles.dataValue}>{port.dockType || '-'}</span>
+                    <span className={styles.dataValue}>{getDockTypeLabel(port.dockType)}</span>
                   </div>
+                  
                   <div className={styles.dataRow}>
                     <span className={styles.dataLabel}>Cantidad de Muelles:</span>
                     <span className={styles.dataValue}>{port.dockCount != null ? port.dockCount : '-'}</span>
@@ -176,15 +203,39 @@ export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClos
         {/* FOOTER ACTIONS */}
         {!loading && !error && port && showActions && (
           <div className={styles.footerActions}>
-            <button className={styles.editActionBtn} title="Editar Puerto">
+            <button 
+              className={styles.editActionBtn} 
+              title="Editar Puerto"
+              onClick={() => navigate(`/puertos/edit/${port.id}`)}
+            >
               <Edit2 size={16} />
             </button>
-            <button className={styles.deleteActionBtn} title="Eliminar Puerto">
+            {/* 🔥 DISPARAMOS EL SUBMODAL AL HACER CLICK EN EL TACHO */}
+            <button 
+              className={styles.deleteActionBtn} 
+              title="Eliminar Puerto"
+              onClick={() => setShowDeleteModal(true)}
+            >
               <Trash2 size={16} />
             </button>
           </div>
         )}
       </div>
+
+      {/* 🔥 CONTROL DEL MODAL DE ELIMINACIÓN REUTILIZADO */}
+      {showDeleteModal && port && (
+        <DeletePortModal
+          portId={portId}
+          portName={port.name || ''}
+          portLocation={`${port.province || ''}, ${port.country || ''}`}
+          mainImageUrl={imageUrl ?? undefined}
+          onCancel={() => setShowDeleteModal(false)}
+          onSuccess={() => {
+            setShowDeleteModal(false);
+            onClose(); // Cierra el detalle completo para que impacte el refresco en la grilla principal
+          }}
+        />
+      )}
     </div>
   );
 };

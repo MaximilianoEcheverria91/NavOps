@@ -89,7 +89,7 @@ export const UpdateShip: React.FC = () => {
 
           <div className={styles.uploadTextInfo}>
             <span className={styles.recommendedBadge}>Recomendado</span>
-            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'rgba(255,255,255,0.7)'}}>
+            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'var(--text-secundary)'}}>
               Se recomienda una fotografía de perfil del barco con buena iluminación. La imagen debe
               ser clara y mostrar las características principales de la embarcación. Solo PNG/JPG, máx. 5MB.
             </p>

@@ -329,6 +329,7 @@ public class ShipService {
     }
 
     private ShipDetailResponse toDetailResponse(Ship ship, Engine engine, BigDecimal fuelCapacity, LocalDate lastMaintDate) {
+        UUID countryId = ship.getCountry() != null ? ship.getCountry().getId() : null;
         String countryName = ship.getCountry() != null ? ship.getCountry().getName() : null;
         return new ShipDetailResponse(
                 ship.getId(),
@@ -337,6 +338,7 @@ public class ShipService {
                 ship.getImoNumber(),
                 ship.getShipType().name(),
                 (int) ship.getBuildYear(),
+                countryId,
                 countryName,
                 ship.getStatus().name(),
                 ship.getMainImageUrl(),

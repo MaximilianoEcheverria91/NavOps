@@ -13,6 +13,7 @@ public record ShipDetailResponse(
     String imoNumber,
     String shipType,
     Integer buildYear,
+    UUID countryId,
     String countryName,
     String status,
     String mainImageUrl,

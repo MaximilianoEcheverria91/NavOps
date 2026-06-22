@@ -10,6 +10,9 @@ import { getCitiesByProvince } from '../../../services/api/cityService';
 // Reutilizamos los estilos del componente CreateUser
 import styles from '../CreateUser/CreateUser.module.css';
 
+// 🔥 IMPORTAMOS LAS CONSTANTES DE ENUMS LOCALES MANDATORIAS
+import { POSITIONS, SYSTEM_ROLES } from '../../../types/userEnums';
+
 export const EditUser: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { form, errors, image, handleImage, handleChange, submit, loading, loadingData } = useEditUserForm(id!);
@@ -289,7 +292,6 @@ export const EditUser: React.FC = () => {
               {errors['residenceInfo.countryId'] && <span className={styles.errorText}>{errors['residenceInfo.countryId']}</span>}
             </div>
           
-          
             <div className={styles.inputGroup}>
               <label className={styles.label}>Provincia</label>
               <select
@@ -423,6 +425,7 @@ export const EditUser: React.FC = () => {
           <p className={styles.sectionTitle}>Datos Laborales</p>
 
           <div className={styles.grid}>
+            {/* 🔥 PROBLEMA 1 SOLUCIONADO: Mapeo dinámico completo de POSITIONS */}
             <div className={styles.inputGroup}>
               <label className={styles.label}>Cargo</label>
               <select 
@@ -430,10 +433,12 @@ export const EditUser: React.FC = () => {
                 value={form.laborData.navigationRole}
                 onChange={(e) => handleChange('laborData','navigationRole', e.target.value)}
               >
-                <option value="">Ej: Jefe de Navegación</option>
-                <option value="Jefe de Navegación">Jefe de Navegación</option>
-                <option value="Marinero">Marinero</option>
-                <option value="Operario carga">Operario carga</option>
+                <option value="">Seleccione Cargo</option>
+                {POSITIONS.map((pos) => (
+                  <option key={pos.value} value={pos.value}>
+                    {pos.label}
+                  </option>
+                ))}
               </select>
               {errors['laborData.navigationRole'] && <span className={styles.errorText}>{errors['laborData.navigationRole']}</span>}
             </div>
@@ -448,7 +453,10 @@ export const EditUser: React.FC = () => {
                 <option value="">Ej: Sub Oficial</option>
                 <option value="Sub Oficial">Sub Oficial</option>
                 <option value="Oficial">Oficial</option>
-                <option value="Auxiliar">Auxiliar</option>
+                <option value="Cabo">Cabo</option>
+                <option value="Cabo Primero">Cabo Primero</option>
+                <option value="Marinero de Segunda">Marinero de Segunda</option>
+                <option value="Marinero de primera">Marinero de primera</option>
               </select>
               {errors['laborData.category'] && <span className={styles.errorText}>{errors['laborData.category']}</span>}
             </div>
@@ -548,6 +556,7 @@ export const EditUser: React.FC = () => {
                 {errors['systemAccessData.username'] && <span className={styles.errorText}>{errors['systemAccessData.username']}</span>}
               </div>
 
+              {/* 🔥 PROBLEMA 2 SOLUCIONADO: Mapeo y traducción del objeto de Rol en base de datos */}
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Rol</label>
                 <select 
@@ -556,9 +565,15 @@ export const EditUser: React.FC = () => {
                   onChange={(e) => handleChange('systemAccessData','roleId', e.target.value)}
                 >
                   <option value="">Seleccione rol</option>
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
+                  {Array.isArray(roles) && roles.map((r) => {
+                    const roleNameRaw = r.name || r.nombre || '';
+                    const localizedRole = SYSTEM_ROLES.find(sr => sr.value === roleNameRaw);
+                    return (
+                      <option key={r.id} value={r.id}>
+                        {localizedRole ? localizedRole.label : roleNameRaw}
+                      </option>
+                    );
+                  })}
                 </select>
                 {errors['systemAccessData.roleId'] && <span className={styles.errorText}>{errors['systemAccessData.roleId']}</span>}
               </div>

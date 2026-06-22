@@ -15,6 +15,7 @@ import styles from './EditPort.module.css';
 import 'leaflet/dist/leaflet.css';
 import { Loader2 } from 'lucide-react';
 
+
 // Fix Leaflet default icon issue
 const defaultIcon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -133,14 +134,24 @@ export const EditPort: React.FC = () => {
 
   useEffect(() => {
     if (form.provinceId) {
-      setCities([]);
       getCitiesByProvince(form.provinceId)
-        .then(setCities)
+        .then((data) => {
+          setCities(data);
+          // 💡 Clave: Sincronizamos el nombre de la provincia seleccionada para que el alineador robusto de abajo no falle
+          const selectedProv = provinces.find(p => p.id === form.provinceId);
+          if (selectedProv) {
+            // Si el formulario ya tiene un cityId inicial del fetch del puerto, no lo pisamos
+            if (!form.cityId && selectedCityName) {
+              const matchedCity = data.find((c: any) => c.name.trim().toLowerCase() === selectedCityName.trim().toLowerCase());
+              if (matchedCity) handleChange('cityId', matchedCity.id);
+            }
+          }
+        })
         .catch(console.error);
     } else {
       setCities([]);
     }
-  }, [form.provinceId]);
+  }, [form.provinceId, provinces, selectedCityName]);
 
   // Robust alignment for Country
   useEffect(() => {
@@ -272,7 +283,7 @@ export const EditPort: React.FC = () => {
 
           <div className={styles.uploadTextInfo}>
             <span className={styles.recommendedBadge}>Recomendado</span>
-            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'rgba(255,255,255,0.7)'}}>
+            <p style={{fontSize: '13px', lineHeight: '1.6', color: 'var(--text-secondary)'}}>
               Se recomienda una fotografía del Puerto con buena iluminación. La imagen debe
               ser clara y mostrar las características principales de la infraestructura.
             </p>
@@ -401,16 +412,22 @@ export const EditPort: React.FC = () => {
             </select>
           </div>
 
-           {/* FILA: CIUDAD */}
+          {/* FILA: CIUDAD */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>Localidad</label>
             <select 
               className={`${styles.input} ${errors['cityId'] ? styles.inputError : ''}`}
-              value={form.cityId} 
-              onChange={(e) => handleChange('cityId', e.target.value)}>
+              value={form.cityId || ''} 
+              onChange={(e) => handleChange('cityId', e.target.value)}
+            >
               <option value="">Seleccione una ciudad</option>
-                  {cities.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              {Array.isArray(cities) && cities.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
+            {errors['cityId'] && <span className={styles.errorText}>{errors['cityId']}</span>}
           </div>
         </div>
 
