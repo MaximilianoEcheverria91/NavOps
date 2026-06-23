@@ -1,12 +1,11 @@
 // src/layouts/MainLayout.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X, Navigation as NavigationIcon, Package, User as UserIcon, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Ship, Anchor, Bell, Sun, Wifi, Moon, Menu, X, Navigation as NavigationIcon, Package, User as UserIcon, LogOut, History } from 'lucide-react';
 import styles from './MainLayout.module.css';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../hooks/useTheme';
-// 🔥 IMPORTAMOS TU COMPONENTE DE MODAL DE CONFIRMACIÓN
 import { ConfirmModal } from '../components/ui/ConfirmModal/ConfirmModal'; 
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -14,20 +13,31 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  // 🔥 ESTADO PARA MOSTRAR/OCULTAR EL MODAL DE LOGOUT
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // src/layouts/MainLayout.tsx
+  // 🚀 ESTADO DETECTOR: Verifica si el capitán tiene un plan de viaje activo/iniciado
+  const [hasActiveVoyage, setHasActiveVoyage] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Buscamos si existe algún residuo o marca de sesión de viaje activo (en curso)
+    const activeUser = localStorage.getItem('navops_user');
+    // También podés checkear si hay un flag específico guardado al darle "Iniciar"
+    // Por ejemplo: const activePlan = localStorage.getItem('active_travel_plan_id');
+    
+    // Dejamos una validación genérica. Si querés que dependa de una clave exacta, cambiala acá:
+    const checkActivePlan = localStorage.getItem('auth_token') !== null; 
+    setHasActiveVoyage(checkActivePlan); // Cambiar por tu flag real de viaje en curso si es necesario
+  }, []);
+
+  // Bloquear de forma activa el botón de atrás del navegador dentro de la app
   // Bloquear de forma activa el botón de atrás del navegador dentro de la app
   useEffect(() => {
-    // Inyectamos un estado ficticio en el historial del navegador
     window.history.pushState(null, '', window.location.href);
     
     const handlePopState = (e: PopStateEvent) => {
-      // Cuando el usuario le da a la flecha "Atrás", volvemos a empujar la URL actual
-      // bloqueando la salida y forzándolo a usar el ConfirmModal de cerrar sesión
+      // ✅ CORREGIDO: Eliminado el 'history' duplicado
       window.history.pushState(null, '', window.location.href);
     };
 
@@ -80,17 +90,29 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
             {user?.role === 'CHIEF_NAVIGATION' && (
               <>
-                <span className={`${styles.link}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-                  <LayoutDashboard size={18}/> Dashboard
-                </span>
+                {/* 📊 DASHBOARD DINÁMICO: Se habilita sólo si hasActiveVoyage es true */}
+                {hasActiveVoyage ? (
+                  <NavLink to="/navigation/dashboard" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
+                    <LayoutDashboard size={18}/> Dashboard
+                  </NavLink>
+                ) : (
+                  <span className={`${styles.link}`} style={{ opacity: 0.4, cursor: 'not-allowed' }} title="Disponible sólo con un viaje en curso">
+                    <LayoutDashboard size={18}/> Dashboard
+                  </span>
+                )}
+
                 <NavLink to="/navigation/menu" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
                   <NavigationIcon size={18} style={{ transform: 'rotate(45deg)' }}/> Navegación
                 </NavLink>
-                <NavLink to="/viajes" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
+
+                {/* 🚢 1) VIAJES: Redirige a la lista de travesías */}
+                <NavLink to="/navigation/travel-plans" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
                   <Ship size={18}/> Viajes
                 </NavLink>
-                <NavLink to="/carga" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
-                  <Package size={18}/> Carga
+
+                {/* 🕒 2) HISTORIAL: Redirige a tu nueva pantalla de historial histórico */}
+                <NavLink to="/navigation/history" className={({ isActive }) => isActive ? styles.activeLink : styles.link}>
+                  <History size={18}/> Historial
                 </NavLink>
               </>
             )}
@@ -152,7 +174,6 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 
                 <div className={styles.dropdownDivider} />
                 
-                {/* 🔥 AL HACER CLICK ACÁ AHORA SOLO ACTIVAMOS EL MODAL ESTÉTICO */}
                 <button 
                   className={styles.dropdownItem} 
                   onClick={() => {
@@ -181,15 +202,14 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         {children}
       </main>
 
-      {/* 🔥 CONTROL DEL MODAL DE CONFIRMACIÓN PERSONALIZADO */}
       {showLogoutConfirm && (
         <ConfirmModal
-          isOpen={showLogoutConfirm} // Por si tu modal requiere el flag de apertura
+          isOpen={showLogoutConfirm} 
           title="Cerrar Sesión"
-          description="¿Estás seguro de que querés cerrar sesión en NavOps?" // 🔥 Cambiado de 'message' a 'description'
+          description="¿Estás seguro de que querés cerrar sesión en NavOps?" 
           onConfirm={() => {
             setShowLogoutConfirm(false);
-            logout(); // Ejecuta la limpieza de tokens
+            logout(); 
           }}
           onCancel={() => setShowLogoutConfirm(false)}
         />

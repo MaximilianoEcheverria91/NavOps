@@ -404,7 +404,7 @@ export const TravelPlanDetailModal: React.FC<TravelPlanDetailModalProps> = ({ pl
                         </div>
                         <div>
                           <span>Volumen total</span>
-                          <strong>{item.volumeM3} M°</strong>
+                          <strong>{item.volumeM3} m³</strong>
                         </div>
                       </div>
 

@@ -264,6 +264,21 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TravelPlanSummaryResponseDTO> getHistoryVoyages(UUID userId) {
+        log.info("Recuperando historial de viajes para el usuario ID: {}", userId);
+        List<TravelPlanStatusEnum> historyStatuses = List.of(
+                TravelPlanStatusEnum.COMPLETED,
+                TravelPlanStatusEnum.CANCELLED);
+        List<TravelPlan> plans = travelPlanRepository.findHistoryByCrewMemberIdAndDeletedAtIsNull(userId, historyStatuses);
+        List<TravelPlanSummaryResponseDTO> result = plans.stream()
+                .map(this::toSummaryResponse)
+                .toList();
+        log.info("Historial de viajes encontrado para usuario {}: {}", userId, result.size());
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<TravelPlanSummaryResponseDTO> getActiveTravelPlans() {
         log.info("Recuperando planes de travesía activos");
         List<TravelPlanStatusEnum> excluded = List.of(

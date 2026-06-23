@@ -115,10 +115,10 @@ export const NavigationMenu: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 4: Historia de viaje */}
+          {/* Card 4: Historial de travesías (Redirige perfectamente) */}
           <div 
             className={`${styles.card} ${activeCard === 4 ? styles.cardActive : ''}`}
-            onClick={() => navigate('/navigation/history')}
+            onClick={() => navigate('/navigation/history')} // 🔥 Apunta directo a la ruta de App.tsx
             onMouseEnter={() => setActiveCard(4)}
             onMouseLeave={() => setActiveCard(null)}
           >

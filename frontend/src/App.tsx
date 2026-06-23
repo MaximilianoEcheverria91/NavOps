@@ -19,8 +19,8 @@ import { CreateVoyagePlan } from './pages/navigation/CreateVoyagePlan/CreateVoya
 import { TravelPlanList } from './pages/navigation/ListTravelPlan/TravelPlanList.tsx';
 import { MyTravelPlanList } from './pages/navigation/MyTravelPlanList/MyTravelPlanList';
 import { VoyageDashboard } from './pages/navigation/Dashboard/VoyageDashboard.tsx';
-
-
+// 🔥 IMPORTACIÓN DE TU NUEVA PANTALLA DE HISTORIAL
+import { TravelHistoryList } from './pages/navigation/TravelHistoryList/TravelHistoryList';
 
 function App() {
   return (
@@ -57,6 +57,9 @@ function App() {
         <Route path="/navigation/travel-plans" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><TravelPlanList /></ProtectedRoute>} />
         <Route path="/navigation/my-voyages" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><MyTravelPlanList /></ProtectedRoute>} />
         <Route path="/navigation/dashboard" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><VoyageDashboard /></ProtectedRoute>} />
+        
+        {/* 🔥 NUEVA RUTA DEL HISTORIAL REGISTRADA EN EL SISTEMA */}
+        <Route path="/navigation/history" element={<ProtectedRoute allowedRoles={['CHIEF_NAVIGATION']}><TravelHistoryList /></ProtectedRoute>} />
 
         {/* Rutas Públicas de Recuperación */}
         <Route path="/forgot-password" element={<ForgotPassword />} />

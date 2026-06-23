@@ -89,5 +89,14 @@ public interface TravelPlanRepository extends JpaRepository<TravelPlan, UUID>, J
            "AND tp.status = :status " +
            "AND tp.deletedAt IS NULL")
     boolean existsByCrewMemberUserIdAndStatus(@Param("userId") UUID userId,
-                                              @Param("status") TravelPlanStatusEnum status);;
+                                               @Param("status") TravelPlanStatusEnum status);;
+
+    @Query("SELECT tp FROM TravelPlan tp " +
+           "JOIN tp.crewMembers cm " +
+           "WHERE cm.crewMember.person.user.id = :userId " +
+           "AND tp.status IN (:statuses) " +
+           "AND tp.deletedAt IS NULL " +
+           "ORDER BY tp.departureTime ASC")
+    List<TravelPlan> findHistoryByCrewMemberIdAndDeletedAtIsNull(@Param("userId") UUID userId,
+                                                                 @Param("statuses") List<TravelPlanStatusEnum> statuses);
 }

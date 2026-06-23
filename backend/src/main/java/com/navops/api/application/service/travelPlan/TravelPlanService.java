@@ -42,6 +42,8 @@ public interface TravelPlanService {
 
     List<TravelPlanSummaryResponseDTO> getMyAssignedVoyages(UUID userId);
 
+    List<TravelPlanSummaryResponseDTO> getHistoryVoyages(UUID userId);
+
     TravelPlanTelemetryResponseDTO getTelemetryByPlanId(UUID id);
 
     TravelPlanFullDetailDTO getTravelPlanFullDetail(UUID id);
