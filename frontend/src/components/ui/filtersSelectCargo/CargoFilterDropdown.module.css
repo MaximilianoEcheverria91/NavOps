@@ -161,7 +161,7 @@
 }
 
 :global([data-theme='light']) .sidebarFooter {
-  background-color: var(var(--sidebar-footer));
+  background-color: var(--sidebar-footer);
   border-color: #e2e8f0;
 }
 
