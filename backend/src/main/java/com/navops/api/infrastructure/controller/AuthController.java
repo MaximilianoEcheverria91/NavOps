@@ -5,6 +5,7 @@ import com.navops.api.application.dto.request.LoginRequest;
 import com.navops.api.application.dto.response.ErrorResponseDto;
 import com.navops.api.application.dto.response.auth.ForgotPasswordResponseDto;
 import com.navops.api.application.dto.response.auth.LoginResponseDto;
+import com.navops.api.application.dto.response.auth.ProfileResponseDto;
 import com.navops.api.application.dto.request.VerifyCodeRequest;
 import com.navops.api.application.dto.response.auth.VerifyCodeResponseDto;
 import com.navops.api.application.service.AuthService;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,5 +83,17 @@ public class AuthController {
     public ResponseEntity<ForgotPasswordResponseDto> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
         return ResponseEntity.ok(new ForgotPasswordResponseDto("Tu contraseña fue actualizada con éxito"));
+    }
+
+    @Operation(summary = "Obtener perfil del usuario autenticado", description = "Devuelve los datos del perfil (fullName, surname, avatarUrl y rol del sistema) del usuario actualmente autenticado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Datos del perfil obtenidos correctamente",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ProfileResponseDto.class)) }),
+            @ApiResponse(responseCode = "401", description = "No autenticado",
+                    content = @Content)
+    })
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileResponseDto> getProfile() {
+        return ResponseEntity.ok(authService.getProfile());
     }
 }

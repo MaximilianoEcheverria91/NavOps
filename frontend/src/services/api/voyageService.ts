@@ -96,3 +96,7 @@ export const getVoyageFullDetail = async (id: string): Promise<VoyageFullDetailR
   return response.data;
 };
 
+export const getHistoryVoyages = async (): Promise<VoyageSummary[]> => {
+  const response = await apiClient.get('/navigation/travel-plans/history-voyages');
+  return response.data;
+};

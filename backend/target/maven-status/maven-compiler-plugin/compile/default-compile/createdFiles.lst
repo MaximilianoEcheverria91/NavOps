@@ -40,6 +40,7 @@ com/navops/api/application/dto/response/travelPlan/GlobalVoyagesMetricsDTO.class
 com/navops/api/domain/entity/Stop.class
 com/navops/api/application/dto/request/user/PersonnelRegistrationRequest$ResidenceInfo$ResidenceInfoBuilder.class
 com/navops/api/application/dto/response/auth/LoginResponseDto.class
+com/navops/api/application/dto/response/auth/ProfileResponseDto.class
 com/navops/api/application/dto/response/port/PortFilterResponse.class
 com/navops/api/infrastructure/exception/NoPersonnelFoundException.class
 com/navops/api/domain/enums/ShipStatusEnum.class

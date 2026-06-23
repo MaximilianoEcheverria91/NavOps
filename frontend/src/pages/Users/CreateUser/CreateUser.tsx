@@ -5,10 +5,13 @@ import { MainLayout } from '../../../layouts/MainLayout';
 import { useCreateUserForm } from '../../../hooks/useCreateUserForm';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { getCountries } from '../../../services/api/countryService';
-import { getRoles } from '../../../services/api/roleService';
-import {getProvincesByCountry} from '../../../services/api/provinceService'
-import {getCitiesByProvince} from '../../../services/api/cityService';
+import { getProvincesByCountry } from '../../../services/api/provinceService';
+import { getCitiesByProvince } from '../../../services/api/cityService';
 import styles from './CreateUser.module.css';
+import { getRoles } from '../../../services/api/roleService'; //
+
+// 🔥 IMPORTAMOS LAS CONSTANTES DE ENUMS LOCALES
+import { POSITIONS, SYSTEM_ROLES } from '../../../types/userEnums';
 
 export const CreateUser: React.FC = () => {
   const { form, errors, image, handleImage, handleChange, submit, loading } = useCreateUserForm();
@@ -16,37 +19,11 @@ export const CreateUser: React.FC = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [countries, setCountries] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
   const [provinces, setProvinces] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
 
-  /*Efecto 1: Cargar Provincias cuando cambie el País
-  React.useEffect(() => {
-    if (form.residenceInfo.countryId) {
-      getProvincesByCountry(form.residenceInfo.countryId)
-        .then(setProvinces)
-        .catch(console.error);
-      handleChange('residenceInfo', 'provinceId', '');
-      handleChange('residenceInfo', 'cityId', '');
-    } else {
-      setProvinces([]);
-    }
-  }, [form.residenceInfo.countryId]);
-
-  // Efecto 2: Cargar Ciudades cuando cambie la Provincia
-  React.useEffect(() => {
-    if (form.residenceInfo.provinceId) {
-      getCitiesByProvince(form.residenceInfo.provinceId)
-        .then(setCities)
-        .catch(console.error);
-      // Resetear hijo
-      handleChange('residenceInfo', 'cityId', '');
-    } else {
-      setCities([]);
-    }
-  }, [form.residenceInfo.provinceId]);*/
   // Efecto 1: Cargar Provincias
   React.useEffect(() => {
     if (form.residenceInfo.countryId) {
@@ -54,7 +31,6 @@ export const CreateUser: React.FC = () => {
         .then(setProvinces)
         .catch(console.error);
       
-      // IMPORTANTE: Solo resetear si el valor actual no es vacío
       if (form.residenceInfo.provinceId !== '' || form.residenceInfo.cityId !== '') {
         handleChange('residenceInfo', 'provinceId', '');
         handleChange('residenceInfo', 'cityId', '');
@@ -63,7 +39,7 @@ export const CreateUser: React.FC = () => {
       setProvinces([]);
       setCities([]);
     }
-  }, [form.residenceInfo.countryId]); // Quité dependencias innecesarias
+  }, [form.residenceInfo.countryId]);
 
   // Efecto 2: Cargar Ciudades
   React.useEffect(() => {
@@ -99,21 +75,12 @@ export const CreateUser: React.FC = () => {
     }
   };
 
-  /*const handleSave = async () => {
-    const response = await submit();
-    if (response.success) {
-      setShowModal(true);
-    }
-  };*/
-
   const handleSave = async () => {
-  console.log("Botón presionado");
-  const response = await submit();
-  console.log("Respuesta de submit:", response);
-  if (response.success) setShowModal(true);
-};
-
-
+    console.log("Botón presionado");
+    const response = await submit();
+    console.log("Respuesta de submit:", response);
+    if (response.success) setShowModal(true);
+  };
 
   const handleConfirmModal = () => {
     setShowModal(false);
@@ -123,6 +90,8 @@ export const CreateUser: React.FC = () => {
   const handleCancel = () => {
     navigate('/usuarios');
   };
+
+  
 
   return (
     <MainLayout>
@@ -311,7 +280,6 @@ export const CreateUser: React.FC = () => {
               {errors['residenceInfo.countryId'] && <span className={styles.errorText}>{errors['residenceInfo.countryId']}</span>}
             </div>
           
-          
             <div className={styles.inputGroup}>
               <label className={styles.label}>Provincia</label>
               <select
@@ -445,6 +413,7 @@ export const CreateUser: React.FC = () => {
           <p className={styles.sectionTitle}>Datos Laborales</p>
 
           <div className={styles.grid}>
+            {/* 🔥 PROBLEMA 1 SOLUCIONADO: Mapeo de POSITIONS locales */}
             <div className={styles.inputGroup}>
               <label className={styles.label}>Cargo</label>
               <select 
@@ -452,9 +421,12 @@ export const CreateUser: React.FC = () => {
                 value={form.laborData.navigationRole}
                 onChange={(e) => handleChange('laborData','navigationRole', e.target.value)}
               >
-                <option value="">Ej: Jefe de Navegación</option>
-                <option value="Jefe de Navegación">Jefe de Navegación</option>
-                <option value="Marinero">Marinero</option>
+                <option value="">Seleccione Cargo</option>
+                {POSITIONS.map((pos) => (
+                  <option key={pos.value} value={pos.value}>
+                    {pos.label}
+                  </option>
+                ))}
               </select>
               {errors['laborData.navigationRole'] && <span className={styles.errorText}>{errors['laborData.navigationRole']}</span>}
             </div>
@@ -469,6 +441,10 @@ export const CreateUser: React.FC = () => {
                 <option value="">Ej: Sub Oficial</option>
                 <option value="Sub Oficial">Sub Oficial</option>
                 <option value="Oficial">Oficial</option>
+                <option value="Cabo">Cabo</option>
+                <option value="Cabo Primero">Cabo Primero</option>
+                <option value="Marinero de Segunda">Marinero de Segunda</option>
+                <option value="Marinero de primera">Marinero de primera</option>
               </select>
               {errors['laborData.category'] && <span className={styles.errorText}>{errors['laborData.category']}</span>}
             </div>
@@ -552,6 +528,7 @@ export const CreateUser: React.FC = () => {
                 {errors['systemAccessData.password'] && <span className={styles.errorText}>{errors['systemAccessData.password']}</span>}
               </div>
 
+              {/* 🔥 PROBLEMA 2 SOLUCIONADO: Mapeo usando los labels de SYSTEM_ROLES */}
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Rol</label>
                 <select 
@@ -560,9 +537,18 @@ export const CreateUser: React.FC = () => {
                   onChange={(e) => handleChange('systemAccessData','roleId', e.target.value)}
                 >
                   <option value="">Seleccione rol</option>
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
+                  {Array.isArray(roles) && roles.map((r) => {
+                    // 💡 Plan de contingencia: extraemos el string del objeto si viene como "name" o "nombre"
+                    const roleNameRaw = r.name || r.nombre || '';
+                    
+                    // Buscamos si el código coincide con alguna de tus constantes locales para traducirlo
+                    const localizedRole = SYSTEM_ROLES.find(sr => sr.value === roleNameRaw);
+                    return (
+                      <option key={r.id} value={r.id}>
+                        {localizedRole ? localizedRole.label : roleNameRaw}
+                      </option>
+                    );
+                  })}
                 </select>
                 {errors['systemAccessData.roleId'] && <span className={styles.errorText}>{errors['systemAccessData.roleId']}</span>}
               </div>

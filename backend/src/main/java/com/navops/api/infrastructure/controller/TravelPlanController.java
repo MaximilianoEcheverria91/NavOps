@@ -122,6 +122,25 @@ public class TravelPlanController {
     }
 
     @Operation(
+            summary = "Obtener historial de viajes del usuario autenticado",
+            description = "Retorna las travesías del usuario logueado con estado COMPLETED o CANCELLED, ordenadas por fecha de salida ascendente.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Historial de viajes obtenido correctamente",
+                            content = @Content(schema = @Schema(implementation = TravelPlanSummaryResponseDTO.class))
+                    )
+            }
+    )
+    @GetMapping("/history-voyages")
+    public ResponseEntity<List<TravelPlanSummaryResponseDTO>> getHistoryVoyages() {
+        log.info("Recibida peticion de historial de viajes del usuario autenticado");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        return ResponseEntity.ok(travelPlanService.getHistoryVoyages(user.getId()));
+    }
+
+    @Operation(
             summary = "Listar planes de travesía activos",
             description = "Retorna los planes activos excluyendo los estados COMPLETED y CANCELLED, y registros con borrado lógico.",
             responses = {

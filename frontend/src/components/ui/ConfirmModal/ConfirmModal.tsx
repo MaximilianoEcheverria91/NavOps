@@ -36,14 +36,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               style={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#94a3b8' }}
               onClick={onCancel}
             >
-              No, cancelar
+              No
             </button>
             <button 
               className={styles.modalButton} 
               style={{ backgroundColor: '#7f1d1d', borderColor: '#ef4444', color: '#ffffff' }}
               onClick={onConfirm}
             >
-              Sí, salir
+              Sí
             </button>
           </div>
 

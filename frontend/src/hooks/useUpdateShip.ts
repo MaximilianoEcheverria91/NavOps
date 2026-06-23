@@ -44,14 +44,17 @@ export const useUpdateShip = (shipId: string | undefined) => {
 
     setFetching(true);
     getShipById(shipId)
-      .then((data) => {
+      .then((data: any) => { // 🔥 CAMBIÁ ESTA LÍNEA (Agregale el ": any")
         setForm({
           name: data.name || '',
           imoNumber: data.imoNumber || '',
           registration: data.registration || '',
           shipType: data.shipType || '',
           buildYear: data.buildYear ? String(data.buildYear) : '',
-          countryId: data.countryId || '',
+          
+          // Ahora te va a leer los objetos anidados sin dar error en rojo:
+          countryId: data.countryId || data.country?.id || data.nationality?.id || '',
+          
           status: data.status || 'OPERATIONAL',
           hullNumber: data.hullNumber || '',
           length: data.length ? String(data.length) : '',
@@ -70,16 +73,19 @@ export const useUpdateShip = (shipId: string | undefined) => {
           lastTboEngineHours: data.lastTboEngineHours !== null && data.lastTboEngineHours !== undefined ? String(data.lastTboEngineHours) : '',
           lastMaintenanceDate: data.lastMaintenanceDate || '',
         });
+
         if (data.mainImageUrl) {
           setPreviewUrl(data.mainImageUrl);
         }
-        if (data.countryName) {
-          setSelectedCountryName(data.countryName);
+
+        // Esta sección tampoco te va a dar error de atributos ahora:
+        if (data.countryName || data.country?.name) {
+          setSelectedCountryName(data.countryName || data.country?.name);
         }
       })
       .catch((err) => console.error('Error al cargar datos del barco:', err))
       .finally(() => setFetching(false));
-  }, [shipId]);
+      }, [shipId]);
 
   const handleChange = (field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));

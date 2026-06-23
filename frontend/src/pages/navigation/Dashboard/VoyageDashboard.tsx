@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import {
   Ship, Users, Calendar, Fuel, Box, Map as MapIcon,
   Clock, Sun, AlertTriangle, Check, TrendingUp, TrendingDown,
@@ -125,17 +125,17 @@ export const VoyageDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <NavigationLayout>
+      <MainLayout>
         <div className={styles.loading}>Cargando telemetría del viaje...</div>
-      </NavigationLayout>
+      </MainLayout>
     );
   }
 
   if (!plan) {
     return (
-      <NavigationLayout>
+      <MainLayout>
         <div className={styles.loading}>No hay un viaje activo seleccionado.</div>
-      </NavigationLayout>
+      </MainLayout>
     );
   }
 
@@ -146,7 +146,7 @@ export const VoyageDashboard: React.FC = () => {
   const completionPercent = getCompletionPercentage(plan.departureTime, plan.eta);
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       <div className={styles.container}>
         <header className={styles.header}>
           <div>
@@ -327,6 +327,6 @@ export const VoyageDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </NavigationLayout>
+    </MainLayout>
   );
 };

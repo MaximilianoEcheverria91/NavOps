@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCreateVoyagePlan } from '../../../hooks/useCreateVoyagePlan';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal'; 
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { Sailboat, Map, Users, Package, Check, X, ArrowLeft} from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
@@ -231,7 +231,7 @@ export const CreateVoyagePlan: React.FC = () => {
   };
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       {activeModal === 'destination' ? (
         <SelectRoute
           onSaveSelection={handleSetRoute}
@@ -330,11 +330,11 @@ export const CreateVoyagePlan: React.FC = () => {
                   </div>
                   <div style={{ display: 'flex', gap: '16px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(51, 65, 85, 0.4)' }}>
                     <div>
-                      <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Distancia</div>
-                      <div style={{ fontSize: '13px', color: '#f8fafc', fontWeight: 600 }}>{planState.routeData.totalDistance?.toLocaleString()} NM</div>
+                      <div style={{ fontSize: '10px', color: '#7289aa', textTransform: 'uppercase' }}>Distancia</div>
+                      <div style={{ fontSize: '13px', color: 'rgb(56, 189, 248)', fontWeight: 600 }}>{planState.routeData.totalDistance?.toLocaleString()} NM</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase' }}>Duración</div>
+                      <div style={{ fontSize: '10px', color: '#7289aa', textTransform: 'uppercase' }}>Duración</div>
                       <div style={{ fontSize: '13px', color: '#38bdf8', fontWeight: 600 }}>{planState.routeData.totalDays || Math.ceil(planState.routeData.etaHours / 24)} Días</div>
                     </div>
                   </div>
@@ -527,6 +527,6 @@ export const CreateVoyagePlan: React.FC = () => {
         />
       </div>
       )}
-    </NavigationLayout>
+    </MainLayout>
   );
 };

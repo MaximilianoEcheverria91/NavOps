@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import styles from './MyTravelPlanList.module.css';
 import { getMyAssignedVoyages, startTravelPlan, cancelVoyagePlan } from '../../../services/api/voyageService';
 import type { VoyageSummary } from '../../../types/navigation';
 import { AlertModal } from '../../../components/ui/AlertModal/AlertModal';
+import { MainLayout } from '../../../layouts/MainLayout';
+import { TravelPlanDetailModal } from '../TravelPlanDetailModal/TravelPlanDetailModal';
+// 🔥 IMPORTAMOS TU COMPONENTE DE CONFIRMACIÓN
+import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal';
 
 export const MyTravelPlanList: React.FC = () => {
   const navigate = useNavigate();
@@ -14,13 +17,17 @@ export const MyTravelPlanList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   
-  // States for Alert Modal
+  // States for Alert Modal (Errores informativos)
   const [alertMessage, setAlertMessage] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
 
-  
-  // 🚀 NUEVO: Para recordar qué viaje quiere cancelar el capitán
+  // 🚀 Estados para el ConfirmModal de Cancelación (Doble acción)
   const [pendingCancelId, setPendingCancelId] = useState<string | null>(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState<boolean>(false);
+
+  // Estados para el Modal de Detalle
+  const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
+  const [selectedVoyageId, setSelectedVoyageId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchVoyages();
@@ -40,45 +47,45 @@ export const MyTravelPlanList: React.FC = () => {
     }
   };
 
-  const handleStartVoyage = async (id: string) => {
-  try {
-    await startTravelPlan(id);
-    // Si sale todo bien, nos eyectamos al dashboard
-    navigate('/navigation/dashboard', { state: { travelPlanId: id } });
-  } catch (error: any) {
-    console.error("Error capturado en el Frente:", error);
-    
-    // 🚀 LA MAGIA: Buscamos el campo 'message' que envía el GlobalExceptionHandler
-    const mensajeDelBackend = error.response?.data?.message 
-      || "Error al iniciar el viaje. Por favor, intente nuevamente.";
-    
-    // Asignamos el mensaje real al estado del modal
-    setAlertMessage(mensajeDelBackend); 
-    setIsAlertOpen(true); // Abrimos tu modal
-  }
-};
-
-  const handleCancelClick = (id: string) => {
-    setPendingCancelId(id);
-    setAlertMessage('¿Está seguro de que desea cancelar este plan de travesía? Esta acción no se puede deshacer.');
-    setIsAlertOpen(true);
+  const handleOpenDetail = (id: string) => {
+    setSelectedVoyageId(id);
+    setIsDetailOpen(true);
   };
 
-  // 🚀 LA MAGIA: Esta función se ejecuta cuando confirman adentro del modal
+  const handleStartVoyage = async (id: string) => {
+    try {
+      await startTravelPlan(id);
+      navigate('/navigation/dashboard', { state: { travelPlanId: id } });
+    } catch (error: any) {
+      console.error("Error capturado en el Frente:", error);
+      const mensajeDelBackend = error.response?.data?.message 
+        || "Error al iniciar el viaje. Por favor, intente nuevamente.";
+      setAlertMessage(mensajeDelBackend); 
+      setIsAlertOpen(true); 
+    }
+  };
+
+  // 🔥 AL HACER CLIC EN CANCELAR: Ahora abrimos el ConfirmModal estético
+  const handleCancelClick = (id: string) => {
+    setPendingCancelId(id);
+    setShowCancelConfirm(true);
+  };
+
+  // 🚀 ESTA FUNCIÓN SE EJECUTA SÓLO SI TOCAN "SÍ" EN EL CONFIRM_MODAL
   const executeCancellation = async () => {
     if (!pendingCancelId) return;
     
     try {
       setLoading(true);
-      setIsAlertOpen(false); // Cerramos el modal primero
+      setShowCancelConfirm(false); // Cerramos el confirm modal
       
-      await cancelVoyagePlan(pendingCancelId); // Le pega al PATCH /cancel del service
-      await fetchVoyages(); // 🔄 Recargamos la lista en vivo desde el Back
+      await cancelVoyagePlan(pendingCancelId); 
+      await fetchVoyages(); // 🔄 Recargamos la lista en vivo
       
       setPendingCancelId(null);
     } catch (err: any) {
       console.error('Error cancelling voyage:', err);
-      // Si el back rechaza la cancelación, reusamos el modal para mostrar la falla
+      // Si el backend rechaza la acción, usamos el AlertModal para avisar la falla
       const backendError = err.response?.data?.message || 'Error al intentar cancelar el viaje.';
       setAlertMessage(backendError);
       setPendingCancelId(null);
@@ -109,7 +116,7 @@ export const MyTravelPlanList: React.FC = () => {
   }, [voyages, searchTerm]);
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Lista de Viajes</h1>
@@ -177,7 +184,12 @@ export const MyTravelPlanList: React.FC = () => {
                     </td>
                     <td className={styles.td}>
                       <div className={styles.actionsCell}>
-                        <button className={`${styles.actionBtn} ${styles.btnDetails}`}>Ver detalle</button>
+                        <button 
+                          className={`${styles.actionBtn} ${styles.btnDetails}`}
+                          onClick={() => handleOpenDetail(voyage.id)}
+                        >
+                          Ver detalle
+                        </button>
                         {voyage.status === 'PLANNED' && (
                           <>
                             <button 
@@ -212,21 +224,38 @@ export const MyTravelPlanList: React.FC = () => {
         </div>
       </div>
       
-      {/* Alert Modal for Errors */}
+      {/* Alert Modal solo para Errores o Mensajes del Sistema (Botón único de Aceptar) */}
       <AlertModal 
        isOpen={isAlertOpen} 
-       title={"Control de Operaciones"} // 👈 Inyectamos tu mensaje acá temporalmente
+       title="Control de Operaciones"
        highlightText={alertMessage} 
        onClose={() => setIsAlertOpen(false)}
       />
 
-      <AlertModal 
-       isOpen={isAlertOpen} 
-       title={pendingCancelId ? "Confirmar Cancelación" : "Control de Operaciones"} 
-       highlightText={alertMessage} 
-       buttonText={pendingCancelId ? "Confirmar" : "Aceptar"} // 👈 Botón dinámico
-       onClose={pendingCancelId ? executeCancellation : () => setIsAlertOpen(false)} // 👈 Acción dinámica
-      />
-    </NavigationLayout>
+      {/* 🔥 NUEVO CONFIRM MODAL CON BOTÓN SÍ Y CANCELAR */}
+      {showCancelConfirm && (
+        <ConfirmModal
+          isOpen={showCancelConfirm}
+          title="Confirmar Cancelación"
+          description="¿Está seguro de que desea cancelar este plan de travesía? Esta acción no se puede deshacer."
+          onConfirm={executeCancellation} // Si dice que sí, liquida el viaje
+          onCancel={() => {
+            setShowCancelConfirm(false); // Si dice que no, cierra limpio
+            setPendingCancelId(null);
+          }}
+        />
+      )}
+
+      {/* Renderizado del Modal de Detalle */}
+      {isDetailOpen && selectedVoyageId && (
+        <TravelPlanDetailModal
+          planId={selectedVoyageId}
+          onClose={() => {
+            setIsDetailOpen(false);
+            setSelectedVoyageId(null);
+          }}
+        />
+      )}
+    </MainLayout>
   );
 };

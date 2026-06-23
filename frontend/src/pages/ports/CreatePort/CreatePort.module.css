@@ -1,3 +1,49 @@
+.mapTooltip {
+  min-width: 200px;
+  padding: 4px;
+}
+.tooltipHeader {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #f8fafc;
+  line-height: 1.4;
+}
+
+.statusActive {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+.statusInactive {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.tooltipStatus {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.tooltipBtn {
+  width: 100%;
+  background-color: #334155;
+  border: none;
+  color: #f8fafc;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 .container {
   width: 100%;
   max-width: 1400px;

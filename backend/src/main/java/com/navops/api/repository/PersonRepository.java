@@ -1,6 +1,7 @@
 package com.navops.api.repository;
 
 import com.navops.api.domain.entity.Person;
+import com.navops.api.domain.entity.User;
 import com.navops.api.domain.enums.PeopleStatusEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,6 @@ public interface PersonRepository extends JpaRepository<Person, UUID>  {
     List<Person> findAllByStatus(PeopleStatusEnum status);
     long countByStatus(PeopleStatusEnum status);
     long countByUserIsNotNull();
+
+    Optional<Person> findByUser(User user);
 }

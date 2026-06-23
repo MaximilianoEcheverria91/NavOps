@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Lock, Moon, Sun, Ship } from 'lucide-react';
+import { User, Lock, Moon, Sun, Ship, EyeOff, Eye } from 'lucide-react';
 import { Input } from '../../components/ui/Input/Input';
 import { Button } from '../../components/ui/Button/Button';
 import { useTheme } from '../../hooks/useTheme';
@@ -25,7 +25,7 @@ export const Login: React.FC = () => {
   const { setUser } = useAuth();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-
+  const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,61 +35,103 @@ export const Login: React.FC = () => {
   const [imgError, setImgError] = useState(false);
   const logoPath = navopsLogo;
 
+  // src/pages/Login/Login.tsx
+  const { user, loading } = useAuth(); // 🔥 Asegurate de extraer 'user' y 'loading' aquí también
+
+  // 🛡️ GUARDIÁN INVERSO: Si el usuario ya está autenticado e intenta volver al Login 
+  // (ya sea tipeando la URL o usando las flechas del navegador), lo mandamos de patitas a su Dashboard.
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === 'ADMIN') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (user.role === 'CHIEF_NAVIGATION') {
+        navigate('/navigation/menu', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [user, loading, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!username || !password) return;
+    if (!username || !password) return;
 
-  setIsLoading(true);
-  setGlobalError('');
+    setIsLoading(true);
+    setGlobalError('');
 
-  try {
-    const response = await apiClient.post('/auth/login', {
-      username,
-      password,
-    });
+    try {
+      const response = await apiClient.post('/auth/login', {
+        username,
+        password,
+      });
 
-    const data = response.data;
+      const data = response.data;
 
-    if (!data?.token) {
-      throw new Error('No se recibió token del servidor.');
+      if (!data?.token) {
+        throw new Error('No se recibió token del servidor.');
+      }
+
+      // 1. Guardamos el token primero (Es vital para que el interceptor lo use)
+      localStorage.setItem('auth_token', data.token);
+
+      // 2. 🔥 LE PEGAMOS AL ENDPOINT DE PERFIL EN TIEMPO REAL
+      // Usamos el apiClient que ya tiene el token inyectado gracias al interceptor
+      const profileResponse = await apiClient.get('/auth/profile');
+      const profileData = profileResponse.data;
+
+      // Helper rápido para traducir roles en el Login
+      const translateRole = (r: string): string => {
+        if (r === 'ADMIN') return 'Administrador';
+        if (r === 'CHIEF_NAVIGATION') return 'Jefe de Navegación';
+        if (r === 'CHIEF_OPERATION') return 'Jefe de Operaciones';
+        return r;
+      };
+
+      // 3. Hidratamos el estado global con el formato exacto que espera MainLayout
+      const extendedUserData = {
+        name: profileData.fullName,
+        surname: profileData.surname || '',
+        role: profileData.role,
+        avatarUrl: profileData.avatarUrl || '',
+        fullName: `${profileData.fullName} ${profileData.surname || ''}`.trim(),
+        roleLabel: translateRole(profileData.role)
+      };
+
+      // Guardamos en localStorage por persistencia
+      localStorage.setItem('navops_user', JSON.stringify(extendedUserData));
+
+      // Asignamos al contexto global (Gatilla el renderizado limpio)
+      setUser(extendedUserData);
+
+      // 4. Redirección limpia borrando el historial (No pueden volver atrás con las flechas)
+      if (profileData.role === 'ADMIN') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (profileData.role === 'CHIEF_NAVIGATION') {
+        navigate('/navigation/menu', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+
+    } catch (err: any) {
+      console.error("Error en el flujo de Login:", err);
+      // Limpiamos residuos por seguridad si falla la sincronización de perfil
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('navops_user');
+      
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Error de red. Asegúrate que el servidor esté en línea.';
+
+      setGlobalError(message);
+    } finally {
+      setIsLoading(false);
     }
-
-    const userData = {
-      name: data.name || username, // fallback temporal
-      role: data.role,
-    };
-
-    // 🔥 persistencia
-    localStorage.setItem('auth_token', data.token);
-    localStorage.setItem('navops_user', JSON.stringify(userData));
-
-    // 🔥 estado global
-    setUser(userData);
-
-    if (data.role === 'ADMIN') {
-      navigate('/admin/dashboard', { replace: true });
-    } else if (data.role === 'CHIEF_NAVIGATION') {
-      navigate('/navigation/menu', { replace: true });
-    } else {
-      navigate('/dashboard', { replace: true });
-    }
-
-  } catch (err: any) {
-    const message =
-      err.response?.data?.message ||
-      err.response?.data?.error ||
-      err.message ||
-      'Error de red. Asegúrate que el servidor esté en línea.';
-
-    setGlobalError(message);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
-    
     <div className={styles.container}>
       {/* Botón superior de Theme */}
       <button
@@ -137,19 +179,44 @@ export const Login: React.FC = () => {
             disabled={isLoading}
           />
 
-          <Input
-            type="password"
-            label="Contraseña"
-            placeholder="Ingresa tu Contraseña"
-            icon={<Lock size={18} />}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-          />
-
-          
+          {/* 🔥 ENVOLVEMOS EL INPUT Y EL BOTÓN EN UN CONTENEDOR RELATIVO */}
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              label="Contraseña"
+              placeholder="Ingresa tu Contraseña"
+              icon={<Lock size={18} />}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+            />
+            
+            {/* 🔥 EL BOTÓN AHORA SÍ SE POSICIONA PERFECTAMENTE A LA DERECHA DEL COMPONENTE */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                bottom: '12px', // Lo cambié a bottom para que se alinee con el input sin importar el alto del label
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#38bdf8', 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px',
+                zIndex: 10
+              }}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+            
           <span className={styles.forgotPassword} onClick={() => navigate('/forgot-password')}
-              style={{ cursor: 'pointer' }}> ¿Olvidaste tu contraseña?</span>
+              style={{ cursor: 'pointer', padding: 4, color: 'var(--item_stan)' }}> ¿Olvidaste tu contraseña?</span>
 
           <Button
             type="submit"

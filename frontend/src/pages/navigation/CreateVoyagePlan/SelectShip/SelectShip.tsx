@@ -45,23 +45,6 @@ export const SelectShip: React.FC<SelectShipProps> = ({ onSelectShip, onCancel, 
   useEffect(() => {
     window.history.pushState(null, '', window.location.href);
 
-  /*  const handlePopState = (event: PopStateEvent) => {
-      // 2. Si el usuario presiona la flecha "Atrás", cancelamos la salida de la URL...
-      event.preventDefault();
-
-      // 3. ...y ejecutamos el callback nativo que cierra la pantalla y vuelve a las 4 cards sanas y salvas
-      onCancel();
-    };
-
-    // Escuchamos el botón atrás del navegador
-    window.addEventListener('popstate', handlePopState);
-
-    // Limpieza al desmontar el componente (Clean-up)
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  */
-
     const fetchShips = async () => {
       setIsFetching(true);
       setErrorMsg(null);
