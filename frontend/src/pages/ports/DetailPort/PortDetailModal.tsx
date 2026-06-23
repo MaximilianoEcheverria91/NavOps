@@ -18,7 +18,7 @@ interface PortDetailModalProps {
 
 export const PortDetailModal: React.FC<PortDetailModalProps> = ({ portId, onClose, showActions = true }) => {
   const navigate = useNavigate();
-  const { data: port, loading, error } = usePortDetail(portId);
+  const { data: port, loading, error } = usePortDetail(portId) as any;
   const [imageError, setImageError] = useState(false);
   
   // 🔥 ESTADO LOCAL PARA MOSTRAR/OCULTAR EL MODAL DE BORRADO
