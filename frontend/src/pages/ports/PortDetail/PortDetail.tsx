@@ -10,8 +10,8 @@ interface Props {
 }
 
 const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
-  const { port, loading, error, retry } = usePortDetail(portId);
-
+  const { port, loading, error, retry } = usePortDetail(portId) as any;
+  
   // Escenario 3: Error de servidor
   if (!loading && error === 'SERVER_ERROR') {
     return (
