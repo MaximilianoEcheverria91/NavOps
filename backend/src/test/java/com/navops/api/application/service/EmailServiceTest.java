@@ -39,7 +39,8 @@ class EmailServiceTest {
         MimeMessage mimeMessageMock = mock(MimeMessage.class);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessageMock);
 
-        when(templateEngine.process(eq("password-recovery.html"), any(Context.class))).thenAnswer(invocation -> {
+        // 🔥 CORREGIDO: Cambiamos "password-recovery.html" por "password-recovery"
+        when(templateEngine.process(eq("password-recovery"), any(Context.class))).thenAnswer(invocation -> {
             Context context = invocation.getArgument(1, Context.class);
             assertEquals("test@navops.com", context.getVariable("email"));
             assertEquals("ABCD - 1234", context.getVariable("code"));
@@ -49,6 +50,7 @@ class EmailServiceTest {
         emailService.sendPasswordRecoveryEmail("test@navops.com", "ABCD - 1234");
 
         verify(javaMailSender).send(mimeMessageMock);
-        verify(templateEngine).process(eq("password-recovery.html"), any(Context.class));
+        // 🔥 CORREGIDO ACÁ TAMBIÉN PARA LA VERIFICACIÓN
+        verify(templateEngine).process(eq("password-recovery"), any(Context.class));
     }
-}
+};

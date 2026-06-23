@@ -8,6 +8,7 @@ import com.navops.api.domain.entity.Maintenance;
 import com.navops.api.domain.entity.Ship;
 import com.navops.api.domain.entity.ShipTank;
 import com.navops.api.domain.enums.ShipStatusEnum;
+import com.navops.api.domain.enums.ShipTypeEnum;
 import com.navops.api.infrastructure.exception.ShipAlreadyExistsException;
 import com.navops.api.infrastructure.exception.ShipNotFoundException;
 import com.navops.api.repository.CountryRepository;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito; // 🔥 Importamos Mockito nativo para usar lenient
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -56,7 +58,7 @@ class ShipServiceTest {
                 .name("Libertador")
                 .registration("2-SE-2-158-97")
                 .imoNumber("9176187")
-                .shipType("Mercantil")
+                .shipType(ShipTypeEnum.CONTAINER_SHIP)
                 .length(new BigDecimal("41.56"))
                 .beam(new BigDecimal("56.89"))
                 .draft(new BigDecimal("56.45"))
@@ -66,14 +68,16 @@ class ShipServiceTest {
                 .crewCapacity((short) 60)
                 .buildYear((short) 1996)
                 .build();
-        when(shipRepository.findByIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.of(ship));
+
+        // 🔥 SOLUCIÓN: Envolvemos el stubbing con Mockito.lenient() para evitar que falle en los tests de creación
+        Mockito.lenient().when(shipRepository.findByIdAndDeletedAtIsNull(shipId)).thenReturn(Optional.of(ship));
     }
 
     // ── createShip ────────────────────────────────────────────────────────────
 
     private ShipCreateRequest minimalRequest(UUID countryId) {
         return new ShipCreateRequest(
-                "ARA Almirante Brown", "AR-D10-1983", "D-10", "Destructor", (short) 1983,
+                "ARA Almirante Brown", "AR-D10-1983", "D-10", ShipTypeEnum.CONTAINER_SHIP.name(), (short) 1983,
                 countryId, "OPERATIONAL", null,
                 new BigDecimal("125.9"), new BigDecimal("14.0"), new BigDecimal("5.8"), new BigDecimal("9.28"),
                 new BigDecimal("3600"), (short) 200, BigDecimal.ZERO,
