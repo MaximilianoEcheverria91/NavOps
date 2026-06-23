@@ -10,8 +10,8 @@ interface Props {
 }
 
 const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
-  const { port, loading, error, retry } = usePortDetail(portId);
-
+  const { port, loading, error, retry } = usePortDetail(portId) as any;
+  
   // Escenario 3: Error de servidor
   if (!loading && error === 'SERVER_ERROR') {
     return (
@@ -125,7 +125,7 @@ const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Bandera/País:</span>
-                    <span className={styles.value}>{port.countryName}</span>
+                    <span className={styles.value}>{port.country}</span>
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Calado Máximo:</span>
@@ -140,7 +140,7 @@ const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
                 <div className={styles.grid}>
                   <div className={styles.field}>
                     <span className={styles.label}>País:</span>
-                    <span className={styles.value}>{port.countryName}</span>
+                    <span className={styles.value}>{port.country}</span>
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Latitud:</span>
@@ -148,7 +148,7 @@ const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Provincia:</span>
-                    <span className={styles.value}>{port.provinceName}</span>
+                    <span className={styles.value}>{port.province}</span>
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Longitud:</span>
@@ -156,7 +156,7 @@ const PortDetail: React.FC<Props> = ({ portId, onClose, onEdit, onDelete }) => {
                   </div>
                   <div className={styles.field}>
                     <span className={styles.label}>Ciudad:</span>
-                    <span className={styles.value}>{port.cityName}</span>
+                    <span className={styles.value}>{port.city}</span>
                   </div>
                 </div>
               </div>

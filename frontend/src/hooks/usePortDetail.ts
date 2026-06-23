@@ -1,24 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getPortById } from '../services/api/portService';
 import type { PortDetailedResponse } from '../types/port';
 
 export const usePortDetail = (portId: string | null) => {
-  const [data, setData] = useState<PortDetailedResponse | null>(null);
+  const [port, setPort] = useState<PortDetailedResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [version, setVersion] = useState<number>(0);
+
+  // Función para forzar el reintento sumando uno al estado de versión
+  const retry = useCallback(() => {
+    setVersion((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
-    // Si no hay ID o se cierra el modal, reseteamos estado
     if (!portId) {
-      setData(null);
+      setPort(null);
       setError(null);
       return;
     }
 
     const fetchPortDetail = async () => {
-      // Verificación local (Offline First)
       if (!navigator.onLine) {
-        setError("No hay conexión a internet para ver detalles remotos.");
+        setError("SERVER_ERROR");
         return;
       }
 
@@ -27,14 +31,13 @@ export const usePortDetail = (portId: string | null) => {
 
       try {
         const portInfo = await getPortById(portId);
-        setData(portInfo);
+        setPort(portInfo);
       } catch (err: any) {
         console.error("Error obteniendo detalle del puerto:", err);
-        // Si el backend es de Spring Boot, el 404 viene típicamente por acá
         if (err.response && err.response.status === 404) {
-          setError("El puerto no existe o no fue encontrado");
+          setError("NOT_FOUND"); // Machea con el componente
         } else {
-          setError("No se pudo cargar la información del puerto");
+          setError("SERVER_ERROR"); // Machea con el componente
         }
       } finally {
         setLoading(false);
@@ -42,7 +45,8 @@ export const usePortDetail = (portId: string | null) => {
     };
 
     fetchPortDetail();
-  }, [portId]);
+  }, [portId, version]); // Al cambiar 'version', se dispara de nuevo
 
-  return { data, loading, error };
+  // Retornamos exactamente lo que la vista PortDetail necesita desestructurar
+  return { port, loading, error, retry };
 };
