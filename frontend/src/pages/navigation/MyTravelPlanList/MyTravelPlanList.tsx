@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import styles from './MyTravelPlanList.module.css';
 import { getMyAssignedVoyages, startTravelPlan, cancelVoyagePlan } from '../../../services/api/voyageService';
 import type { VoyageSummary } from '../../../types/navigation';
 import { AlertModal } from '../../../components/ui/AlertModal/AlertModal';
+import { MainLayout } from '../../../layouts/MainLayout';
 
 export const MyTravelPlanList: React.FC = () => {
   const navigate = useNavigate();
@@ -109,7 +109,7 @@ export const MyTravelPlanList: React.FC = () => {
   }, [voyages, searchTerm]);
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Lista de Viajes</h1>
@@ -227,6 +227,6 @@ export const MyTravelPlanList: React.FC = () => {
        buttonText={pendingCancelId ? "Confirmar" : "Aceptar"} // 👈 Botón dinámico
        onClose={pendingCancelId ? executeCancellation : () => setIsAlertOpen(false)} // 👈 Acción dinámica
       />
-    </NavigationLayout>
+    </MainLayout>
   );
 };

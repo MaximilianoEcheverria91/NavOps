@@ -25,6 +25,7 @@
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/RoleResponseDto.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/ForgotPasswordResponseDto.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/LoginResponseDto.java
+/home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/ProfileResponseDto.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/auth/VerifyCodeResponseDto.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/dashboardAdmin/PeopleStatusCountResponse.java
 /home/maxi/proyectos/NavOps/backend/src/main/java/com/navops/api/application/dto/response/dashboardAdmin/PortStatusCountResponse.java

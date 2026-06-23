@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { Map, Sailboat, ShipWheel, History, Check } from 'lucide-react';
 import styles from './NavigationMenu.module.css';
 import { 
@@ -41,7 +41,7 @@ export const NavigationMenu: React.FC = () => {
   }, []);
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       <div className={styles.container}>
         <header className={styles.header}>
           <h1 className={styles.title}>Navegación</h1>
@@ -143,6 +143,6 @@ export const NavigationMenu: React.FC = () => {
           Sistema de Gestión Marítima V.1
         </footer>
       </div>
-    </NavigationLayout>
+    </MainLayout>
   );
 };

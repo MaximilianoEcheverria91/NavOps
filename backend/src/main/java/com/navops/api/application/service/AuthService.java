@@ -2,15 +2,18 @@ package com.navops.api.application.service;
 
 import com.navops.api.application.dto.request.LoginRequest;
 import com.navops.api.application.dto.response.auth.LoginResponseDto;
+import com.navops.api.application.dto.response.auth.ProfileResponseDto;
 import com.navops.api.application.dto.response.auth.VerifyCodeResponseDto;
 import com.navops.api.domain.entity.LoginAttempt;
 import com.navops.api.domain.entity.PasswordResetCode;
+import com.navops.api.domain.entity.Person;
 import com.navops.api.domain.entity.User;
 import com.navops.api.infrastructure.exception.ExpiredResetCodeException;
 import com.navops.api.infrastructure.exception.InvalidResetCodeException;
 import com.navops.api.infrastructure.exception.UserNotFoundException;
 import com.navops.api.repository.LoginAttemptRepository;
 import com.navops.api.repository.PasswordResetCodeRepository;
+import com.navops.api.repository.PersonRepository;
 import com.navops.api.repository.UserRepository;
 import com.navops.api.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +40,7 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PersonRepository personRepository;
     private final LoginAttemptRepository loginAttemptRepository;
     private final PasswordResetCodeRepository passwordResetCodeRepository;
     private final JwtService jwtService;
@@ -80,6 +86,20 @@ public class AuthService {
             log.warn("Intento de inicio de sesión fallido para el nombre de usuario: {} desde la IP: {}", username, ipAddress);
             throw new BadCredentialsException("Usuario o contraseña incorrectos");
         }
+    }
+
+    public ProfileResponseDto getProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        Person person = personRepository.findByUser(user)
+                .orElseThrow(UserNotFoundException::new);
+
+        return new ProfileResponseDto(
+                person.getFullName(),
+                person.getSurname(),
+                person.getAvatarUrl(),
+                user.getRole().getName()
+        );
     }
 
     private void checkLockoutStatus(String username, String ipAddress) {

@@ -34,6 +34,7 @@
   --background-color-detail: #082842;
   --fondo: #082842;
   --delete-fondo:#450a0a9a;
+  --bg-card2: #082842;
 
   /*Navar*/
   --barckground-color-nav: none;
@@ -95,6 +96,7 @@
   --background-color-detail: #ffff;
   --fondo: #ffff;
   --delete-fondo:#c4a3a3;
+  --bg-card2: white;
  
 
 

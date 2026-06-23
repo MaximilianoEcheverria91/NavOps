@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal, CheckCircle, Sailboat, Anchor, MapPin, Navigation, Calendar, X, ArrowLeft } from 'lucide-react';
 import { useTravelPlans } from '../../../hooks/useTravelPlans';
 import type { TravelPlanFilters } from '../../../hooks/useTravelPlans';
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { useTheme } from '../../../hooks/useTheme';
 import { FilterDropdown } from './FilterDropdown/FilterDropdown';
 import styles from './TravelPlanList.module.css';
@@ -155,7 +155,7 @@ export const TravelPlanList: React.FC = () => {
   };
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       <div className={styles.pageContainer}>
         
         {/* Cabecera */}
@@ -340,6 +340,6 @@ export const TravelPlanList: React.FC = () => {
           onClose={() => setSelectedPlanId(null)}
         />
       )}
-    </NavigationLayout>
+    </MainLayout>
   );
 };

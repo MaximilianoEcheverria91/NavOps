@@ -87,3 +87,15 @@ export const updateUserStatus = async (id: string, status: string) => {
   const response = await apiClient.patch(`/admin/user/${id}/status`, { status });
   return response.data;
 };
+
+export interface UserProfileResponse {
+  fullName: string;
+  surname: string;
+  avatarUrl: string;
+  role: string;
+}
+
+export const getUserProfile = async (): Promise<UserProfileResponse> => {
+  const response = await apiClient.get('/auth/profile');
+  return response.data;
+};

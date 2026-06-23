@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCreateVoyagePlan } from '../../../hooks/useCreateVoyagePlan';
 import { FeedbackModal } from '../../../components/ui/FeedbackModal/FeedbackModal';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal/ConfirmModal'; 
-import { NavigationLayout } from '../../../layouts/NavigationLayout';
+import { MainLayout } from '../../../layouts/MainLayout';
 import { Sailboat, Map, Users, Package, Check, X, ArrowLeft} from 'lucide-react';
 import styles from './CreateVoyagePlan.module.css';
 import { SelectShip } from './SelectShip/SelectShip';
@@ -231,7 +231,7 @@ export const CreateVoyagePlan: React.FC = () => {
   };
 
   return (
-    <NavigationLayout>
+    <MainLayout>
       {activeModal === 'destination' ? (
         <SelectRoute
           onSaveSelection={handleSetRoute}
@@ -527,6 +527,6 @@ export const CreateVoyagePlan: React.FC = () => {
         />
       </div>
       )}
-    </NavigationLayout>
+    </MainLayout>
   );
 };
